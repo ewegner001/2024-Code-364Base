@@ -64,12 +64,12 @@ public class Swerve extends SubsystemBase {
         }
     } 
     
-    /*
+    
     public ChassisSpeeds getChassisSpeed() {
 
-        return ChassisSpeeds.fromFieldRelativeSpeeds(swerveOdometry., getGyroYaw());
+        return ChassisSpeeds.fromFieldRelativeSpeeds(swerveOdometry.getGyroYaw());
     }
-    */
+    
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
