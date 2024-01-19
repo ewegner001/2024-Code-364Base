@@ -19,17 +19,30 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
+    public SwerveDriveKinematics swerveKinematics;
+    public Translation2d frontLeftModule;
+    public Translation2d frontRightModule;
+    public Translation2d backLeftModule;
+    public Translation2d backRightModule;
     private final Field2d m_field = new Field2d();
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        swerveKinematics = new SwerveDriveKinematics();
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(Constants.Swerve.gyroOffset);
+
+        frontLeftModule = new Translation2d(Constants.Swerve.wheelBase,Constants.Swerve.wheelBase);
+        frontRightModule = new Translation2d(Constants.Swerve.wheelBase,Constants.Swerve.wheelBase);
+        backLeftModule = new Translation2d(Constants.Swerve.wheelBase,Constants.Swerve.wheelBase);
+        backRightModule = new Translation2d(Constants.Swerve.wheelBase,Constants.Swerve.wheelBase);
 
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
@@ -67,7 +80,7 @@ public class Swerve extends SubsystemBase {
     
     public ChassisSpeeds getChassisSpeed() {
 
-        return ChassisSpeeds.fromFieldRelativeSpeeds(swerveOdometry.getGyroYaw());
+        return swerveKinematics.toChassisSpeeds(swerveKinematics.toSwerveModuleStates());
     }
     
 
