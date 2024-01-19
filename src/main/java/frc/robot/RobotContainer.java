@@ -85,8 +85,8 @@ public class RobotContainer {
         AutoBuilder.configureHolonomic(
             s_Swerve::getPose, 
             s_Swerve::setPose,
-            null, 
-            null,
+            s_Swerve::getChassisSpeed, 
+            s_Swerve::setChassisSpeed,
             new HolonomicPathFollowerConfig(
                 new PIDConstants(Constants.Swerve.driveKP, 0.0, 0.0), // Translation PID constants
                 new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants

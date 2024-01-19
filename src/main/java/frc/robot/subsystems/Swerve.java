@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
@@ -31,6 +32,7 @@ public class Swerve extends SubsystemBase {
     public Translation2d frontRightModule;
     public Translation2d backLeftModule;
     public Translation2d backRightModule;
+    public SwerveModuleState[] swerveModuleStates;
     private final Field2d m_field = new Field2d();
 
     public Swerve() {
@@ -50,7 +52,8 @@ public class Swerve extends SubsystemBase {
             new SwerveModule(2, Constants.Swerve.Mod2.constants),
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
-        
+
+         
         Timer.delay(1.0);
         resetModulesToAbsolute();
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
@@ -80,10 +83,16 @@ public class Swerve extends SubsystemBase {
     
     public ChassisSpeeds getChassisSpeed() {
 
-        return swerveKinematics.toChassisSpeeds(swerveKinematics.toSwerveModuleStates());
+        return swerveKinematics.toChassisSpeeds(getModuleStates());
+
+    }
+
+    public void setChassisSpeed(ChassisSpeeds chassisSpeed) {
+
+        setModuleStates(swerveKinematics.toSwerveModuleStates(chassisSpeed));
+        
     }
     
-
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
