@@ -20,6 +20,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
+    private final Joystick operator = new Joystick(1);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -32,7 +33,8 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-
+    // Intake
+    private final Intake intake = new Intake();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -47,7 +49,7 @@ public class RobotContainer {
         );
 
         // Configure the button bindings
-        configureButtonBindings();
+        this.configureButtonBindings();
     }
 
     /**
