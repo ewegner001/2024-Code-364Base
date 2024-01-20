@@ -37,7 +37,7 @@ public class Swerve extends SubsystemBase {
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
-        swerveKinematics = new SwerveDriveKinematics();
+        swerveKinematics = new SwerveDriveKinematics(new Translation2d(Constants.Swerve.wheelBase, Constants.Swerve.wheelBase));
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(Constants.Swerve.gyroOffset);
 
