@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -110,6 +111,8 @@ public class RobotContainer {
         );
 
         // An ExampleCommand will run in autonomous
-        return new PathPlannerAuto("Example Path");
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
+
+        return AutoBuilder.followPath(path);
     }
 }

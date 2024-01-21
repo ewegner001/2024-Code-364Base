@@ -35,9 +35,8 @@ public class Swerve extends SubsystemBase {
     public SwerveModuleState[] swerveModuleStates;
     private final Field2d m_field = new Field2d();
 
-    public Swerve() {
+    public Swerve() {a
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
-        swerveKinematics = new SwerveDriveKinematics(new Translation2d(Constants.Swerve.wheelBase, Constants.Swerve.wheelBase));
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(Constants.Swerve.gyroOffset);
 
@@ -45,6 +44,8 @@ public class Swerve extends SubsystemBase {
         frontRightModule = new Translation2d(Constants.Swerve.wheelBase,Constants.Swerve.wheelBase);
         backLeftModule = new Translation2d(Constants.Swerve.wheelBase,Constants.Swerve.wheelBase);
         backRightModule = new Translation2d(Constants.Swerve.wheelBase,Constants.Swerve.wheelBase);
+
+        swerveKinematics = new SwerveDriveKinematics(frontLeftModule, frontRightModule, backLeftModule, backRightModule);
 
         mSwerveMods = new SwerveModule[] {
             new SwerveModule(0, Constants.Swerve.Mod0.constants),
