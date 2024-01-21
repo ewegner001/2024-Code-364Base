@@ -62,27 +62,7 @@ public class RobotContainer {
         configureButtonBindings();
 
         NamedCommands.registerCommand("Example Command", new PathPlannerExampleCommand(pathPlannerExampleSub));
-    }
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be created by
-     * instantiating a {@link GenericHID} or one of its subclasses ({@link
-     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
-    private void configureButtonBindings() {
-        /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-    }
-
-    
-
-    /**
-     * Use this to pass the autonomous command to the main {@link Robot} class.
-     *
-     * @return the command to run in autonomous
-     */
-    public Command getAutonomousCommand() {
         AutoBuilder.configureHolonomic(
             s_Swerve::getPose, 
             s_Swerve::setPose,
@@ -109,6 +89,27 @@ public class RobotContainer {
             },
             s_Swerve
         );
+    }
+
+    /**
+     * Use this method to define your button->command mappings. Buttons can be created by
+     * instantiating a {@link GenericHID} or one of its subclasses ({@link
+     * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+     * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+     */
+    private void configureButtonBindings() {
+        /* Driver Buttons */
+        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+    }
+
+    
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
 
         // An ExampleCommand will run in autonomous
         PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");

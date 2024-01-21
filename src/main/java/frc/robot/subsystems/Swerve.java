@@ -35,7 +35,7 @@ public class Swerve extends SubsystemBase {
     public SwerveModuleState[] swerveModuleStates;
     private final Field2d m_field = new Field2d();
 
-    public Swerve() {a
+    public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(Constants.Swerve.gyroOffset);
