@@ -4,29 +4,28 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake extends SubsystemBase {
+public class Wrist extends SubsystemBase {
   private CANSparkMax motor;
 
-  /** Creates a new Intake. */
-  public Intake() {
-    motor = new CANSparkMax(12, MotorType.kBrushless);
+  /** Creates a new Wrist. */
+  public Wrist() {
+    motor = new CANSparkMax(20, MotorType.kBrushless); //Change later q1
   }
 
   public void run(double speed) {
     motor.set(speed);
   }
-
-  public double intakeMotorTemp() {
+  public double WristMotorTemp() {
     return motor.getMotorTemperature();
   }
 
-  // @Override
-  // public void periodic() {
-  //   // This method will be called once per scheduler run
-  // }
+  //@Override
+  //public void periodic() {
+    // This method will be called once per scheduler run
+ // }
 }

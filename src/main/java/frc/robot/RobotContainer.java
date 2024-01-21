@@ -35,12 +35,21 @@ public class RobotContainer {
         new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton driverBButton = 
         new JoystickButton(driver, XboxController.Button.kB.value);
-    
+    private final JoystickButton driverXButton = 
+        new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton driverYButton = 
+        new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton driverLBButton = 
+        new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton driverRBButton = 
+        new JoystickButton(driver, XboxController.Button.kRightBumper.value); 
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     // Intake
     private final Intake intake = new Intake();
+    //Wrist
+    private final Wrist chipmunks = new Wrist();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -67,8 +76,15 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        driverAButton.onTrue(new InstantCommand(() -> intake.run(0.25)));
-        driverBButton.onTrue(new InstantCommand(() -> intake.run(-0.25)));
+        driverLBButton.onFalse(new InstantCommand(() -> intake.run(0)));
+        driverRBButton.onFalse(new InstantCommand(() -> intake.run(0)));
+        driverLBButton.whileTrue(new InstantCommand(() -> intake.run(0.75)));
+        driverRBButton.whileTrue(new InstantCommand(() -> intake.run(-0.75)));
+    //Wrist Buttons
+        driverAButton.onFalse(new InstantCommand(() -> chipmunks.run(0)));
+        driverYButton.onFalse(new InstantCommand(() -> chipmunks.run(0)));
+        driverAButton.whileTrue(new InstantCommand(() -> chipmunks.run(.25)));
+        driverYButton.whileTrue(new InstantCommand(() -> chipmunks.run(-.25)));
     }
 
     /**
