@@ -21,7 +21,7 @@ public class Eyes extends SubsystemBase {
 
         // photonvision camera object
         camera = new PhotonCamera("photonvision");
-        
+
     }
 
     public void readAprilTag() {
@@ -30,9 +30,21 @@ public class Eyes extends SubsystemBase {
         var result = camera.getLatestResult();
         target = result.getBestTarget();
 
-        // read data from target
-        targetID = target.getFiducialId();
-        poseAmbiguity = target.getPoseAmbiguity();
+        // if target found
+        if (result.hasTargets()) {
+
+            System.out.println("Lock");
+
+            // read data from target
+            targetID = target.getFiducialId();
+            poseAmbiguity = target.getPoseAmbiguity();
+
+        } else {
+
+            System.out.println("Blind");
+
+        }
+        
     }
 
 
