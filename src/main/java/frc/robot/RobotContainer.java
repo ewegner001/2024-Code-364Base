@@ -61,7 +61,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        NamedCommands.registerCommand("Example Command", new PathPlannerExampleCommand(pathPlannerExampleSub));
+        //NamedCommands.registerCommand("Example Command", new PathPlannerExampleCommand(pathPlannerExampleSub));
 
         AutoBuilder.configureHolonomic(
             s_Swerve::getPose, 
@@ -112,7 +112,7 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
 
         // An ExampleCommand will run in autonomous
-        PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path123");
 
         return AutoBuilder.followPath(path);
     }
