@@ -17,12 +17,15 @@ public class ShooterPiviot extends SubsystemBase {
   /** Creates a new ShooterPiviot. */
   public ShooterPiviot() {
     motor = new CANSparkMax(1, MotorType.kBrushless);
-    cancoder = new CANCoder(0);
-  }
+    cancoder = new CANcoder(0);
+    }
 
+    public double getValue() {
+      return cancoder.getPosition().;
+    }
 public void run() {
 PIDController pid = new PIDController(0, 0, 0);
-motor.set(pid.calculate(encoder.getDistance(), 10));
+motor.set(pid.calculate(cancoder.getPosition(), 10));
 }
  
  
