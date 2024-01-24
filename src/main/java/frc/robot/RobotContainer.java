@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -17,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 import frc.robot.Constants;
@@ -84,9 +84,10 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
 
-        // An ExampleCommand will run in autonomous
-        //PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path123");
+        // Load the path you want to follow using its name in the GUI
+        PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path123");
 
-        return s_Swerve.followPathCommand("Example Path123");
+        // Create a path following command using AutoBuilder. This will also trigger event markers.
+        return AutoBuilder.followPath(path);
     }
 }
