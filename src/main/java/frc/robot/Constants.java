@@ -18,7 +18,7 @@ public final class Constants {
     public static final class Swerve {
 
         public static final double maxEncoderVoltage = 5;
-        public static final int pigeonID = 1;
+        public static final int pigeonID = 8;
         public static final double gyroOffset = 0;
 
         public static final COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
