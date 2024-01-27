@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -43,6 +45,7 @@ public class Swerve extends SubsystemBase {
     public Translation2d backRightModule;
     public SwerveModuleState[] swerveModuleStates;
     private final Field2d m_field = new Field2d();
+    private StructArrayPublisher<SwerveModuleState> publisher;
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -67,6 +70,9 @@ public class Swerve extends SubsystemBase {
         Timer.delay(1.0);
         resetModulesToAbsolute();
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
+
+        publisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic("SmartDashboard/ModuleStates", SwerveModuleState.struct).publish();
 
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
@@ -160,6 +166,10 @@ public class Swerve extends SubsystemBase {
     public void setChassisSpeed(ChassisSpeeds chassisSpeed) {
 
         setModuleStates(swerveKinematics.toSwerveModuleStates(chassisSpeed));
+
+        SmartDashboard.putNumber("SetChassisSpeedX", chassisSpeed.vxMetersPerSecond);
+        SmartDashboard.putNumber("SetChassisSpeedY", chassisSpeed.vyMetersPerSecond);
+        SmartDashboard.putNumber("SetChassisSpeedOmega", chassisSpeed.omegaRadiansPerSecond);
         
     }
     
@@ -208,7 +218,7 @@ public class Swerve extends SubsystemBase {
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
     }
 
-    public Rotation2d getGyroYaw() {
+    public Rotation2d getGyroYaw(){
         return Rotation2d.fromDegrees(gyro.getYaw().getValue());
     }
 
@@ -221,6 +231,24 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic(){
         swerveOdometry.update(getGyroYaw(), getModulePositions());
+
+        SmartDashboard.putNumber("Robot Odometry X", getPose().getX());
+        SmartDashboard.putNumber("Robot Odometry Y", getPose().getY());
+        SmartDashboard.putNumber("Gyro Yaw", getGyroYaw().getDegrees());
+        
+        // SwerveModuleState[] states  = new SwerveModuleState[] {
+        //     new SwerveModuleState(),
+        //     new SwerveModuleState(),
+        //     new SwerveModuleState(),
+        //     new SwerveModuleState()
+        // };
+
+        publisher.set(swerveKinematics.toSwerveModuleStates(getChassisSpeed()));
+        // publisher.set(states);
+
+        SmartDashboard.putNumber("ChassisSpeedX", getChassisSpeed().vxMetersPerSecond);
+        SmartDashboard.putNumber("ChassisSpeedY", getChassisSpeed().vyMetersPerSecond);
+        SmartDashboard.putNumber("ChassisSpeedOmega", getChassisSpeed().omegaRadiansPerSecond);
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
