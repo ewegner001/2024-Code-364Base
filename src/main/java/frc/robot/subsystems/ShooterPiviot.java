@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 
@@ -21,13 +22,14 @@ public class ShooterPiviot extends SubsystemBase {
     }
 
     public double getValue() {
-      StatusSignal<Double> position = cancoder.getPostion();
+      StatusSignal<Double> position = cancoder.getPosition();
       Double positionValue = position.getValue();
       return positionValue.doubleValue();
     }
-public void run() {
-PIDController pid = new PIDController(0, 0, 0);
-motor.set(pid.calculate(getValue(), 10));
+public void run(double setPoint) {
+try (PIDController pid = new PIDController(0, 0, 0)) {
+  motor.set(pid.calculate(getValue(), setPoint));
+}
 }
  
  
