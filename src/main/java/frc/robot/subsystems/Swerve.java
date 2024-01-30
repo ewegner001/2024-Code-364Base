@@ -15,8 +15,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -45,7 +47,9 @@ public class Swerve extends SubsystemBase {
     public Translation2d backRightModule;
     public SwerveModuleState[] swerveModuleStates;
     private final Field2d m_field = new Field2d();
-    private StructArrayPublisher<SwerveModuleState> publisher;
+    private DoubleArrayPublisher moduleStatePublisher = NetworkTableInstance.getDefault()
+            .getDoubleArrayTopic("/ModuleStates").publish();
+    private StructPublisher<Pose2d> posePublisher;
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -71,8 +75,8 @@ public class Swerve extends SubsystemBase {
         resetModulesToAbsolute();
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
 
-        publisher = NetworkTableInstance.getDefault()
-            .getStructArrayTopic("SmartDashboard/ModuleStates", SwerveModuleState.struct).publish();
+        posePublisher = NetworkTableInstance.getDefault()
+            .getStructTopic("RobotPose", Pose2d.struct).publish();
 
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
@@ -84,7 +88,7 @@ public class Swerve extends SubsystemBase {
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
                         4.5, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                        new ReplanningConfig(false, false) // Default path replanning config. See the API for the options here
                 ),
                 () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -165,11 +169,20 @@ public class Swerve extends SubsystemBase {
 
     public void setChassisSpeed(ChassisSpeeds chassisSpeed) {
 
-        setModuleStates(swerveKinematics.toSwerveModuleStates(chassisSpeed));
-
         SmartDashboard.putNumber("SetChassisSpeedX", chassisSpeed.vxMetersPerSecond);
         SmartDashboard.putNumber("SetChassisSpeedY", chassisSpeed.vyMetersPerSecond);
         SmartDashboard.putNumber("SetChassisSpeedOmega", chassisSpeed.omegaRadiansPerSecond);
+
+        SwerveModuleState[] desiredStates = swerveKinematics.toSwerveModuleStates(chassisSpeed);
+
+        moduleStatePublisher.set(new double[] {
+            desiredStates[0].angle.getDegrees(), desiredStates[0].speedMetersPerSecond,
+            desiredStates[1].angle.getDegrees(), desiredStates[1].speedMetersPerSecond,
+            desiredStates[2].angle.getDegrees(), desiredStates[2].speedMetersPerSecond,
+            desiredStates[3].angle.getDegrees(), desiredStates[3].speedMetersPerSecond,
+        });
+
+        setModuleStates(desiredStates);
         
     }
     
@@ -177,6 +190,13 @@ public class Swerve extends SubsystemBase {
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
         
+        // moduleStatePublisher.set(new double[] {
+        //     desiredStates[0].angle.getDegrees(), desiredStates[0].speedMetersPerSecond,
+        //     desiredStates[1].angle.getDegrees(), desiredStates[1].speedMetersPerSecond,
+        //     desiredStates[2].angle.getDegrees(), desiredStates[2].speedMetersPerSecond,
+        //     desiredStates[3].angle.getDegrees(), desiredStates[3].speedMetersPerSecond,
+        // });
+
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
         }
@@ -234,17 +254,17 @@ public class Swerve extends SubsystemBase {
 
         SmartDashboard.putNumber("Robot Odometry X", getPose().getX());
         SmartDashboard.putNumber("Robot Odometry Y", getPose().getY());
+        SmartDashboard.putNumber("Robot Odometry Rotation", getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("Gyro Yaw", getGyroYaw().getDegrees());
-        
-        // SwerveModuleState[] states  = new SwerveModuleState[] {
-        //     new SwerveModuleState(),
-        //     new SwerveModuleState(),
-        //     new SwerveModuleState(),
-        //     new SwerveModuleState()
-        // };
 
-        publisher.set(swerveKinematics.toSwerveModuleStates(getChassisSpeed()));
-        // publisher.set(states);
+        // SwerveModuleState[] states = getModuleStates();
+        // moduleStatePublisher.set(new double[] {
+        //     states[0].angle.getDegrees(), states[0].speedMetersPerSecond,
+        //     states[1].angle.getDegrees(), states[1].speedMetersPerSecond,
+        //     states[2].angle.getDegrees(), states[2].speedMetersPerSecond,
+        //     states[3].angle.getDegrees(), states[3].speedMetersPerSecond,
+        // });
+        // posePublisher.set(getPose());
 
         SmartDashboard.putNumber("ChassisSpeedX", getChassisSpeed().vxMetersPerSecond);
         SmartDashboard.putNumber("ChassisSpeedY", getChassisSpeed().vyMetersPerSecond);
