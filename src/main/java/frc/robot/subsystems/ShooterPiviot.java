@@ -21,11 +21,13 @@ public class ShooterPiviot extends SubsystemBase {
     }
 
     public double getValue() {
-      return cancoder.getPosition().;
+      StatusSignal<Double> position = cancoder.getPostion();
+      Double positionValue = position.getValue();
+      return positionValue.doubleValue();
     }
 public void run() {
 PIDController pid = new PIDController(0, 0, 0);
-motor.set(pid.calculate(cancoder.getPosition(), 10));
+motor.set(pid.calculate(getValue(), 10));
 }
  
  
