@@ -15,22 +15,26 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterPiviot extends SubsystemBase {
   private CANSparkMax motor;
   private CANcoder cancoder;
+  private double m_setPoint;
+  private PIDController pid;
   /** Creates a new ShooterPiviot. */
   public ShooterPiviot() {
     motor = new CANSparkMax(1, MotorType.kBrushless);
     cancoder = new CANcoder(0);
-    }
+    m_setPoint = 0;
+    pid = new PIDController(0, 0, 0);
 
-    public double getValue() {
-      StatusSignal<Double> position = cancoder.getPosition();
-      Double positionValue = position.getValue();
-      return positionValue.doubleValue();
-    }
-public void run(double setPoint) {
-try (PIDController pid = new PIDController(0, 0, 0)) {
-  motor.set(pid.calculate(getValue(), setPoint));
-}
-}
+  }
+
+  private double encoderAngle() {
+    StatusSignal<Double> position = cancoder.getPosition();
+    Double positionValue = position.getValue();
+    return positionValue.doubleValue();
+  }
+
+  public void moveShooterPivot(double setPoint) {
+    m_setPoint = setPoint;
+  }
  
  
  
@@ -38,6 +42,7 @@ try (PIDController pid = new PIDController(0, 0, 0)) {
  
   @Override
   public void periodic() {
+    motor.set(pid.calculate(encoderAngle(), m_setPoint));
     // This method will be called once per scheduler run
   }
 }

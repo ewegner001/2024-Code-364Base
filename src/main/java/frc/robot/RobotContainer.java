@@ -62,9 +62,9 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        xboxAButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.run(60)));
-        xboxBButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.run(-20)));
-        xboxXButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.run(-90)));
+        xboxAButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.moveShooterPivot(60)));
+        xboxBButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.moveShooterPivot(-20)));
+        xboxXButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.moveShooterPivot(-90)));
     }
 
     /**
