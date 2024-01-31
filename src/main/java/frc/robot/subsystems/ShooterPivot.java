@@ -9,20 +9,23 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ShooterPiviot extends SubsystemBase {
+public class ShooterPivot extends SubsystemBase {
   private CANSparkMax motor;
   private CANcoder cancoder;
   private double m_setPoint;
   private PIDController pid;
+  private ArmFeedforward feedforward;
   /** Creates a new ShooterPiviot. */
-  public ShooterPiviot() {
+  public ShooterPivot() {
     motor = new CANSparkMax(1, MotorType.kBrushless);
     cancoder = new CANcoder(0);
     m_setPoint = 0;
     pid = new PIDController(0, 0, 0);
+    feedforward = new ArmFeedforward(0, 0, 0, 0);
 
   }
 
@@ -35,6 +38,10 @@ public class ShooterPiviot extends SubsystemBase {
   public void moveShooterPivot(double setPoint) {
     m_setPoint = setPoint;
   }
+
+  public void feedForwardShooterpivot(double motorVelocity) {
+    
+  }
  
  
  
@@ -43,6 +50,7 @@ public class ShooterPiviot extends SubsystemBase {
   @Override
   public void periodic() {
     motor.set(pid.calculate(encoderAngle(), m_setPoint));
+    motor.setVoltage(feedforward.calculate(motorVelocity));
     // This method will be called once per scheduler run
   }
 }

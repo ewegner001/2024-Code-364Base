@@ -33,7 +33,7 @@ public class RobotContainer {
     private final JoystickButton xboxBButton = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton xboxXButton = new JoystickButton(driver, XboxController.Button.kX.value);
     /* Subsystems */
-    private final ShooterPiviot s_ShooterPiviot = new ShooterPiviot();
+    private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
 
 
@@ -62,9 +62,9 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        xboxAButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.moveShooterPivot(60)));
-        xboxBButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.moveShooterPivot(-20)));
-        xboxXButton.onTrue(new InstantCommand(() -> s_ShooterPiviot.moveShooterPivot(-90)));
+        xboxAButton.onTrue(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(60)));
+        xboxBButton.onTrue(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(-20)));
+        xboxXButton.onTrue(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(-90)));
     }
 
     /**
