@@ -26,9 +26,9 @@ public class RobotContainer {
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
     private final int rotationAxis = XboxController.Axis.kRightX.value;
     /*Operator Buttons */
-    private final JoystickButton buttonY = new JoystickButton(operator, XboxController.Button.kY.value);
-    private final JoystickButton buttonA = new JoystickButton(operator, XboxController.Button.kA.value);
-    private final JoystickButton buttonB = new JoystickButton(operator, XboxController.Button.kB.value);
+    private final JoystickButton operatorButtonY = new JoystickButton(operator, XboxController.Button.kY.value);
+    private final JoystickButton operatorButtonA = new JoystickButton(operator, XboxController.Button.kA.value);
+    private final JoystickButton operatorButtonB = new JoystickButton(operator, XboxController.Button.kB.value);
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
@@ -64,10 +64,12 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         /*Operator Buttons */
-        buttonY.onTrue(new InstantCommand(()-> s_Elevator.lift()));
-        buttonB.onTrue(new InstantCommand(()-> s_Elevator.stop()));
-        buttonA.onTrue(new InstantCommand(()-> s_Elevator.down()));
-
+        operatorButtonY.onTrue(new InstantCommand(()-> s_Elevator.lift()));
+        operatorButtonB.onTrue(new InstantCommand(()-> s_Elevator.stop()));
+        operatorButtonA.onTrue(new InstantCommand(()-> s_Elevator.down()));
+        if(operatorButtonY.getAsBoolean() == false && operatorButtonA.getAsBoolean() == false){
+            
+        }
 
     }
 
