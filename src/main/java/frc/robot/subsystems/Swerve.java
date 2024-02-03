@@ -174,7 +174,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("SetChassisSpeedOmega", chassisSpeed.omegaRadiansPerSecond);
 
         SwerveModuleState[] desiredStates = swerveKinematics.toSwerveModuleStates(chassisSpeed);
-
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
         moduleStatePublisher.set(new double[] {
             desiredStates[0].angle.getDegrees(), desiredStates[0].speedMetersPerSecond,
             desiredStates[1].angle.getDegrees(), desiredStates[1].speedMetersPerSecond,
