@@ -20,18 +20,22 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
-
+    private final Joystick operator = new Joystick(1);
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
     private final int rotationAxis = XboxController.Axis.kRightX.value;
-
+    /*Operator Buttons */
+    private final JoystickButton buttonY = new JoystickButton(operator, XboxController.Button.kY.value);
+    private final JoystickButton buttonA = new JoystickButton(operator, XboxController.Button.kA.value);
+    private final JoystickButton buttonB = new JoystickButton(operator, XboxController.Button.kB.value);
     /* Driver Buttons */
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
+    private final Elevator s_Elevator = new Elevator();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -59,6 +63,12 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+        /*Operator Buttons */
+        buttonY.onTrue(new InstantCommand(()-> s_Elevator.lift()));
+        buttonB.onTrue(new InstantCommand(()-> s_Elevator.stop()));
+        buttonA.onTrue(new InstantCommand(()-> s_Elevator.down()));
+
+
     }
 
     /**
