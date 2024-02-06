@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -14,12 +15,15 @@ public class Shooter extends SubsystemBase {
   private TalonFX rightShooterMotor;
   private TalonFX frontShooterMotor;
   private DigitalInput inputSensor;
+  private PIDController pidAdvanced;
   /** Creates a new Shooter. */
   public Shooter() {
     leftShooterMotor = new TalonFX(0);
     rightShooterMotor = new TalonFX(0);
     frontShooterMotor = new TalonFX(0);
     inputSensor = new DigitalInput(0);
+    pidAdvanced = new PIDController(0, 0, 0);
+    
   }
 
   public void frontShooterIntake() {
@@ -38,6 +42,11 @@ public class Shooter extends SubsystemBase {
 
   public boolean sensorValue() {
     return inputSensor.get();
+  }
+
+  public void shootingMotorsController() {
+    leftShooterMotor
+
   }
 
   
