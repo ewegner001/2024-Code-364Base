@@ -18,8 +18,14 @@ public class TrackAprilTag extends Command {
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
 
         eyes.readAprilTag();
+    }
+
+    @Override
+    public void execute() {
+
+    
     }
 }
