@@ -12,7 +12,6 @@ public class ShooterFrontRollerRun extends Command {
   /** Creates a new ShooterFrontRollerRun. */
   public ShooterFrontRollerRun(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
-    //shooter = new Shooter();
     this.shooter = shooter;
     addRequirements(shooter);
   }

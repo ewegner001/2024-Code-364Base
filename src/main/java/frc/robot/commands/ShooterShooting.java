@@ -5,20 +5,28 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Shooter;
 
 public class ShooterShooting extends Command {
+  private Shooter s_shooter;
   /** Creates a new ShooterShooting. */
-  public ShooterShooting() {
+  public ShooterShooting(Shooter s_shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.s_shooter = s_shooter;
+    addRequirements(s_shooter);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    s_shooter.shootingMotorsConfig();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    s_shooter.shootingMotorsSetControl();
+  }
 
   // Called once the command ends or is interrupted.
   @Override
