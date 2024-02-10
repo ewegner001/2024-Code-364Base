@@ -33,7 +33,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-    private final Eyes s_Eyes = new Eyes();
+    //private final Eyes s_Eyes = new Eyes();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -64,7 +64,7 @@ public class RobotContainer {
     }
 
     public void init() {
-        s_Eyes.initCamera();
+        //s_Eyes.initCamera();
     }
 
     /**
