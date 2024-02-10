@@ -5,66 +5,47 @@ import frc.robot.Constants;
 
 import java.util.List;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.proto.Photon;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 
 
 public class Eyes extends SubsystemBase {
 
-    public PhotonCamera camera;
-    public PhotonTrackedTarget target;
-    public int targetID;
-    public double poseAmbiguity;
-    public PhotonPipelineResult result;
+    public LimelightHelpers limelight;
+    public double tx;
+    public double ty;
+    public double ta;
   
-    public Eyes() {
+    public Eyes() {}
 
-        // photonvision camera object
-        
+
+    public void updateData() {
+
+        tx = LimelightHelpers.getTX("");
+        ty = LimelightHelpers.getTY("");
+        ta = LimelightHelpers.getTA("");
+
+        SmartDashboard.putNumber("AprilTagX", tx);
+        SmartDashboard.putNumber("AprilTagY", ty);
+        SmartDashboard.putNumber("AprilTagA", ta);
 
     }
 
-    public void initCamera() {
-        camera = new PhotonCamera("more_camera");
+    public double[] getDataPackage() {
+
+        double[] data = {
+            tx,
+            ty,
+            ta
+        };
+
+        return data;
     }
-
-    public void look() {
-
-        result = camera.getLatestResult();
-        List<PhotonTrackedTarget> target = result.getTargets();
-        
-    }
-
-    public void readAprilTag() {
-
-        // identify april tag target
-        // look();
-
-        if (camera != null) {
-            System.out.println(camera.isConnected());
-        }
-        // if target found
-        // if (result.hasTargets()) {
-
-        //     // read data from target
-        //     targetID = target.getFiducialId();
-        //     poseAmbiguity = target.getPoseAmbiguity();
-
-        // }
-        
-    }
-
 
     @Override
     public void periodic(){
-
-        readAprilTag();
-        //SmartDashboard.putNumber("Target ID", targetID);
-
+        updateData();
     }
 }
