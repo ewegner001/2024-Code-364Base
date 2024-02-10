@@ -30,7 +30,9 @@ public class RobotContainer {
     private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
     private final JoystickButton xboxAButton = new JoystickButton(driver, XboxController.Button.kA.value);
-
+    private final JoystickButton xboxBButton = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton xboxXButton = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton xboxYButton = new JoystickButton(driver, XboxController.Button.kY.value);
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
@@ -49,6 +51,7 @@ public class RobotContainer {
             )
         );
 
+       
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -63,6 +66,9 @@ public class RobotContainer {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         xboxAButton.onTrue(new ShooterFrontRollerRun(s_Shooter));
+        xboxBButton.onTrue(new InstantCommand(() -> s_Shooter.shootingMotorsConfig()));
+        xboxXButton.whileTrue(new InstantCommand(()-> s_Shooter.shootingMotorsSetControl()));
+        xboxYButton.onTrue(new InstantCommand(()-> s_Shooter.stop()));
     }
 
     /**
