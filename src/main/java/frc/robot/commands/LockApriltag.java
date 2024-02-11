@@ -14,11 +14,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class LockApriltag extends Command {    
     private Swerve s_Swerve;    
-    private Eyes eyes;
+    private Eyes s_Eyes;
 
-    public LockApriltag(Swerve s_Swerve) {
+    public LockApriltag(Swerve s_Swerve, Eyes s_Eyes) {
         this.s_Swerve = s_Swerve;
-        addRequirements(s_Swerve);
+        this.s_Eyes = s_Eyes;
+        addRequirements(s_Swerve, s_Eyes);
 
     }
 
@@ -26,7 +27,7 @@ public class LockApriltag extends Command {
     public void execute() {
         /* Get Values, Deadband*/
 
-        double xPos = eyes.getDataPackage()[0];
+        double xPos = s_Eyes.getDataPackage()[0];
 
         /* Drive */
         s_Swerve.drive(

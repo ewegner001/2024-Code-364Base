@@ -34,6 +34,7 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
+    private final Eyes s_Eyes = new Eyes();
     //private final Eyes s_Eyes = new Eyes();
 
 
@@ -62,7 +63,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        lock.onTrue(new LockApriltag(s_Swerve));
+        lock.onTrue(new LockApriltag(s_Swerve, s_Eyes));
         
     }
 
