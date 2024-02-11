@@ -11,10 +11,15 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -22,6 +27,16 @@ public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
+
+    //  private final SwerveDrivePoseEstimator m_poseEstimator =
+    //   new SwerveDrivePoseEstimator(
+    //       Constants.Swerve.swerveKinematics,
+    //       gyro.getRotation2d(),
+    //       getPose(),
+    //       m_rightEncoder.getDistance(),
+    //       getPose(),
+    //       VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+    //       VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);

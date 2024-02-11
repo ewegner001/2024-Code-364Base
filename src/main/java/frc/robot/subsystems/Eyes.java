@@ -17,6 +17,7 @@ public class Eyes extends SubsystemBase {
     public double tx;
     public double ty;
     public double ta;
+    public double tID;
   
     public Eyes() {}
 
@@ -26,10 +27,12 @@ public class Eyes extends SubsystemBase {
         tx = LimelightHelpers.getTX("");
         ty = LimelightHelpers.getTY("");
         ta = LimelightHelpers.getTA("");
+        tID = LimelightHelpers.getFiducialID("");
 
         SmartDashboard.putNumber("AprilTagX", tx);
         SmartDashboard.putNumber("AprilTagY", ty);
         SmartDashboard.putNumber("AprilTagA", ta);
+        SmartDashboard.putNumber("AprilTagID", tID);
 
     }
 
@@ -38,7 +41,8 @@ public class Eyes extends SubsystemBase {
         double[] data = {
             tx,
             ty,
-            ta
+            ta,
+            tID
         };
 
         return data;
