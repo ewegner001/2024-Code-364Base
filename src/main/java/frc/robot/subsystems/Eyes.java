@@ -9,6 +9,7 @@ import java.util.List;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
+import edu.wpi.first.math.geometry.Pose2d;
 
 
 public class Eyes extends SubsystemBase {
@@ -46,6 +47,14 @@ public class Eyes extends SubsystemBase {
         };
 
         return data;
+    }
+
+    public Pose2d getRobotPose() {
+
+        Pose2d pose = LimelightHelpers.getBotPose2d_wpiBlue("");
+
+        return pose;
+
     }
 
     @Override
