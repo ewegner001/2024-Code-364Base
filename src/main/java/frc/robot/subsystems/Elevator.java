@@ -4,8 +4,10 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -25,7 +27,9 @@ public class Elevator extends SubsystemBase {
    * means that nothing outside of this class can access it.
    */
   private CANSparkMax motor;
+  private SparkPIDController pidController;
   private double internalData;
+
   private float heightlimit = 10;
   public double elevatorspeed = 1.0;
   public float restingposition = 0;
@@ -46,8 +50,34 @@ public class Elevator extends SubsystemBase {
      */
     motor = new CANSparkMax(0, MotorType.kBrushless);
     internalData = 0.4;
+    motor.restoreFactoryDefaults();
+    pidController = motor.getPIDController();
     motor.setSoftLimit(SoftLimitDirection.kForward, heightlimit);
     motor.setSoftLimit(SoftLimitDirection.kReverse,restingposition);
+
+    double kP = 0.1; 
+    double kI = 1e-4;
+    double kD = 1; 
+    double kIz = 0; 
+    double kFF = 0; 
+    double kMaxOutput = 1; 
+    double kMinOutput = -1;
+
+    pidController.setP(kP);
+    pidController.setI(kI);
+    pidController.setD(kD);
+    pidController.setIZone(kIz);
+    pidController.setFF(kFF);
+    pidController.setOutputRange(kMinOutput, kMaxOutput);
+  }
+
+  /*This method tells the robot how many rotations are needed for moving the elevator. SetReference is the 
+  number of, in this case, rotations needed to be executed by the robot
+  */
+   
+  public void SetReference(double rotations){
+  
+    pidController.setReference(rotations, CANSparkMax.ControlType.kPosition);
   }
 
   /* Methods
