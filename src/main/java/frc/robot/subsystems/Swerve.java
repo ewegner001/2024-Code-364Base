@@ -27,6 +27,7 @@ public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
+    public Eyes eyes;
 
     //  private final SwerveDrivePoseEstimator m_poseEstimator =
     //   new SwerveDrivePoseEstimator(
@@ -40,6 +41,7 @@ public class Swerve extends SubsystemBase {
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        eyes = new Eyes();
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -131,7 +133,10 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic(){
+
         swerveOdometry.update(getGyroYaw(), getModulePositions());
+
+        setPose(eyes.getRobotPose());
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
@@ -141,5 +146,6 @@ public class Swerve extends SubsystemBase {
 
         SmartDashboard.putNumber("Robot X", swerveOdometry.getPoseMeters().getX());
         SmartDashboard.putNumber("Robot Y", swerveOdometry.getPoseMeters().getY());
+        
     }
 }

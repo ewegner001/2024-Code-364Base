@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 
 
 public class Eyes extends SubsystemBase {
@@ -55,6 +56,13 @@ public class Eyes extends SubsystemBase {
 
         return pose;
 
+    }
+
+    public Pose3d getTargetPose() {
+
+        Pose3d pose = LimelightHelpers.getTargetPose3d_RobotSpace("");
+
+        return pose;
     }
 
     @Override

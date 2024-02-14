@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -28,20 +29,23 @@ public class LockApriltag extends Command {
     public void execute() {
         /* Get Values, Deadband*/
 
-        Pose2d robotPose = s_Eyes.getRobotPose();
+        Pose2d robotPose = s_Swerve.getPose();
+        Pose3d targetPose = s_Eyes.getTargetPose();
 
         double robotX = robotPose.getX();
         double robotY = robotPose.getY();
 
+        double targetX = targetPose.getX();
+        double targetY = targetPose.getY();
 
-        //double angle = Math.atan();
+        double angle = Math.atan((targetY - robotY) / (targetX - robotX));
 
         /* Drive */
-        // s_Swerve.drive(
-        //     new Translation2d(0, 0).times(Constants.Swerve.maxSpeed), 
-        //     xPos * Constants.Swerve.maxAngularVelocity, 
-        //     true, 
-        //     true
-        // );
+        s_Swerve.drive(
+            new Translation2d(0, 0).times(Constants.Swerve.maxSpeed), 
+            angle, 
+            true, 
+            true
+        );
     }
 }
