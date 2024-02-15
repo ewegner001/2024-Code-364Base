@@ -5,7 +5,8 @@ import frc.robot.Constants;
 
 import java.util.List;
 
-
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
@@ -52,7 +53,16 @@ public class Eyes extends SubsystemBase {
 
     public Pose2d getRobotPose() {
 
-        Pose2d pose = LimelightHelpers.getBotPose2d_wpiBlue("");
+        Pose2d pose;
+
+        if(DriverStation.getAlliance().get() == Alliance.Red) {
+
+            pose = LimelightHelpers.getBotPose2d_wpiRed("");
+
+        } else {
+
+            pose = LimelightHelpers.getBotPose2d_wpiBlue("");
+        }
 
         return pose;
 
@@ -67,6 +77,6 @@ public class Eyes extends SubsystemBase {
 
     @Override
     public void periodic(){
-        updateData();
+        getTargetPose();
     }
 }

@@ -20,6 +20,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -28,7 +31,8 @@ public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
     public Eyes eyes;
-
+    public StructPublisher<Pose2d> publisher;
+    public StructArrayPublisher<SwerveModuleState> swerveKinematicsPublisher;
     //  private final SwerveDrivePoseEstimator m_poseEstimator =
     //   new SwerveDrivePoseEstimator(
     //       Constants.Swerve.swerveKinematics,
@@ -53,6 +57,12 @@ public class Swerve extends SubsystemBase {
         };
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getGyroYaw(), getModulePositions());
+
+        publisher = NetworkTableInstance.getDefault().getStructTopic("/MyPose", Pose2d.struct).publish();
+
+        swerveKinematicsPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveModuleStates", SwerveModuleState.struct).publish();
+        
+
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -141,11 +151,15 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
+            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
+
         }
 
         SmartDashboard.putNumber("Robot X", swerveOdometry.getPoseMeters().getX());
         SmartDashboard.putNumber("Robot Y", swerveOdometry.getPoseMeters().getY());
+
+        publisher.set(swerveOdometry.getPoseMeters());
+        swerveKinematicsPublisher.set(getModuleStates());
         
     }
 }
