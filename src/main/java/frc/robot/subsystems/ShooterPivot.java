@@ -16,6 +16,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ShooterPivot extends SubsystemBase {
+  private int ShooterPiviotMotorID = 0;
+  private int ShooterPiviotCANCoderID = 0;
+  private double ShooterPiviotPGains = 0;
+  private double ShooterPiviotIGains = 0;
+  private double ShooterPiviotDGains = 0;
+  private double ShooterPiviotGGains = 0;
+
   private CANSparkMax motor;
   private CANcoder cancoder;
   private double m_setPoint;
@@ -23,11 +30,11 @@ public class ShooterPivot extends SubsystemBase {
   private ArmFeedforward ff;
   /** Creates a new ShooterPiviot. */
   public ShooterPivot() {
-    motor = new CANSparkMax(1, MotorType.kBrushless);
-    cancoder = new CANcoder(0);
+    motor = new CANSparkMax(ShooterPiviotMotorID, MotorType.kBrushless);
+    cancoder = new CANcoder(ShooterPiviotCANCoderID);
     m_setPoint = 0;
-    pid = new PIDController(0, 0, 0);
-    this.ff = new ArmFeedforward(0, 0, 0, 0);
+    pid = new PIDController(ShooterPiviotPGains, ShooterPiviotIGains, ShooterPiviotDGains);
+    this.ff = new ArmFeedforward(0, ShooterPiviotGGains, 0, 0);
 
   }
 
