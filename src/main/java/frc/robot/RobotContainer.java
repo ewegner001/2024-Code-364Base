@@ -76,15 +76,17 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        driverLBButton.onFalse(new InstantCommand(() -> intake.run(0)));
+        /*driverLBButton.onFalse(new InstantCommand(() -> intake.run(0)));
         driverRBButton.onFalse(new InstantCommand(() -> intake.run(0)));
         driverLBButton.whileTrue(new InstantCommand(() -> intake.run(0.75)));
-        driverRBButton.whileTrue(new InstantCommand(() -> intake.run(-0.75)));
+        driverRBButton.whileTrue(new InstantCommand(() -> intake.run(-0.75)));*/
     //Wrist Buttons
-        driverAButton.onFalse(new InstantCommand(() -> chipmunks.run(0)));
+        /*driverAButton.onFalse(new InstantCommand(() -> chipmunks.run(0)));
         driverYButton.onFalse(new InstantCommand(() -> chipmunks.run(0)));
         driverAButton.whileTrue(new InstantCommand(() -> chipmunks.run(.25)));
-        driverYButton.whileTrue(new InstantCommand(() -> chipmunks.run(-.25)));
+        driverYButton.whileTrue(new InstantCommand(() -> chipmunks.run(-.25)));*/
+    //Intake Buttons
+        driverAButton.onTrue(new InstantCommand(()-> intake.intakePivotRun(0)));
     }
 
     /**
