@@ -39,14 +39,14 @@ public class ShooterPivot extends SubsystemBase {
 
   /** Creates a new ShooterPiviot. */
   public ShooterPivot() {
+    
+    motor = new CANSparkMax(ShooterPiviotMotorID, MotorType.kBrushless);
+    cancoder = new CANcoder(ShooterPiviotCANCoderID);
+
     CANcoderConfigurator cancoderConfigurator = cancoder.getConfigurator();
     cancoderConfigurator.apply(
       new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf).withMagnetOffset(magnetOffset)
     );
-    motor = new CANSparkMax(ShooterPiviotMotorID, MotorType.kBrushless);
-    cancoder = new CANcoder(ShooterPiviotCANCoderID);
-
-
     shooterPivotMotorEncoder = motor.getEncoder();
     shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
     shooterPivotMotorEncoder.setPosition(cancoder.getPosition().getValue());
