@@ -49,7 +49,7 @@ public class ShooterPivot extends SubsystemBase {
     );
     shooterPivotMotorEncoder = motor.getEncoder();
     shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
-    shooterPivotMotorEncoder.setPosition(cancoder.getPosition().getValue());
+    shooterPivotMotorEncoder.setPosition(getCANcoderValue());
     shooterPivotMotorEncoder.setVelocityConversionFactor(360 / shooterPivotGearRatio);
 
 
@@ -61,6 +61,10 @@ public class ShooterPivot extends SubsystemBase {
 
   public void moveShooterPivot(double setPoint) {
     m_setPoint = setPoint;
+  }
+
+  private Double getCANcoderValue() {
+    return cancoder.getPosition().getValue() * 360;
   }
 
 
