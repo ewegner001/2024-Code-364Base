@@ -6,7 +6,10 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -25,6 +28,7 @@ public class ShooterPivot extends SubsystemBase {
   private double ShooterPiviotDGains = 0;
   private double ShooterPiviotGGains = 0;
   private double shooterPivotGearRatio = 54.545;
+  private final double magnetOffset = 0.0;
 
   private CANSparkMax motor;
   private CANcoder cancoder;
@@ -32,15 +36,16 @@ public class ShooterPivot extends SubsystemBase {
   private PIDController pid;
   private ArmFeedforward shooterPivotFeedforward;
   private RelativeEncoder shooterPivotMotorEncoder;
-  private Swerve swerve;
-  private InterpolatingDoubleTreeMap angleInterpolation;
 
   /** Creates a new ShooterPiviot. */
   public ShooterPivot() {
-    swerve = new Swerve();
+    CANcoderConfigurator cancoderConfigurator = cancoder.getConfigurator();
+    cancoderConfigurator.apply(
+      new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf).withMagnetOffset(magnetOffset)
+    );
     motor = new CANSparkMax(ShooterPiviotMotorID, MotorType.kBrushless);
     cancoder = new CANcoder(ShooterPiviotCANCoderID);
-    angleInterpolation = new InterpolatingDoubleTreeMap();
+
 
     shooterPivotMotorEncoder = motor.getEncoder();
     shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
@@ -58,17 +63,7 @@ public class ShooterPivot extends SubsystemBase {
     m_setPoint = setPoint;
   }
 
-  public double getShooterAngle() {
 
-    double distance = swerve.getDistanceFromTarget();
-
-    //TODO tune
-    angleInterpolation.put(0.0, 0.0);
-    angleInterpolation.put(1.0, 1.0);
-
-    return angleInterpolation.get(distance);
-
-}
 
  
   @Override

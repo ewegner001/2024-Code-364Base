@@ -106,6 +106,7 @@ public class RobotContainer {
     /* Subsystems */
     private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
+    private final Shooter s_Shooter = new Shooter();
     private final Eyes s_Eyes = new Eyes();
 
 
@@ -125,6 +126,7 @@ public class RobotContainer {
             )
         );
 
+       
         // Configure the button bindings
         configureButtonBindings();
 
@@ -141,6 +143,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+        driverA.whileTrue(new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter));
         driverB.whileTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(driverLeftY), 
