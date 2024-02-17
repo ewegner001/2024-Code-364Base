@@ -143,6 +143,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+        driverA.whileTrue(new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter));
         driverB.whileTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(driverLeftY), 

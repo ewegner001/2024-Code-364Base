@@ -33,14 +33,14 @@ public class ShooterPivot extends SubsystemBase {
   private ArmFeedforward shooterPivotFeedforward;
   private RelativeEncoder shooterPivotMotorEncoder;
   private Swerve swerve;
-  private InterpolatingDoubleTreeMap angleInterpolation;
+
 
   /** Creates a new ShooterPiviot. */
   public ShooterPivot() {
     swerve = new Swerve();
     motor = new CANSparkMax(ShooterPiviotMotorID, MotorType.kBrushless);
     cancoder = new CANcoder(ShooterPiviotCANCoderID);
-    angleInterpolation = new InterpolatingDoubleTreeMap();
+
 
     shooterPivotMotorEncoder = motor.getEncoder();
     shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
@@ -58,17 +58,7 @@ public class ShooterPivot extends SubsystemBase {
     m_setPoint = setPoint;
   }
 
-  public double getShooterAngle() {
 
-    double distance = swerve.getDistanceFromTarget();
-
-    //TODO tune
-    angleInterpolation.put(0.0, 0.0);
-    angleInterpolation.put(1.0, 1.0);
-
-    return angleInterpolation.get(distance);
-
-}
 
  
   @Override

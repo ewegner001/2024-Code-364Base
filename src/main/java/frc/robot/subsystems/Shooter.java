@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void frontShooterIntake() {
-    frontShooterMotor.setVoltage(12);  
+    frontShooterMotor.setVoltage(12.0);  
   }
 
   // public void shooterIntakeStop() {
@@ -78,11 +78,10 @@ public class Shooter extends SubsystemBase {
     leftShooterMotor.getConfigurator().apply(slotConfigsL);
   }
 
-  public void shootingMotorsSetControl() {
-    double RShooterSpeed = SmartDashboard.getNumber("RShooter Speed", 0);
-    double LShooterSpeed = SmartDashboard.getNumber("LShooter Speed", 0);
-    rightShooterMotor.setControl(rm_request.withVelocity(RShooterSpeed));
-    leftShooterMotor.setControl(lm_request.withVelocity(LShooterSpeed));
+  public void shootingMotorsSetControl(double rightShooterSpeed, double leftShooterSpeed) {
+
+    rightShooterMotor.setControl(rm_request.withVelocity(rightShooterSpeed));
+    leftShooterMotor.setControl(lm_request.withVelocity(leftShooterSpeed));
 
   }
 
