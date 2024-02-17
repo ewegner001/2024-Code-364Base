@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -22,50 +23,42 @@ public class ShooterPivot extends SubsystemBase {
   private double ShooterPiviotIGains = 0;
   private double ShooterPiviotDGains = 0;
   private double ShooterPiviotGGains = 0;
+  private double shooterPivotGearRatio = 54.545;
 
   private CANSparkMax motor;
   private CANcoder cancoder;
   private double m_setPoint;
   private PIDController pid;
-  private ArmFeedforward ff;
+  private ArmFeedforward shooterPivotFeedforward;
+  private RelativeEncoder shooterPivotMotorEncoder;
+
   /** Creates a new ShooterPiviot. */
   public ShooterPivot() {
     motor = new CANSparkMax(ShooterPiviotMotorID, MotorType.kBrushless);
     cancoder = new CANcoder(ShooterPiviotCANCoderID);
+    shooterPivotMotorEncoder = motor.getEncoder();
+    shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
+    shooterPivotMotorEncoder.setPosition(cancoder.getPosition().getValue());
+    shooterPivotMotorEncoder.setVelocityConversionFactor(360 / shooterPivotGearRatio);
+
+
     m_setPoint = 0;
     pid = new PIDController(ShooterPiviotPGains, ShooterPiviotIGains, ShooterPiviotDGains);
-    this.ff = new ArmFeedforward(0, ShooterPiviotGGains, 0, 0);
+    shooterPivotFeedforward = new ArmFeedforward(0, ShooterPiviotGGains, 0, 0);
 
-  }
-
-  private double encoderAngle() {
-    StatusSignal<Double> position = cancoder.getPosition();
-    Double positionValue = position.getValue();
-    return positionValue.doubleValue();
   }
 
   public void moveShooterPivot(double setPoint) {
     m_setPoint = setPoint;
   }
 
-  private double encoderPosition() {
-    StatusSignal<Double> aPosition = cancoder.getAbsolutePosition();
-    Double aPositionValue = aPosition.getValue();
-    return aPositionValue.doubleValue();
-  }
-
-  private double encoderVelocity() {
-    StatusSignal<Double> velocity = cancoder.getVelocity();
-    Double velocityValue = velocity.getValue();
-    return velocityValue.doubleValue();
-  }
  
  
  
   @Override
   public void periodic() {
-    double feedForward = ff.calculate(Units.degreesToRadians(encoderPosition()), Units.degreesToRadians(encoderVelocity()));
-    motor.setVoltage(pid.calculate(encoderAngle(), m_setPoint) + feedForward);
+    double feedForward = shooterPivotFeedforward.calculate(Units.degreesToRadians(shooterPivotMotorEncoder.getPosition()), Units.degreesToRadians(shooterPivotMotorEncoder.getVelocity()));
+    motor.setVoltage(pid.calculate(shooterPivotMotorEncoder.getPosition(), m_setPoint) + feedForward);
     // This method will be called once per scheduler run
   }
 }
