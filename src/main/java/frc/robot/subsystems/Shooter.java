@@ -13,6 +13,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
+  private final double lShooterMotorSGains = 0.0;
+  private final double lShooterMotorVGains = 0.0;
+  private final double lShooterMotorPGains = 0.0;
+  private final double lShooterMotorIGains = 0.0;
+  private final double lShooterMotorDGains = 0.0;
+  private final double rShooterMotorSGains = 0.0;
+  private final double rShooterMotorVGains = 0.0;
+  private final double rShooterMotorPGains = 0.0;
+  private final double rShooterMotorIGains = 0.0;
+  private final double rShooterMotorDGains = 0.0;
+  
+
+
+
   private TalonFX leftShooterMotor;
   private TalonFX rightShooterMotor;
   private TalonFX frontShooterMotor;
@@ -26,20 +40,20 @@ public class Shooter extends SubsystemBase {
     leftShooterMotor = new TalonFX(13);
     rightShooterMotor = new TalonFX(11);
     frontShooterMotor = new TalonFX(17);
-    inputSensor = new DigitalInput(0);
+    inputSensor = new DigitalInput(1);
     slotConfigsR = new Slot0Configs();
-    slotConfigsR.kS = 0.05; //0.05
-    slotConfigsR.kV = 0.12; // 0.12 
-    slotConfigsR.kP = 0.12; 
-    slotConfigsR.kI = 0;
-    slotConfigsR.kD = 0;
+    slotConfigsR.kS = rShooterMotorSGains; //0.05
+    slotConfigsR.kV = rShooterMotorVGains; // 0.12 
+    slotConfigsR.kP = rShooterMotorPGains; 
+    slotConfigsR.kI = rShooterMotorIGains;
+    slotConfigsR.kD = rShooterMotorDGains;
     rm_request = new VelocityVoltage(0).withSlot(0);
     slotConfigsL = new Slot0Configs();
-    slotConfigsL.kS = 0.05;
-    slotConfigsL.kV = 0.12;
-    slotConfigsL.kP = 0.12;
-    slotConfigsL.kI = 0;
-    slotConfigsL.kD = 0;
+    slotConfigsL.kS = lShooterMotorSGains;
+    slotConfigsL.kV = lShooterMotorVGains;
+    slotConfigsL.kP = lShooterMotorPGains;
+    slotConfigsL.kI = lShooterMotorIGains;
+    slotConfigsL.kD = lShooterMotorDGains;
     lm_request = new VelocityVoltage(0);
 
     SmartDashboard.putNumber("RShooter kP", slotConfigsR.kP);
