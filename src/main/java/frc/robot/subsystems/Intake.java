@@ -79,7 +79,9 @@ public class Intake extends SubsystemBase {
     intakeMotor.setVoltage(-12);
   }
 
-  
+  private double cancoderInDegrees() {
+    return intakePivotEncoder.getPosition().getValue() * 360;
+  }
 
   
 
@@ -87,7 +89,7 @@ public class Intake extends SubsystemBase {
    public void periodic() {
     double feedForward = intakePivotFeedforward.calculate(Units.degreesToRadians(intakePivotMotorEncoder.getPosition()), Units.degreesToRadians(intakePivotMotorEncoder.getVelocity()));
     m_IntakePiviot.setVoltage(pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward);
-    SmartDashboard.putNumber("Intake CANcoder", intakePivotEncoder.getPosition().getValue());
+    SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Intake Pivot Motor Position", intakePivotMotorEncoder.getPosition());
    }
 }
