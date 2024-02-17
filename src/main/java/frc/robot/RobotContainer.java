@@ -1,5 +1,19 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -7,9 +21,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.autos.*;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.Constants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,25 +35,79 @@ import frc.robot.subsystems.*;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
+    double rotationSpeed = 1.0;
+
     /* Controllers */
     private final Joystick driver = new Joystick(0);
+    private final Joystick operator = new Joystick(1);
 
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
+    private final int driverLeftY = XboxController.Axis.kLeftY.value;
+    private final int driverLeftX = XboxController.Axis.kLeftX.value;
+    private final int driverRightX = XboxController.Axis.kRightX.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton xboxAButton = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton xboxBButton = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton xboxXButton = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton xboxYButton = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton driverA = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton driverB = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton driverX = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton driverY = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton driverLB = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton driverRB = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
+    private final JoystickButton driverLStick = new JoystickButton(driver, XboxController.Button.kLeftStick.value);
+    private final JoystickButton driverRStick = new JoystickButton(driver, XboxController.Button.kRightStick.value);
+    private final JoystickButton driverStart = new JoystickButton(driver, XboxController.Button.kStart.value);
+    private final JoystickButton driverBack = new JoystickButton(driver, XboxController.Button.kBack.value);
+    private final POVButton driverDpadUp = new POVButton(driver, 0);
+    private final POVButton driverDpadRight = new POVButton(driver, 90);
+    private final POVButton driverDpadDown = new POVButton(driver, 180);
+    private final POVButton driverDpadLeft = new POVButton(driver, 270);
+
+    /* driver axis */
+    private final int driverLeftTriggerAxis = XboxController.Axis.kLeftTrigger.value;
+    private final int driverRightTriggerAxis = XboxController.Axis.kRightTrigger.value;
+    
+    /* driver triggers */
+    final Trigger driverLeftTrigger = new Trigger(() -> driver.getRawAxis(driverLeftTriggerAxis) > 0.1);
+    final Trigger driverRightTrigger = new Trigger(() -> driver.getRawAxis(driverRightTriggerAxis) > 0.1);
+ 
+    /* Operator Buttons */
+    private final JoystickButton operatorA = new JoystickButton(operator, XboxController.Button.kA.value);
+    private final JoystickButton operatorB = new JoystickButton(operator, XboxController.Button.kB.value);
+    private final JoystickButton operatorX = new JoystickButton(operator, XboxController.Button.kX.value);
+    private final JoystickButton operatorY = new JoystickButton(operator, XboxController.Button.kY.value);
+    private final JoystickButton operatorLB = new JoystickButton(operator, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton operatorRB = new JoystickButton(operator, XboxController.Button.kRightBumper.value);
+    private final JoystickButton operatorLStick = new JoystickButton(operator, XboxController.Button.kLeftStick.value);
+    private final JoystickButton operatorRStick = new JoystickButton(operator, XboxController.Button.kRightStick.value);
+    private final JoystickButton operatorUpStick = new JoystickButton(operator, XboxController.Button.kLeftStick.value);
+    private final JoystickButton operatorDownStick = new JoystickButton(operator, XboxController.Button.kRightStick.value);
+
+    private final JoystickButton operatorStart = new JoystickButton(operator, XboxController.Button.kStart.value);
+    private final JoystickButton operatorBack = new JoystickButton(operator, XboxController.Button.kBack.value);
+    private final POVButton operatorDpadUp = new POVButton(operator, 0);
+    private final POVButton operatorDpadRight = new POVButton(operator, 90);
+    private final POVButton operatorDpadDown = new POVButton(operator, 180);
+    private final POVButton operatorDpadLeft = new POVButton(operator, 270);
+
+    /* operator axis */
+    private final int operatorLeftYAxis = XboxController.Axis.kLeftY.value;
+    private final int operatorRightYAxis = XboxController.Axis.kRightY.value;
+    private final int operatorLeftTriggerAxis = XboxController.Axis.kLeftTrigger.value;
+    private final int operatorRightTriggerAxis = XboxController.Axis.kRightTrigger.value;
+
+    /* operator triggers */
+    final Trigger elevatorManualUpTrigger = new Trigger(() -> -operator.getRawAxis(operatorLeftYAxis) > 0.5);
+    final Trigger elevatorManualDownTrigger = new Trigger(() -> -operator.getRawAxis(operatorLeftYAxis) < -0.5);
+    final Trigger operatorLeftTrigger = new Trigger(() -> operator.getRawAxis(operatorLeftTriggerAxis) > 0.1);
+    final Trigger operatorRightTrigger = new Trigger(() -> operator.getRawAxis(operatorRightTriggerAxis) > 0.1);
+    
+    
     /* Subsystems */
+    private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
     private final Shooter s_Shooter = new Shooter();
-
+    private final Eyes s_Eyes = new Eyes();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -44,16 +115,23 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(translationAxis), 
-                () -> -driver.getRawAxis(strafeAxis), 
-                () -> -driver.getRawAxis(rotationAxis), 
-                () -> robotCentric.getAsBoolean()
+                () -> -driver.getRawAxis(driverLeftY), 
+                () -> -driver.getRawAxis(driverLeftX), 
+                () -> -driver.getRawAxis(driverRightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Swerve.getGyroYaw().getDegrees(),
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                false
             )
         );
 
        
         // Configure the button bindings
         configureButtonBindings();
+
+        //NamedCommands.registerCommand("Example Command", new PathPlannerExampleCommand(pathPlannerExampleSub));
+
     }
 
     /**
@@ -64,12 +142,24 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        xboxAButton.onTrue(new ShooterFrontRollerRun(s_Shooter));
-        xboxBButton.onTrue(new InstantCommand(() -> s_Shooter.shootingMotorsConfig()));
-        xboxXButton.whileTrue(new InstantCommand(()-> s_Shooter.shootingMotorsSetControl()));
-        xboxYButton.onTrue(new InstantCommand(()-> s_Shooter.stop()));
+        driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+        driverB.whileTrue(new TeleopSwerve(
+                s_Swerve, 
+                () -> -driver.getRawAxis(driverLeftY), 
+                () -> -driver.getRawAxis(driverLeftX), 
+                () -> -driver.getRawAxis(driverRightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Swerve.getTargetRotation(),
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                true
+            )//.until(() -> Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) < s_Swerve.getTargetRotation() + Constants.AUTO_ROTATE_DEADBAND && 
+            //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
+        );
+
     }
+
+    
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -77,7 +167,13 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return new exampleAuto(s_Swerve);
+
+        // Load the path you want to follow using its name in the GUI
+        //PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path123");
+        //s_Swerve.swerveOdometry.resetPosition(new Rotation2d(), s_Swerve.getModulePositions(), new Pose2d(new Translation2d(0,0), new Rotation2d()));
+
+        // Create a path following command using AutoBuilder. This will also trigger event markers.
+        return new PathPlannerAuto("Example Auto");
+        
     }
 }

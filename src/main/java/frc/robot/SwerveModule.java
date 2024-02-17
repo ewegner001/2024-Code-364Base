@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.UnitBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.math.Conversions;
 import frc.lib.util.AbsoluteEncoder;
 import frc.lib.util.SwerveModuleConstants;
@@ -60,6 +61,9 @@ public class SwerveModule {
         desiredState = SwerveModuleState.optimize(desiredState, getState().angle); 
         mAngleMotor.setControl(anglePosition.withPosition(desiredState.angle.getRotations()));
         setSpeed(desiredState, isOpenLoop);
+
+        SmartDashboard.putNumber("Mod " + moduleNumber + " Set Speed", desiredState.speedMetersPerSecond);
+        SmartDashboard.putNumber("Mod " + moduleNumber + " Set Angle", desiredState.angle.getDegrees());
     }
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop){
@@ -96,11 +100,6 @@ public class SwerveModule {
     public double makePositiveDegrees(Rotation2d anAngle){
         return makePositiveDegrees(anAngle.getDegrees());
     }
-
-    public Rotation2d getAngle(){
-        return Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getPosition().getValue(), Constants.Swerve.angleGearRatio));
-    }   
-
 
     public Rotation2d getCANcoder(){
         //return Rotation2d.fromRotations(angleEncoder.getAbsolutePosition().getValue());
