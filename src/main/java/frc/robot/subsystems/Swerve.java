@@ -68,14 +68,12 @@ public class Swerve extends SubsystemBase {
     public StructPublisher<Pose2d> estimatedRobotPosePublisher;
 
     public SwerveDrivePoseEstimator m_poseEstimator;
-    public InterpolatingDoubleTreeMap angleInterpolation;
 
 
     public Swerve() {
 
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         eyes = new Eyes();
-        angleInterpolation = new InterpolatingDoubleTreeMap();
 
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(Constants.Swerve.gyroOffset);
@@ -306,18 +304,7 @@ public class Swerve extends SubsystemBase {
         return -angle;
     }
 
-    
-    public double getShooterAngle() {
 
-        double distance = getDistanceFromTarget();
-
-        //TODO tune
-        angleInterpolation.put(0.0, 0.0);
-        angleInterpolation.put(1.0, 1.0);
-
-        return angleInterpolation.get(distance);
-
-    }
 
     @Override
     public void periodic(){
@@ -352,7 +339,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("target X", getTargetPose().getX());
         SmartDashboard.putNumber("target Y", getTargetPose().getY());
 
-        publisher.set(getPose());
+        posePublisher.set(getPose());
         swerveKinematicsPublisher.set(getModuleStates());
         estimatedRobotPosePublisher.set(m_poseEstimator.getEstimatedPosition());
     }

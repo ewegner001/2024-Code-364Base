@@ -12,6 +12,7 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -31,11 +32,16 @@ public class ShooterPivot extends SubsystemBase {
   private PIDController pid;
   private ArmFeedforward shooterPivotFeedforward;
   private RelativeEncoder shooterPivotMotorEncoder;
+  private Swerve swerve;
+  private InterpolatingDoubleTreeMap angleInterpolation;
 
   /** Creates a new ShooterPiviot. */
   public ShooterPivot() {
+    swerve = new Swerve();
     motor = new CANSparkMax(ShooterPiviotMotorID, MotorType.kBrushless);
     cancoder = new CANcoder(ShooterPiviotCANCoderID);
+    angleInterpolation = new InterpolatingDoubleTreeMap();
+
     shooterPivotMotorEncoder = motor.getEncoder();
     shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
     shooterPivotMotorEncoder.setPosition(cancoder.getPosition().getValue());
@@ -52,8 +58,18 @@ public class ShooterPivot extends SubsystemBase {
     m_setPoint = setPoint;
   }
 
- 
- 
+  public double getShooterAngle() {
+
+    double distance = swerve.getDistanceFromTarget();
+
+    //TODO tune
+    angleInterpolation.put(0.0, 0.0);
+    angleInterpolation.put(1.0, 1.0);
+
+    return angleInterpolation.get(distance);
+
+}
+
  
   @Override
   public void periodic() {
