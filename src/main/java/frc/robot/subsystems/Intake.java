@@ -23,7 +23,7 @@ public class Intake extends SubsystemBase {
   private final double intakePivotMotorGearRatio = 100.0;
   private final int intakeMotorID = 10;
   private final int intakePivotID = 11;
-  private final int intakePivotEncoderID = 1;
+  private final int intakePivotEncoderID = 9;
   private final double intakePValue = 0.0;
   private final double intakeIValue = 0.0;
   private final double intakeDValue = 0.0;

@@ -22,7 +22,7 @@ import frc.robot.Constants;
 
 public class ShooterPivot extends SubsystemBase {
   private int ShooterPiviotMotorID = 0;
-  private int ShooterPiviotCANCoderID = 0;
+  private int ShooterPiviotCANCoderID = 15;
   private double ShooterPiviotPGains = 0;
   private double ShooterPiviotIGains = 0;
   private double ShooterPiviotDGains = 0;

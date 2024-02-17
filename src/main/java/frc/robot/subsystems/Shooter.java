@@ -23,7 +23,7 @@ public class Shooter extends SubsystemBase {
   private VelocityVoltage lm_request;
   /** Creates a new Shooter. */
   public Shooter() {
-    leftShooterMotor = new TalonFX(10);
+    leftShooterMotor = new TalonFX(13);
     rightShooterMotor = new TalonFX(11);
     frontShooterMotor = new TalonFX(17);
     inputSensor = new DigitalInput(0);
