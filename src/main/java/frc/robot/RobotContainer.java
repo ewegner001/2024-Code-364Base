@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.autos.*;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -105,6 +104,7 @@ public class RobotContainer {
     
     
     /* Subsystems */
+    private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
     private final Eyes s_Eyes = new Eyes();
 
