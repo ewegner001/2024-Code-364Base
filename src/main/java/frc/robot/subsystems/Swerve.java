@@ -352,7 +352,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("target X", getTargetPose().getX());
         SmartDashboard.putNumber("target Y", getTargetPose().getY());
 
-        publisher.set(getPose());
+        posePublisher.set(getPose());
         swerveKinematicsPublisher.set(getModuleStates());
         estimatedRobotPosePublisher.set(m_poseEstimator.getEstimatedPosition());
     }
