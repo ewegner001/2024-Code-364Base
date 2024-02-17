@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
@@ -41,6 +44,12 @@ public class Intake extends SubsystemBase {
     intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
     m_IntakePiviot = new CANSparkMax(intakePivotID, MotorType.kBrushless);
     intakePivotEncoder = new CANcoder(intakePivotEncoderID);
+    CANcoderConfigurator configuator = intakePivotEncoder.getConfigurator();
+    configuator.apply(
+      new MagnetSensorConfigs()
+        .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
+        .withMagnetOffset(0.0)
+    );
     intakePivotMotorEncoder = m_IntakePiviot.getEncoder();
     intakePivotMotorEncoder.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
     intakePivotMotorEncoder.setPosition(intakePivotEncoder.getPosition().getValue());
