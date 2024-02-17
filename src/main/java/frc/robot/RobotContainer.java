@@ -160,6 +160,9 @@ public class RobotContainer {
             //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
         );
 
+    driverLB.whileTrue(new InstantCommand(() -> intake.intakePivotRun(-10)));
+    driverRB.whileTrue(new InstantCommand(()-> intake.intakePivotRun(70)));
+
     }
 
     
