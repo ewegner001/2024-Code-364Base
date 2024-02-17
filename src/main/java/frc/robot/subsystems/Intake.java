@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   private final double intakePivotMotorGearRatio = 100.0;
-  private final int intakeMotorID = 12;
+  private final int intakeMotorID = 10;
   private final int intakePivotID = 11;
   private final int intakePivotEncoderID = 1;
   private final double intakePValue = 0.0;
