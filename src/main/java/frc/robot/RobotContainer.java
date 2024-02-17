@@ -104,6 +104,7 @@ public class RobotContainer {
     
     
     /* Subsystems */
+    private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
     private final Eyes s_Eyes = new Eyes();
 
