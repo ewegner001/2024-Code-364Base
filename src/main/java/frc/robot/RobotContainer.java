@@ -106,6 +106,10 @@ public class RobotContainer {
     /* Subsystems */
     private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
+    // Intake
+    private final Intake intake = new Intake();
+    //Wrist
+    private final Wrist chipmunks = new Wrist();
     private final Shooter s_Shooter = new Shooter();
     private final Eyes s_Eyes = new Eyes();
 
@@ -129,9 +133,6 @@ public class RobotContainer {
        
         // Configure the button bindings
         configureButtonBindings();
-
-        //NamedCommands.registerCommand("Example Command", new PathPlannerExampleCommand(pathPlannerExampleSub));
-
     }
 
     /**
