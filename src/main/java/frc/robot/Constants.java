@@ -14,6 +14,9 @@ import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
     public static final double stickDeadband = 0.1;
+    public static final double ELEVATOR_ROTATIONS_TO_IN = 0;
+    public static final double ELEVATOR_TOLERANCE = 0;
+    public static final double ELEVATOR_HIGH_LEVEL = 0;
 
     public static final class Swerve {
 

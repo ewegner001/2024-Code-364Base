@@ -4,9 +4,23 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.util.datalog.BooleanLogEntry;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.util.datalog.IntegerLogEntry;
+import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -30,11 +44,33 @@ public class Elevator extends SubsystemBase {
   private SparkPIDController pidController;
   private double internalData;
 
+  private ProfiledPIDController controller;
+  private RelativeEncoder elevatorEncoder;
+  private CANSparkMax elevatorMotor;
+  private double targetElevatorPosition;
+
+      // /* Elevator Motor */
+    private DoubleLogEntry elevatorMotorTemperature;
+    private DoubleLogEntry elevatorMotorAppliedOutput;
+    private DoubleLogEntry elevatorMotorBusVoltage;
+    private DoubleLogEntry elevatorMotorOutputCurrent;
+    private DoubleLogEntry elevatorMotorClosedLoopRampRate;
+    private DoubleLogEntry elevatorMotorOpenLoopRampRate;
+    private IntegerLogEntry elevatorMotorFaults;
+    private StringLogEntry elevatorMotorIdleMode;
+    private BooleanLogEntry elevatorMotorInverted;
+    private StringLogEntry elevatorMotorLastError;
+
   private float heightlimit = 10;
   public double elevatorspeed = 1.0;
   public float restingposition = 0;
   public double shootingPosition = 10;
-  
+
+  public  double getEncoderPosition() {
+    return elevatorEncoder.getPosition();
+  }
+ 
+
   /* Constructor
    * The Constructor is a special type of method that gets 
    * called when this subsystem/class is created, usually 
@@ -90,6 +126,42 @@ public class Elevator extends SubsystemBase {
   motor.set(elevatorspeed);
   }
 
+    /* Sets the Target Elevator Position in inches.*/
+    public void setTargetElevatorPosition(double inches){
+      targetElevatorPosition = inches;
+  }
+
+  /* Sets the Target Elevator Position in inches.*/
+  public double getTargetElevatorPosition(){
+      return targetElevatorPosition;
+  }
+
+
+    private double motorRotationsToInches(double rotations) {
+        return rotations * Constants.ELEVATOR_ROTATIONS_TO_IN;
+    }
+
+    private double inchesToMotorRotations(double inches) {
+        return inches / Constants.ELEVATOR_ROTATIONS_TO_IN;
+    }
+
+    public boolean atPosition() {
+
+        double error = Math.abs(elevatorEncoder.getPosition() - targetElevatorPosition);
+
+        if (Constants.ELEVATOR_TOLERANCE >= error) {
+            return true;
+
+        } else {
+            return false;
+        }
+
+        }
+
+        public Boolean isHigh(){
+          return getTargetElevatorPosition() == Constants.ELEVATOR_HIGH_LEVEL;
+      }
+
   /* The below method is public, which means that it can be 
    * accessed outside of this class. It also takes in a 
    * single double value as a parameter. It then takes that 
@@ -125,5 +197,49 @@ if (motor.getEncoder().getPosition() == shootingPosition){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (DriverStation.isEnabled()){
+            // This method will be called once per scheduler run
+            // TODO: Test that .getPosition() gives us the elevator position in inches
+            double voltage = controller.calculate(elevatorEncoder.getPosition(), targetElevatorPosition);
+            // double feedforward = ff.calculate(/*double */elevatorEncoder.getVelocity());
+            MathUtil.clamp(voltage, -12, 12);
+
+            elevatorMotor.setVoltage(voltage);
+
+            
+            SmartDashboard.putNumber("ELEVATOR PID VOLTAGE", voltage);
+        }
+        logData();
+        SmartDashboard.putNumber("ELEVATOR TARGET POSITION", targetElevatorPosition);
+        SmartDashboard.putNumber("Elevator Encoder Value: ", getEncoderPosition());
+        
+        logData();
+      
   }
-}
+   
+public Command SetElevatorPosition (double inches){
+        return new InstantCommand(() -> setTargetElevatorPosition(inches), this);
+    }
+
+    public Command ElevatorAtPosition(){
+        return Commands.waitUntil(() -> atPosition());
+    }
+
+    private void logData() {
+        /* Elevator Motor */
+        elevatorMotorTemperature.append(elevatorMotor.getMotorTemperature());
+        elevatorMotorAppliedOutput.append(elevatorMotor.getAppliedOutput());
+       // elevatorMotorBusVoltage.append(elevatorMotor.getBusVoltage());
+        elevatorMotorOutputCurrent.append(elevatorMotor.getOutputCurrent());
+      //  elevatorMotorClosedLoopRampRate.append(elevatorMotor.getClosedLoopRampRate());
+    //    elevatorMotorOpenLoopRampRate.append(elevatorMotor.getOpenLoopRampRate());
+        elevatorMotorFaults.append(elevatorMotor.getFaults());
+    //    elevatorMotorIdleMode.append(elevatorMotor.getIdleMode().toString());
+    //    elevatorMotorInverted.append(elevatorMotor.getInverted());
+     //   elevatorMotorLastError.append(elevatorMotor.getLastError().toString());
+
+        // /* Elevator Encoder */
+        // elevatorEncoderPosition.append(getEncoderPosition());
+        // elevatorEncoderVelocity.append(elevatorEncoder.getVelocity());
+      }
+    }
