@@ -1,3 +1,10 @@
+/*
+ * This command will use linear interpolation to adjust the
+ * shooter angle and shooter power based upon the distance from the target,
+ * which is determined using the robot pose estimator.
+ * 
+ */
+
 package frc.robot.commands;
 
 import frc.robot.subsystems.Swerve;
@@ -10,15 +17,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 public class AimShoot extends Command {
 
+    // required subystems
     private Swerve swerve;
     private ShooterPivot shooterPivot;  
     private Shooter shooter;
     private double distance;
+
+    // required WPILib class objects
     private InterpolatingDoubleTreeMap shooterAngleInterpolation;
     private InterpolatingDoubleTreeMap shooterSpeedInterpolation;
+
+    // local variables
     private double shooterAngle;
     private double shooterSpeed;
 
+    // constructor
     public AimShoot(Swerve swerve, ShooterPivot shooterPivot, Shooter shooter) {
 
         this.swerve = swerve;
@@ -27,6 +40,7 @@ public class AimShoot extends Command {
 
         addRequirements(swerve, shooterPivot, shooter);
 
+        // object instantiation
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
 
     }
@@ -34,21 +48,39 @@ public class AimShoot extends Command {
     @Override
     public void execute() {
 
+        // assign target distance as variable
         distance = swerve.getDistanceFromTarget();
 
-        //TODO tune
+        // create points in angle linear interpolation line
+        // TODO tune these values
         shooterAngleInterpolation.put(0.0, 0.0);
         shooterAngleInterpolation.put(1.0, 1.0);
 
+        // create points in shooter power linear interpolation line
+        // TODO tune these values
         shooterSpeedInterpolation.put(0.0, 0.0);
         shooterSpeedInterpolation.put(1.0, 1.0);
     
+        // get desired shooter angle using the linear interpolation
+        // x (input) = distance
+        // y (output) = shooter angle
         shooterAngle = shooterAngleInterpolation.get(distance);
+
+        // get desired shooter power using the linear interpolation
+        // x (input) = distance
+        // y (output) = shooter power
         shooterSpeed = shooterSpeedInterpolation.get(distance);
-;
+
+        // move shooter to calculated angle
         shooterPivot.moveShooterPivot(shooterAngle);
+
+        // set shooter speed power to calculated value
         shooter.shootingMotorsSetControl(shooterSpeed, shooterSpeed);
+
+        // wait for robot to reach correct configuration
         Timer.delay(0.5);
+
+        // fire by running shooter-intake
         shooter.frontShooterIntake();
 
     }
@@ -59,7 +91,7 @@ public class AimShoot extends Command {
         shooter.frontRollersStop();
     }
 
-        // Returns true when the command should end.
+    // Returns true when the command should end.
     @Override
     public boolean isFinished() {
         return false; 

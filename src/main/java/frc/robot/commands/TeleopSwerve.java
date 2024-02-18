@@ -1,3 +1,13 @@
+/*
+ * This command is responsible for running the swerve drive.
+ * It is used in both driving during the teleoperated period,
+ * and automatically rotating to the target using the robot
+ * odometry. Although this command was made with teh intention
+ * of driving the swerve duriing the teleoperated period, it can
+ * also be used in auto without joystick input.
+ */
+
+
 package frc.robot.commands;
 
 import frc.robot.Constants;
@@ -11,25 +21,29 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 
-public class TeleopSwerve extends Command {    
-    public Swerve s_Swerve;    
+public class TeleopSwerve extends Command {  
+    
+    // required subsytems
+    public Swerve s_Swerve;
+    
+    // required WPILib classes
+    private ProfiledPIDController PID;
+
+    // command parameters
     private DoubleSupplier translationSup;
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier slowModeSup;
     private double rotationSpeed;
-    private ProfiledPIDController PID;
     private DoubleSupplier targetRotation;
     private boolean isAutoRotating;
-    private static final double AUTO_ROTATE_DEADBAND = 0.3;
-    // private Timer timer;
 
+    // constructor
     public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, 
             DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, DoubleSupplier targetRotation,
             BooleanSupplier slowModeSup, double rotationSpeed, boolean isAutoRotating) {
@@ -45,6 +59,7 @@ public class TeleopSwerve extends Command {
         this.targetRotation = targetRotation;
         this.isAutoRotating = isAutoRotating;
         
+        // object instantiation
         PID = new ProfiledPIDController(
             Constants.ROTATE_KP, 
             Constants.ROTATE_KI, 
@@ -52,25 +67,27 @@ public class TeleopSwerve extends Command {
             new Constraints(Constants.ROTATE_VELOCITY, Constants.ROTATE_ACCELERATION)
         ); 
 
-        // timer = new Timer();
     }
 
     @Override
     public void execute() {
-        /* Get Values, Deadband*/
+
+        // get drive values from controller sticks
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) * rotationSpeed;
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
-        /*slowmode*/
+        // set drive values to slow mode constants if slow mode is activated
         if (slowModeSup.getAsBoolean()) {
+
             translationVal = translationVal * Constants.SLOW_MODE_PERCENT_TRANSLATION;
             strafeVal = strafeVal * Constants.SLOW_MODE_PERCENT_STRAFE;
             rotationVal = rotationVal * Constants.SLOW_MODE_PERCENT_ROTATION;
+
         }
         
-        /* Rotate to Score */
-        if (-AUTO_ROTATE_DEADBAND <= rotationVal && rotationVal <= AUTO_ROTATE_DEADBAND && isAutoRotating) {
+        // rotate to score
+        if (-Constants.AUTO_ROTATE_DEADBAND <= rotationVal && rotationVal <= Constants.AUTO_ROTATE_DEADBAND && isAutoRotating) {
             double yaw = s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360;
 
             // convert the yaw from [-360, 360] to [-180, 180]
@@ -103,7 +120,7 @@ public class TeleopSwerve extends Command {
             rotationVal = PID.calculate(rotationYaw.getDegrees(), 0.0); 
         }
 
-        /* Drive */
+        // drive swerve
         s_Swerve.drive(
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
             rotationVal * Constants.Swerve.maxAngularVelocity, 
