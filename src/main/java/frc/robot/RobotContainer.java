@@ -144,7 +144,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        driverA.whileTrue(new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter));
+        // driverA.whileTrue(new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter));
+        driverA.whileTrue(new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6)));
         driverX.onTrue(new ShooterFrontRollerRun(s_Shooter));
         driverB.whileTrue(new TeleopSwerve(
                 s_Swerve, 
@@ -160,8 +161,11 @@ public class RobotContainer {
             //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
         );
 
-    driverLB.whileTrue(new InstantCommand(() -> intake.intakePivotRun(-10)));
-    driverRB.whileTrue(new InstantCommand(()-> intake.intakePivotRun(70)));
+        driverLB.whileTrue(new InstantCommand(() -> intake.intakePivotRun(-10)));
+        driverRB.whileTrue(new InstantCommand(()-> intake.intakePivotRun(70)));
+        driverDpadRight.whileTrue(new InstantCommand(() -> intake.intakeMotorRun()));
+        driverDpadLeft.whileTrue(new InstantCommand(() -> intake.intakeMotorStop()));
+        driverDpadDown.whileTrue(new InstantCommand(() -> s_Shooter.frontRollersStop()));
 
     }
 
