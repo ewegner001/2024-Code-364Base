@@ -73,7 +73,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeMotorRun() {
-    intakeMotor.setVoltage(12);
+    intakeMotor.setVoltage(-12);
     }
 
   public void intakeMotorStop() {
@@ -81,7 +81,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeMotorRunOut() {
-    intakeMotor.setVoltage(-12);
+    intakeMotor.setVoltage(12);
   }
 
   public double cancoderInDegrees() {

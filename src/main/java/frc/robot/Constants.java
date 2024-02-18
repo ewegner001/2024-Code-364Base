@@ -17,9 +17,9 @@ public final class Constants {
 
 
     /* PID Rotation */ 
-    public static final double ROTATE_KP = 0.01; //0.0222
+    public static final double ROTATE_KP = 0.02; //0.0222
     public static final double ROTATE_KI = 0.0;
-    public static final double ROTATE_KD = 0.0;
+    public static final double ROTATE_KD = 0.001;
     public static final double ROTATE_VELOCITY = 200.0;
     public static final double ROTATE_ACCELERATION = 400.0;
 
@@ -28,7 +28,7 @@ public final class Constants {
     public static final double SLOW_MODE_PERCENT_STRAFE = 0.5;
     public static final double SLOW_MODE_PERCENT_ROTATION = 0.5;
 
-    public static final double AUTO_ROTATE_DEADBAND = 5.0;
+    public static final double AUTO_ROTATE_DEADBAND = 0.0;
 
     public static final class Swerve {
 

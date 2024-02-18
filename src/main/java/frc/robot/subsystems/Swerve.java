@@ -90,6 +90,7 @@ public class Swerve extends SubsystemBase {
         resetModulesToAbsolute();
         swerveOdometry = new SwerveDriveOdometry(swerveKinematics, getGyroYaw(), getModulePositions());
       
+        posePublisher = NetworkTableInstance.getDefault().getStructTopic("/MyPose", Pose2d.struct).publish();
         swerveKinematicsPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveModuleStates", SwerveModuleState.struct).publish();
         estimatedRobotPosePublisher = NetworkTableInstance.getDefault().getStructTopic("/EstimatedRobotPose", Pose2d.struct).publish();
 

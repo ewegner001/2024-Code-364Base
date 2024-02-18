@@ -149,7 +149,7 @@ public class RobotContainer {
         
         //driverA.whileTrue(new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))).onFalse(new InstantCommand(() -> s_Shooter.stop()));
         //driverX.onTrue(new ShooterFrontRollerRun(s_Shooter));
-        driverB.whileTrue(new TeleopSwerve(
+        driverB.toggleOnTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(driverLeftY), 
                 () -> -driver.getRawAxis(driverLeftX), 
@@ -178,7 +178,7 @@ public class RobotContainer {
         
         
         
-        driverA.whileTrue(new ParallelCommandGroup(
+        driverRightTrigger.whileTrue(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6)),
             new InstantCommand(() -> s_Shooter.frontShooterIntake())
         )).onFalse(new ParallelCommandGroup(
