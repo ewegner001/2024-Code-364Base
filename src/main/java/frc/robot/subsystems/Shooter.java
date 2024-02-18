@@ -19,8 +19,8 @@ public class Shooter extends SubsystemBase {
   private final double lShooterMotorIGains = 0.0;
   private final double lShooterMotorDGains = 0.0;
   private final double rShooterMotorSGains = 0.0;
-  private final double rShooterMotorVGains = 0.0;
-  private final double rShooterMotorPGains = 0.0;
+  private final double rShooterMotorVGains = 0.12;
+  private final double rShooterMotorPGains = 0.05;
   private final double rShooterMotorIGains = 0.0;
   private final double rShooterMotorDGains = 0.0;
   
@@ -42,8 +42,8 @@ public class Shooter extends SubsystemBase {
     frontShooterMotor = new TalonFX(16);
     inputSensor = new DigitalInput(3);
     slotConfigsR = new Slot0Configs();
-    slotConfigsR.kS = rShooterMotorSGains; //0.05
-    slotConfigsR.kV = rShooterMotorVGains; // 0.12 
+    slotConfigsR.kS = rShooterMotorSGains;
+    slotConfigsR.kV = rShooterMotorVGains;
     slotConfigsR.kP = rShooterMotorPGains; 
     slotConfigsR.kI = rShooterMotorIGains;
     slotConfigsR.kD = rShooterMotorDGains;

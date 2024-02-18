@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
   private final int intakeMotorID = 10;
   private final int intakePivotID = 11;
   private final int intakePivotEncoderID = 9;
-  private final double intakePValue = 0.0;
+  private final double intakePValue = 0.2;
   private final double intakeIValue = 0.0;
   private final double intakeDValue = 0.0;
   private final double intakeSValue = 0.0;
@@ -39,6 +39,7 @@ public class Intake extends SubsystemBase {
   private PIDController pid;
   private ArmFeedforward intakePivotFeedforward;
   private double m_setPoint;
+  private double m_IntakePiviotVoltage = 0.0;
 
 
   /** Creates a new Intake. */
@@ -47,18 +48,22 @@ public class Intake extends SubsystemBase {
     m_IntakePiviot = new CANSparkMax(intakePivotID, MotorType.kBrushless);
     intakePivotEncoder = new CANcoder(intakePivotEncoderID);
     CANcoderConfigurator configuator = intakePivotEncoder.getConfigurator();
+
     configuator.apply(
       new MagnetSensorConfigs()
         .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
         .withMagnetOffset(magnetOffSet)
     );
+
     intakePivotMotorEncoder = m_IntakePiviot.getEncoder();
     intakePivotMotorEncoder.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
     intakePivotMotorEncoder.setPosition(intakePivotEncoder.getPosition().getValue());
     intakePivotMotorEncoder.setVelocityConversionFactor(360 / intakePivotMotorGearRatio);
+
     pid = new PIDController(intakePValue, intakeIValue, intakeDValue);
     intakePivotFeedforward = new ArmFeedforward(intakeSValue, intakeGValue, intakeVValue);
-    m_setPoint = 0;
+    m_setPoint = 70;
+
     intakeMotor.setVoltage(0);
 
   }
@@ -68,7 +73,7 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeMotorRun() {
-    intakeMotor.setVoltage(-12);
+    intakeMotor.setVoltage(12);
     }
 
   public void intakeMotorStop() {
@@ -76,20 +81,25 @@ public class Intake extends SubsystemBase {
   }
 
   public void intakeMotorRunOut() {
-    intakeMotor.setVoltage(12);
+    intakeMotor.setVoltage(-12);
   }
 
-  private double cancoderInDegrees() {
+  public double cancoderInDegrees() {
     return intakePivotEncoder.getPosition().getValue() * 360;
   }
+
 
   
 
    @Override
    public void periodic() {
-    double feedForward = intakePivotFeedforward.calculate(Units.degreesToRadians(intakePivotMotorEncoder.getPosition()), Units.degreesToRadians(intakePivotMotorEncoder.getVelocity()));
-    m_IntakePiviot.setVoltage(pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward);
+    //double feedForward = intakePivotFeedforward.calculate(Units.degreesToRadians(cancoderInDegrees()), Units.degreesToRadians(cancoder.getVelocity()));
+    m_IntakePiviotVoltage = pid.calculate(cancoderInDegrees(), m_setPoint); //m_IntakePiviotVoltage = pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward;
+    m_IntakePiviot.setVoltage(m_IntakePiviotVoltage);
+
+    SmartDashboard.putNumber("Intake Voltage", m_IntakePiviotVoltage);
     SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Intake Pivot Motor Position", intakePivotMotorEncoder.getPosition());
+    SmartDashboard.putNumber("Intake setpoint", m_setPoint);
    }
 }

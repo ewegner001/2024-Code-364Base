@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -130,7 +131,7 @@ public class RobotContainer {
             )
         );
 
-       
+     
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -145,8 +146,9 @@ public class RobotContainer {
         /* Driver Buttons */
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         // driverA.whileTrue(new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter));
-        driverA.whileTrue(new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6)));
-        driverX.onTrue(new ShooterFrontRollerRun(s_Shooter));
+        
+        //driverA.whileTrue(new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))).onFalse(new InstantCommand(() -> s_Shooter.stop()));
+        //driverX.onTrue(new ShooterFrontRollerRun(s_Shooter));
         driverB.whileTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(driverLeftY), 
@@ -161,11 +163,28 @@ public class RobotContainer {
             //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
         );
 
-        driverLB.whileTrue(new InstantCommand(() -> intake.intakePivotRun(-10)));
-        driverRB.whileTrue(new InstantCommand(()-> intake.intakePivotRun(70)));
-        driverDpadRight.whileTrue(new InstantCommand(() -> intake.intakeMotorRun()));
-        driverDpadLeft.whileTrue(new InstantCommand(() -> intake.intakeMotorStop()));
-        driverDpadDown.whileTrue(new InstantCommand(() -> s_Shooter.frontRollersStop()));
+        driverX.onTrue(new ParallelCommandGroup(
+                new InstantCommand(() -> intake.intakePivotRun(-25.92)),
+                new InstantCommand(() -> intake.intakeMotorRun()),
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)),
+                new InstantCommand(() -> s_Shooter.frontShooterIntake())
+            ))
+            .onFalse(new ParallelCommandGroup(
+                new InstantCommand(() -> intake.intakePivotRun(70)),
+                new InstantCommand(() -> intake.intakeMotorStop()),
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)),
+                new InstantCommand(() -> s_Shooter.frontRollersStop())
+            ));
+        
+        
+        
+        driverA.whileTrue(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6)),
+            new InstantCommand(() -> s_Shooter.frontShooterIntake())
+        )).onFalse(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Shooter.stop()),
+            new InstantCommand(() -> s_Shooter.frontRollersStop())
+        ));
 
     }
 
