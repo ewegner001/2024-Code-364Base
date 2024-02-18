@@ -38,9 +38,9 @@ public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
   public Shooter() {
     leftShooterMotor = new TalonFX(13);
-    rightShooterMotor = new TalonFX(11);
-    frontShooterMotor = new TalonFX(17);
-    inputSensor = new DigitalInput(1);
+    rightShooterMotor = new TalonFX(14);
+    frontShooterMotor = new TalonFX(16);
+    inputSensor = new DigitalInput(3);
     slotConfigsR = new Slot0Configs();
     slotConfigsR.kS = rShooterMotorSGains; //0.05
     slotConfigsR.kV = rShooterMotorVGains; // 0.12 
@@ -76,7 +76,7 @@ public class Shooter extends SubsystemBase {
   // }
 
   public void frontRollersStop() {
-    frontShooterMotor.stopMotor();
+    frontShooterMotor.setVoltage(0);
   }
 
   public boolean sensorValue() {
@@ -99,10 +99,16 @@ public class Shooter extends SubsystemBase {
 
   }
 
+  public void setShooterVoltage(double rightVoltage, double leftVoltage) {
+    rightShooterMotor.setVoltage(rightVoltage);
+    leftShooterMotor.setVoltage(leftVoltage);
+  }
+
   public void stop() {
     rightShooterMotor.setControl(rm_request.withVelocity(0));
     leftShooterMotor.setControl(rm_request.withVelocity(0));
   }
+
 
   
 
@@ -113,5 +119,6 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Left Shooter Speed", leftShooterMotor.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Right Shooter Temp", rightShooterMotor.getDeviceTemp().getValueAsDouble());
     SmartDashboard.putNumber("Left Shooter Temp", leftShooterMotor.getDeviceTemp().getValueAsDouble());
+    SmartDashboard.putBoolean("Break Beam Sensor", sensorValue());
   }
 }
