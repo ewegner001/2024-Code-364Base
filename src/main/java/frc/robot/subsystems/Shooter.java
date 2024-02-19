@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,6 +57,9 @@ public class Shooter extends SubsystemBase {
     slotConfigsL.kD = lShooterMotorDGains;
     lm_request = new VelocityVoltage(0);
 
+    leftShooterMotor.setNeutralMode(NeutralModeValue.Coast);
+    rightShooterMotor.setNeutralMode(NeutralModeValue.Coast);
+
     SmartDashboard.putNumber("RShooter kP", slotConfigsR.kP);
     SmartDashboard.putNumber("RShooter kV", slotConfigsR.kV);
     SmartDashboard.putNumber("RShooter Speed", 0);
@@ -67,6 +71,10 @@ public class Shooter extends SubsystemBase {
 
   public void frontShooterIntake() {
     frontShooterMotor.setVoltage(12.0);  
+  }
+
+    public void frontShooterOutake() {
+    frontShooterMotor.setVoltage(-3.0);  
   }
 
   // public void shooterIntakeStop() {

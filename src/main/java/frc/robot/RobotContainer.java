@@ -16,10 +16,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -164,25 +166,42 @@ public class RobotContainer {
         );
 
         driverX.onTrue(new ParallelCommandGroup(
-                new InstantCommand(() -> intake.intakePivotRun(-25.92)),
+                new InstantCommand(() -> intake.intakePivotRun(12.56)),
                 new InstantCommand(() -> intake.intakeMotorRun()),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)),
-                new InstantCommand(() -> s_Shooter.frontShooterIntake())
+                new InstantCommand(() -> s_Shooter.frontShooterIntake()),
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(-3, 3))
             ))
             .onFalse(new ParallelCommandGroup(
-                new InstantCommand(() -> intake.intakePivotRun(70)),
+                new InstantCommand(() -> intake.intakePivotRun(105.73)),
                 new InstantCommand(() -> intake.intakeMotorStop()),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)),
-                new InstantCommand(() -> s_Shooter.frontRollersStop())
+                new InstantCommand(() -> s_Shooter.frontRollersStop()),
+                new InstantCommand(() -> s_Shooter.stop())
             ));
         
+        operatorLB.onTrue(new ParallelCommandGroup(
+            
+                new InstantCommand(() -> s_Shooter.frontShooterOutake()),
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(-6, 6))
+
+            )).onFalse(new ParallelCommandGroup(
+
+                new InstantCommand(() -> s_Shooter.frontRollersStop()),
+                new InstantCommand(() -> s_Shooter.stop())
+            ));
         
-        
-        driverRightTrigger.whileTrue(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6)),
+        operatorLeftTrigger.whileTrue(
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))
+
+        ).onFalse(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Shooter.stop())
+        ));
+
+        operatorRightTrigger.whileTrue(
             new InstantCommand(() -> s_Shooter.frontShooterIntake())
-        )).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.stop()),
+
+        ).onFalse(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.frontRollersStop())
         ));
 
