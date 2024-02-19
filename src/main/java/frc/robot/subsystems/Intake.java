@@ -62,7 +62,7 @@ public class Intake extends SubsystemBase {
 
     pid = new PIDController(intakePValue, intakeIValue, intakeDValue);
     intakePivotFeedforward = new ArmFeedforward(intakeSValue, intakeGValue, intakeVValue);
-    m_setPoint = 70;
+    m_setPoint = 105.73;
 
     intakeMotor.setVoltage(0);
 
