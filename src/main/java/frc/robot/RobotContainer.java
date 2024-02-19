@@ -166,15 +166,15 @@ public class RobotContainer {
         );
 
         driverX.onTrue(new ParallelCommandGroup(
-                new InstantCommand(() -> intake.intakePivotRun(12.56)),
-                new InstantCommand(() -> intake.intakeMotorRun()),
+                new InstantCommand(() -> intake.setIntakePivotPosition(12.56)),
+                new InstantCommand(() -> intake.intake()),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)),
                 new InstantCommand(() -> s_Shooter.frontShooterIntake()),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(-3, 3))
             ))
             .onFalse(new ParallelCommandGroup(
-                new InstantCommand(() -> intake.intakePivotRun(105.73)),
-                new InstantCommand(() -> intake.intakeMotorStop()),
+                new InstantCommand(() -> intake.setIntakePivotPosition(105.73)),
+                new InstantCommand(() -> intake.stopIntake()),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)),
                 new InstantCommand(() -> s_Shooter.frontRollersStop()),
                 new InstantCommand(() -> s_Shooter.stop())

@@ -3,11 +3,18 @@
  * shooter angle and shooter power based upon the distance from the target,
  * which is determined using the robot pose estimator.
  * 
+ * Parameters:
+ * 
+ * Swerve           (subsystem)
+ * ShooterPivot     (subsystem)
+ * Shooter          (subsystem)
+ * 
  */
 
 package frc.robot.commands;
 
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Eyes;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -19,6 +26,7 @@ public class AimShoot extends Command {
 
     // required subystems
     private Swerve swerve;
+    private Eyes eyes;
     private ShooterPivot shooterPivot;  
     private Shooter shooter;
     private double distance;
@@ -40,7 +48,7 @@ public class AimShoot extends Command {
 
         addRequirements(swerve, shooterPivot, shooter);
 
-        // object instantiation
+        // instantiate objects
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
 
     }

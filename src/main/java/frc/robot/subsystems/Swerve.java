@@ -245,45 +245,12 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    public Pose3d getTargetPose() {
 
-        Pose3d pose;
-
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-
-            pose = new Pose3d(Constants.Positions.speakerBlueX, Constants.Positions.speakerBlueY, 0, new Rotation3d(0,0,Constants.Positions.speakerBlueR));
-
-        } else {
-
-            pose = new Pose3d(Constants.Positions.speakerRedX, Constants.Positions.speakerRedY, 0, new Rotation3d(0,0,Constants.Positions.speakerRedR));
-
-        }
-        
-        return pose;
-
-    }
-
-    public double getDistanceFromTarget() {
-
-        double distance;
-
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-
-            distance = Math.sqrt(Math.pow((Constants.Positions.speakerBlueX - m_poseEstimator.getEstimatedPosition().getX()), 2) - Math.pow((Constants.Positions.speakerBlueY - m_poseEstimator.getEstimatedPosition().getY()), 2));
-
-        } else {
-
-            distance = Math.sqrt(Math.pow((Constants.Positions.speakerRedX - m_poseEstimator.getEstimatedPosition().getX()), 2) - Math.pow((Constants.Positions.speakerRedY - m_poseEstimator.getEstimatedPosition().getY()), 2));
-
-        }
-
-        return distance;
-    }
 
     public double getTargetRotation() {
 
         Pose2d robotPose = m_poseEstimator.getEstimatedPosition();
-        Pose3d targetPose = getTargetPose();
+        Pose3d targetPose = eyes.getTargetPose();
 
         double robotX = robotPose.getX();
         double robotY = robotPose.getY();
@@ -304,6 +271,24 @@ public class Swerve extends SubsystemBase {
 
         return -angle;
     }
+
+    public double getDistanceFromTarget() {
+
+        double distance;
+
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+
+            distance = Math.sqrt(Math.pow((Constants.Positions.speakerBlueX - m_poseEstimator.getEstimatedPosition().getX()), 2) - Math.pow((Constants.Positions.speakerBlueY - m_poseEstimator.getEstimatedPosition().getY()), 2));
+
+        } else {
+
+            distance = Math.sqrt(Math.pow((Constants.Positions.speakerRedX - m_poseEstimator.getEstimatedPosition().getX()), 2) - Math.pow((Constants.Positions.speakerRedY - m_poseEstimator.getEstimatedPosition().getY()), 2));
+
+        }
+
+        return distance;
+    }
+
 
 
 
@@ -337,8 +322,8 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Pose estimator rotations", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
         SmartDashboard.putNumber("robot X", m_poseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("robot Y", m_poseEstimator.getEstimatedPosition().getY());
-        SmartDashboard.putNumber("target X", getTargetPose().getX());
-        SmartDashboard.putNumber("target Y", getTargetPose().getY());
+        SmartDashboard.putNumber("target X", eyes.getTargetPose().getX());
+        SmartDashboard.putNumber("target Y", eyes.getTargetPose().getY());
 
         posePublisher.set(getPose());
         swerveKinematicsPublisher.set(getModuleStates());

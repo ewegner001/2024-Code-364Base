@@ -1,6 +1,8 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*
+ * This subsystem controls the robot intake. It manages
+ * positional control of the intake through a PID loop.
+ * It also controls the intake motors.
+ */
 
 package frc.robot.subsystems;
 
@@ -20,67 +22,108 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-  private final double intakePivotMotorGearRatio = 100.0;
+
+  // local constants
+
+  // IDs
   private final int intakeMotorID = 10;
   private final int intakePivotID = 11;
   private final int intakePivotEncoderID = 9;
+
+  // positions
+  // NOTE: these positions are also used in robotcontainer.
+  public final double intakeSafePosition = 105.73;
+  public final double intakeGroundPosition = 0;
+  public final double intakeLoadPosition = 0;
+
+  // shooter PID
   private final double intakePValue = 0.2;
   private final double intakeIValue = 0.0;
   private final double intakeDValue = 0.0;
+
+  // feed forward PID
   private final double intakeSValue = 0.0;
   private final double intakeGValue = 0.0;
   private final double intakeVValue = 0.0;
+
+  private final double intakePivotMotorGearRatio = 100.0;
+
   private final double magnetOffSet = 0.0;
 
+
+  // local variables
+  private double m_setPoint;
+  private double m_IntakePiviotVoltage = 0.0;
+
+  // WPILib class objects
   private CANSparkMax intakeMotor;
   private CANSparkMax m_IntakePiviot;
   private CANcoder intakePivotEncoder;
   private RelativeEncoder intakePivotMotorEncoder;
   private PIDController pid;
   private ArmFeedforward intakePivotFeedforward;
-  private double m_setPoint;
-  private double m_IntakePiviotVoltage = 0.0;
 
 
-  /** Creates a new Intake. */
+  // constructor
   public Intake() {
+
+    // instantiate objects
     intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
     m_IntakePiviot = new CANSparkMax(intakePivotID, MotorType.kBrushless);
     intakePivotEncoder = new CANcoder(intakePivotEncoderID);
-    CANcoderConfigurator configuator = intakePivotEncoder.getConfigurator();
 
+    // configure cancoder
+    CANcoderConfigurator configuator = intakePivotEncoder.getConfigurator();
     configuator.apply(
       new MagnetSensorConfigs()
         .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
         .withMagnetOffset(magnetOffSet)
     );
 
+    // set integrated encoder to position from cancoder
+
+    // TODO: Go over this part with Dylan and student that wrote this. Can we simplify this?
     intakePivotMotorEncoder = m_IntakePiviot.getEncoder();
     intakePivotMotorEncoder.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
     intakePivotMotorEncoder.setPosition(intakePivotEncoder.getPosition().getValue());
     intakePivotMotorEncoder.setVelocityConversionFactor(360 / intakePivotMotorGearRatio);
 
+    // create PID loop for intake pivot
     pid = new PIDController(intakePValue, intakeIValue, intakeDValue);
-    intakePivotFeedforward = new ArmFeedforward(intakeSValue, intakeGValue, intakeVValue);
-    m_setPoint = 105.73;
 
-    intakeMotor.setVoltage(0);
+    // create PID feed forward loop for intake pivot
+    intakePivotFeedforward = new ArmFeedforward(intakeSValue, intakeGValue, intakeVValue);
+
+    // go to intake safe position on initialization
+    m_setPoint = intakeSafePosition;
+
+    // stop intake on initialization
+    stopIntake();
 
   }
 
-  public void intakePivotRun(double setpoint) {
+  /*
+   * This method will set the position of the shooter pivot.
+   * 
+   * parameters:
+   * setpoint       (double)
+   * 
+   * returns:
+   * none
+   */
+  public void setIntakePivotPosition(double setpoint) {
     m_setPoint = setpoint;
   }
 
-  public void intakeMotorRun() {
+  public void intake() {
     intakeMotor.setVoltage(-12);
     }
 
-  public void intakeMotorStop() {
+  public void stopIntake() {
     intakeMotor.setVoltage(0);
   }
 
-  public void intakeMotorRunOut() {
+  public void outake() {
     intakeMotor.setVoltage(12);
   }
 

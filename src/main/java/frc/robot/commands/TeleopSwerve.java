@@ -2,9 +2,21 @@
  * This command is responsible for running the swerve drive.
  * It is used in both driving during the teleoperated period,
  * and automatically rotating to the target using the robot
- * odometry. Although this command was made with teh intention
- * of driving the swerve duriing the teleoperated period, it can
+ * odometry. Although this command was made with the intention
+ * of driving the swerve during the teleoperated period, it can
  * also be used in auto without joystick input.
+ * 
+ * Parameters:
+ * 
+ * Swerve                       (subsytem)
+ * translation supplier         (double)
+ * strafe supplier              (double)
+ * rotation supplier            (double)
+ * robot centric supplier       (boolean)
+ * target rotation supplier     (double)
+ * slow mode supplier           (boolean)
+ * rotation speed               (double)
+ * 
  */
 
 
@@ -30,7 +42,7 @@ public class TeleopSwerve extends Command {
     // required subsytems
     public Swerve s_Swerve;
     
-    // required WPILib classes
+    // WPILIb class objects
     private ProfiledPIDController PID;
 
     // command parameters
