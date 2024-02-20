@@ -131,14 +131,46 @@ public class Intake extends SubsystemBase {
     m_IntakeMotor.setVoltage(-intakeSpeedVoltage);
     }
 
+  /*
+   * This method will stop the intake, and set the speed to a resting
+   * voltage if desired. In this case, the resting voltage is set to
+   * zero volts, and thus the intake stops.
+   * 
+   * parameters:
+   * none
+   * 
+   * returns:
+   * none
+   */
   public void stopIntake() {
     m_IntakeMotor.setVoltage(intakeRestVoltage);
   }
 
+  /*
+   * This method is identical to the intake() method, except that it
+   * will run the intake motor in the opposite direction. This causes
+   * the game piece to be ejected from the intake.
+   * 
+   * parameters:
+   * none
+   * 
+   * returns:
+   * none
+   */
   public void outake() {
     m_IntakeMotor.setVoltage(intakeSpeedVoltage);
   }
 
+  /*
+   * This method will get the position of the intake
+   * cancoder in degrees.
+   * 
+   * parameters:
+   * none
+   * 
+   * returns:
+   * cancoder degrees     (double)
+   */
   public double cancoderInDegrees() {
     return intakePivotEncoder.getPosition().getValue() * 360;
   }
@@ -148,10 +180,12 @@ public class Intake extends SubsystemBase {
 
    @Override
    public void periodic() {
-    //double feedForward = intakePivotFeedforward.calculate(Units.degreesToRadians(cancoderInDegrees()), Units.degreesToRadians(cancoder.getVelocity()));
-    intakePivotVoltage = pid.calculate(cancoderInDegrees(), m_setPoint); //m_IntakePiviotVoltage = pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward;
+  
+    // move the intake pivot motor to the current desired position
+    intakePivotVoltage = pid.calculate(cancoderInDegrees(), m_setPoint)/*+ feedForward) */;
     m_IntakePiviot.setVoltage(intakePivotVoltage);
 
+    // log values
     SmartDashboard.putNumber("Intake Voltage", intakePivotVoltage);
     SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Intake Pivot Motor Position", intakePivotIntegratedEncoder.getPosition());

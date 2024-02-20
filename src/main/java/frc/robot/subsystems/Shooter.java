@@ -1,7 +1,8 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
+/*
+ * This method controls the shooting mechanism. It
+ * manages both the shooter and the loader.
+ * 
+ */
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -14,47 +15,68 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  private final double lShooterMotorSGains = 0.0;
-  private final double lShooterMotorVGains = 0.0;
-  private final double lShooterMotorPGains = 0.0;
+
+  // local constants
+  
+  //IDs
+  private final int leftShooterMotorID = 13;
+  private final int rightShooterMotorID = 14;
+  private final int loaderMotorID = 16;
+
+  // left shooter motor PID
+  private final double lShooterMotorPGains = 0.05;
   private final double lShooterMotorIGains = 0.0;
   private final double lShooterMotorDGains = 0.0;
-  private final double rShooterMotorSGains = 0.0;
-  private final double rShooterMotorVGains = 0.12;
+  private final double lShooterMotorSGains = 0.0;
+  private final double lShooterMotorVGains = 0.12;
+
+  // right shooter motor PID
   private final double rShooterMotorPGains = 0.05;
   private final double rShooterMotorIGains = 0.0;
   private final double rShooterMotorDGains = 0.0;
-  
+  private final double rShooterMotorSGains = 0.0;
+  private final double rShooterMotorVGains = 0.12;
 
-
-
+  // WPILib class objects
   private TalonFX leftShooterMotor;
   private TalonFX rightShooterMotor;
-  private TalonFX frontShooterMotor;
-  private DigitalInput inputSensor;
+  private TalonFX loaderMotor;
+
   private Slot0Configs slotConfigsR;
   private Slot0Configs slotConfigsL;
+
   private VelocityVoltage rm_request;
   private VelocityVoltage lm_request;
-  /** Creates a new Shooter. */
+
+  private DigitalInput inputSensor;
+
+
+  // constructor
   public Shooter() {
-    leftShooterMotor = new TalonFX(13);
-    rightShooterMotor = new TalonFX(14);
-    frontShooterMotor = new TalonFX(16);
+
+    // instantiate objects
+    leftShooterMotor = new TalonFX(leftShooterMotorID);
+    rightShooterMotor = new TalonFX(rightShooterMotorID);
+    loaderMotor = new TalonFX(loaderMotorID);
+
     inputSensor = new DigitalInput(3);
+
     slotConfigsR = new Slot0Configs();
     slotConfigsR.kS = rShooterMotorSGains;
     slotConfigsR.kV = rShooterMotorVGains;
     slotConfigsR.kP = rShooterMotorPGains; 
     slotConfigsR.kI = rShooterMotorIGains;
     slotConfigsR.kD = rShooterMotorDGains;
-    rm_request = new VelocityVoltage(0).withSlot(0);
+
+
     slotConfigsL = new Slot0Configs();
     slotConfigsL.kS = lShooterMotorSGains;
     slotConfigsL.kV = lShooterMotorVGains;
     slotConfigsL.kP = lShooterMotorPGains;
     slotConfigsL.kI = lShooterMotorIGains;
     slotConfigsL.kD = lShooterMotorDGains;
+
+    rm_request = new VelocityVoltage(0).withSlot(0);
     lm_request = new VelocityVoltage(0);
 
     leftShooterMotor.setNeutralMode(NeutralModeValue.Coast);
@@ -69,22 +91,16 @@ public class Shooter extends SubsystemBase {
     shootingMotorsConfig();
   }
 
-  public void frontShooterIntake() {
-    frontShooterMotor.setVoltage(12.0);  
+  public void runLoader() {
+    loaderMotor.setVoltage(12.0);  
   }
 
-    public void frontShooterOutake() {
-    frontShooterMotor.setVoltage(-3.0);  
+    public void reverseLoader() {
+    loaderMotor.setVoltage(-3.0);  
   }
 
-  // public void shooterIntakeStop() {
-  //   if (inputSensor.get() == true) {
-  //     frontShooterMotor.stopMotor();
-  //   }
-  // }
-
-  public void frontRollersStop() {
-    frontShooterMotor.setVoltage(0);
+  public void stopLoader() {
+    loaderMotor.setVoltage(0);
   }
 
   public boolean sensorValue() {

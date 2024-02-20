@@ -111,8 +111,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     // Intake
     private final Intake intake = new Intake();
-    //Wrist
-    private final Wrist chipmunks = new Wrist();
+
     private final Shooter s_Shooter = new Shooter();
     private final Eyes s_Eyes = new Eyes();
 
@@ -169,25 +168,25 @@ public class RobotContainer {
                 new InstantCommand(() -> intake.setIntakePivotPosition(12.56)),
                 new InstantCommand(() -> intake.intake()),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)),
-                new InstantCommand(() -> s_Shooter.frontShooterIntake()),
+                new InstantCommand(() -> s_Shooter.runLoader()),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(-3, 3))
             ))
             .onFalse(new ParallelCommandGroup(
                 new InstantCommand(() -> intake.setIntakePivotPosition(105.73)),
                 new InstantCommand(() -> intake.stopIntake()),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)),
-                new InstantCommand(() -> s_Shooter.frontRollersStop()),
+                new InstantCommand(() -> s_Shooter.stopLoader()),
                 new InstantCommand(() -> s_Shooter.stop())
             ));
         
         operatorLB.onTrue(new ParallelCommandGroup(
             
-                new InstantCommand(() -> s_Shooter.frontShooterOutake()),
+                new InstantCommand(() -> s_Shooter.reverseLoader()),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(-6, 6))
 
             )).onFalse(new ParallelCommandGroup(
 
-                new InstantCommand(() -> s_Shooter.frontRollersStop()),
+                new InstantCommand(() -> s_Shooter.stopLoader()),
                 new InstantCommand(() -> s_Shooter.stop())
             ));
         
@@ -199,10 +198,10 @@ public class RobotContainer {
         ));
 
         operatorRightTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.frontShooterIntake())
+            new InstantCommand(() -> s_Shooter.runLoader())
 
         ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.frontRollersStop())
+            new InstantCommand(() -> s_Shooter.stopLoader())
         ));
 
     }

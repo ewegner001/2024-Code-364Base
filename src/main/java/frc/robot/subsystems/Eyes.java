@@ -5,7 +5,6 @@
  * subsystem to update the robot's odometry using the pose estimator.
  * 
  * parameters:
- * 
  * none
  */
 

@@ -89,14 +89,14 @@ public class AimShoot extends Command {
         Timer.delay(0.5);
 
         // fire by running shooter-intake
-        shooter.frontShooterIntake();
+        shooter.runLoader();
 
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.frontRollersStop();
+        shooter.stopLoader();
     }
 
     // Returns true when the command should end.
