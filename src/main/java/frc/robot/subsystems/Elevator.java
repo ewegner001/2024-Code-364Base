@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
@@ -40,35 +41,14 @@ public class Elevator extends SubsystemBase {
    * constructor. In this example, they is private, which 
    * means that nothing outside of this class can access it.
    */
-  private CANSparkMax motor;
-  private SparkPIDController pidController;
-  private double internalData;
-
-  private ProfiledPIDController controller;
-  private RelativeEncoder elevatorEncoder;
-  private CANSparkMax elevatorMotor;
-  private double targetElevatorPosition;
-
-      // /* Elevator Motor */
-    private DoubleLogEntry elevatorMotorTemperature;
-    private DoubleLogEntry elevatorMotorAppliedOutput;
-    private DoubleLogEntry elevatorMotorBusVoltage;
-    private DoubleLogEntry elevatorMotorOutputCurrent;
-    private DoubleLogEntry elevatorMotorClosedLoopRampRate;
-    private DoubleLogEntry elevatorMotorOpenLoopRampRate;
-    private IntegerLogEntry elevatorMotorFaults;
-    private StringLogEntry elevatorMotorIdleMode;
-    private BooleanLogEntry elevatorMotorInverted;
-    private StringLogEntry elevatorMotorLastError;
+  private CANSparkMax motor1;
+  private CANSparkMax motor2;
+  private SparkPIDController pidController; 
 
   private float heightlimit = 10;
   public double elevatorspeed = 1.0;
   public float restingposition = 0;
   public double shootingPosition = 10;
-
-  public  double getEncoderPosition() {
-    return elevatorEncoder.getPosition();
-  }
  
 
   /* Constructor
@@ -84,12 +64,18 @@ public class Elevator extends SubsystemBase {
      * used to create a new CANSparkMax object and give it 
      * to `motor` as it's value. 
      */
-    motor = new CANSparkMax(0, MotorType.kBrushless);
-    internalData = 0.4;
-    motor.restoreFactoryDefaults();
-    pidController = motor.getPIDController();
-    motor.setSoftLimit(SoftLimitDirection.kForward, heightlimit);
-    motor.setSoftLimit(SoftLimitDirection.kReverse,restingposition);
+    motor1 = new CANSparkMax(0, MotorType.kBrushless);
+    motor2 = new CANSparkMax(1, MotorType.kBrushless);
+    motor1.restoreFactoryDefaults();
+    pidController = motor1.getPIDController();
+    motor1.setSoftLimit(SoftLimitDirection.kForward, heightlimit);
+    motor1.setSoftLimit(SoftLimitDirection.kReverse,restingposition);
+    
+    motor2.restoreFactoryDefaults();
+    pidController = motor2.getPIDController();
+    motor2.setSoftLimit(SoftLimitDirection.kForward, heightlimit);
+    motor2.setSoftLimit(SoftLimitDirection.kReverse,restingposition);
+    motor2.follow(motor1, false);
 
     double kP = 0.1; 
     double kI = 1e-4;
@@ -123,7 +109,7 @@ public class Elevator extends SubsystemBase {
 
    /* This method makes the elevator go up until it hits the soft limit*/
   public void lift() {
-  motor.set(elevatorspeed);
+  motor1.set(elevatorspeed);
   }
 
     /* Sets the Target Elevator Position in inches.*/
@@ -169,17 +155,17 @@ public class Elevator extends SubsystemBase {
    * `internalData` to change it's value.
    */
   public void stop() {
-  motor.set(0);
+  motor1.set(0);
   }
 /*This method makes the elevator go down until */
 public void down() {
-  motor.set(elevatorspeed);
+  motor1.set(elevatorspeed);
 }
 /*This method sets the elevator to a shooting position */
 private void goToShootingPos(){
-if (motor.getEncoder().getPosition() == shootingPosition){
+if (motor1.getEncoder().getPosition() == shootingPosition){
   stop();
-}else if(motor.getEncoder().getPosition() < shootingPosition){
+}else if(motor1.getEncoder().getPosition() < shootingPosition){
   lift();
 }else{
   down();
