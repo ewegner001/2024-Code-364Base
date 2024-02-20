@@ -52,17 +52,18 @@ public class Intake extends SubsystemBase {
 
 
   // local variables
-  private double m_setPoint;
+  public double runIntakeVoltage = -12.0;
+  public double reverseIntakeVoltage = 12.0;
+  public double stopIntakeVoltage = 0.0;
 
-  private double intakePivotVoltage = 0.0;
-  private double intakeSpeedVoltage = 12.0;
-  private double intakeRestVoltage = 0.0;
+  private double m_setPoint;
+  private double intakePivotVoltage;
 
   // WPILib class objects
-  private CANSparkMax m_IntakeMotor;
-  private CANSparkMax m_IntakePiviot;
-  private CANcoder intakePivotEncoder;
-  private RelativeEncoder intakePivotIntegratedEncoder;
+  private CANSparkMax m_Intake;
+  private CANSparkMax m_IntakePivot;
+  private CANcoder e_intakePivot;
+  private RelativeEncoder e_intakePivotIntegrated;
   private PIDController pid;
   private ArmFeedforward intakePivotFeedforward;
 
@@ -71,12 +72,12 @@ public class Intake extends SubsystemBase {
   public Intake() {
 
     // instantiate objects
-    m_IntakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
-    m_IntakePiviot = new CANSparkMax(intakePivotID, MotorType.kBrushless);
-    intakePivotEncoder = new CANcoder(intakePivotEncoderID);
+    m_Intake = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
+    m_IntakePivot = new CANSparkMax(intakePivotID, MotorType.kBrushless);
+    e_intakePivot = new CANcoder(intakePivotEncoderID);
 
     // configure cancoder
-    CANcoderConfigurator configuator = intakePivotEncoder.getConfigurator();
+    CANcoderConfigurator configuator = e_intakePivot.getConfigurator();
     configuator.apply(
       new MagnetSensorConfigs()
         .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
@@ -86,10 +87,10 @@ public class Intake extends SubsystemBase {
     // set integrated encoder to position from cancoder
 
     // TODO: Go over this part with Dylan and student that wrote this. Can we simplify this?
-    intakePivotIntegratedEncoder = m_IntakePiviot.getEncoder();
-    intakePivotIntegratedEncoder.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
-    intakePivotIntegratedEncoder.setPosition(intakePivotEncoder.getPosition().getValue());
-    intakePivotIntegratedEncoder.setVelocityConversionFactor(360 / intakePivotMotorGearRatio);
+    e_intakePivotIntegrated = m_IntakePivot.getEncoder();
+    e_intakePivotIntegrated.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
+    e_intakePivotIntegrated.setPosition(e_intakePivot.getPosition().getValue());
+    e_intakePivotIntegrated.setVelocityConversionFactor(360 / intakePivotMotorGearRatio);
 
     // create PID loop for intake pivot
     pid = new PIDController(intakePValue, intakeIValue, intakeDValue);
@@ -101,7 +102,7 @@ public class Intake extends SubsystemBase {
     m_setPoint = intakeSafePosition;
 
     // stop intake on initialization
-    stopIntake();
+    setIntakeVoltage(stopIntakeVoltage);
 
   }
 
@@ -119,47 +120,18 @@ public class Intake extends SubsystemBase {
   }
 
   /*
-   * This method will run the intake motor to intake a game piece.
+   * This method will run the intake motor at a desired voltage.
+   * It can be used to start and stop the intake.
    * 
    * parameters:
-   * none
+   * voltage         (double)
    * 
    * returns:
    * none
    */
-  public void intake() {
-    m_IntakeMotor.setVoltage(-intakeSpeedVoltage);
+  public void setIntakeVoltage(double intakeSpeedVoltage) {
+    m_Intake.setVoltage(intakeSpeedVoltage);
     }
-
-  /*
-   * This method will stop the intake, and set the speed to a resting
-   * voltage if desired. In this case, the resting voltage is set to
-   * zero volts, and thus the intake stops.
-   * 
-   * parameters:
-   * none
-   * 
-   * returns:
-   * none
-   */
-  public void stopIntake() {
-    m_IntakeMotor.setVoltage(intakeRestVoltage);
-  }
-
-  /*
-   * This method is identical to the intake() method, except that it
-   * will run the intake motor in the opposite direction. This causes
-   * the game piece to be ejected from the intake.
-   * 
-   * parameters:
-   * none
-   * 
-   * returns:
-   * none
-   */
-  public void outake() {
-    m_IntakeMotor.setVoltage(intakeSpeedVoltage);
-  }
 
   /*
    * This method will get the position of the intake
@@ -172,23 +144,20 @@ public class Intake extends SubsystemBase {
    * cancoder degrees     (double)
    */
   public double cancoderInDegrees() {
-    return intakePivotEncoder.getPosition().getValue() * 360;
+    return e_intakePivot.getPosition().getValue() * 360;
   }
-
-
-  
 
    @Override
    public void periodic() {
   
     // move the intake pivot motor to the current desired position
     intakePivotVoltage = pid.calculate(cancoderInDegrees(), m_setPoint)/*+ feedForward) */;
-    m_IntakePiviot.setVoltage(intakePivotVoltage);
+    m_IntakePivot.setVoltage(intakePivotVoltage);
 
     // log values
     SmartDashboard.putNumber("Intake Voltage", intakePivotVoltage);
     SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
-    SmartDashboard.putNumber("Intake Pivot Motor Position", intakePivotIntegratedEncoder.getPosition());
+    SmartDashboard.putNumber("Intake Pivot Motor Position", e_intakePivotIntegrated.getPosition());
     SmartDashboard.putNumber("Intake setpoint", m_setPoint);
    }
 }

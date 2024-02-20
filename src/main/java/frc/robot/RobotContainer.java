@@ -166,27 +166,27 @@ public class RobotContainer {
 
         driverX.onTrue(new ParallelCommandGroup(
                 new InstantCommand(() -> intake.setIntakePivotPosition(12.56)),
-                new InstantCommand(() -> intake.intake()),
+                new InstantCommand(() -> intake.setIntakeVoltage(intake.runIntakeVoltage)),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)),
-                new InstantCommand(() -> s_Shooter.runLoader()),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(-3, 3))
             ))
             .onFalse(new ParallelCommandGroup(
                 new InstantCommand(() -> intake.setIntakePivotPosition(105.73)),
-                new InstantCommand(() -> intake.stopIntake()),
+                new InstantCommand(() -> intake.setIntakeVoltage(intake.stopIntakeVoltage)),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)),
-                new InstantCommand(() -> s_Shooter.stopLoader()),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)),
                 new InstantCommand(() -> s_Shooter.stop())
             ));
         
         operatorLB.onTrue(new ParallelCommandGroup(
             
-                new InstantCommand(() -> s_Shooter.reverseLoader()),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(-6, 6))
 
             )).onFalse(new ParallelCommandGroup(
 
-                new InstantCommand(() -> s_Shooter.stopLoader()),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)),
                 new InstantCommand(() -> s_Shooter.stop())
             ));
         
@@ -198,10 +198,10 @@ public class RobotContainer {
         ));
 
         operatorRightTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.runLoader())
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
 
         ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.stopLoader())
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
         ));
 
     }

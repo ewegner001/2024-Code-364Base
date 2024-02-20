@@ -88,15 +88,15 @@ public class AimShoot extends Command {
         // wait for robot to reach correct configuration
         Timer.delay(0.5);
 
-        // fire by running shooter-intake
-        shooter.runLoader();
+        // fire by running loader
+        shooter.setLoaderVoltage(shooter.runLoaderVoltage);
 
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        shooter.stopLoader();
+        shooter.setLoaderVoltage(shooter.stopLoaderVoltage);
     }
 
     // Returns true when the command should end.
