@@ -53,13 +53,16 @@ public class Intake extends SubsystemBase {
 
   // local variables
   private double m_setPoint;
-  private double m_IntakePiviotVoltage = 0.0;
+
+  private double intakePivotVoltage = 0.0;
+  private double intakeSpeedVoltage = 12.0;
+  private double intakeRestVoltage = 0.0;
 
   // WPILib class objects
-  private CANSparkMax intakeMotor;
+  private CANSparkMax m_IntakeMotor;
   private CANSparkMax m_IntakePiviot;
   private CANcoder intakePivotEncoder;
-  private RelativeEncoder intakePivotMotorEncoder;
+  private RelativeEncoder intakePivotIntegratedEncoder;
   private PIDController pid;
   private ArmFeedforward intakePivotFeedforward;
 
@@ -68,7 +71,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
 
     // instantiate objects
-    intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
+    m_IntakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
     m_IntakePiviot = new CANSparkMax(intakePivotID, MotorType.kBrushless);
     intakePivotEncoder = new CANcoder(intakePivotEncoderID);
 
@@ -83,10 +86,10 @@ public class Intake extends SubsystemBase {
     // set integrated encoder to position from cancoder
 
     // TODO: Go over this part with Dylan and student that wrote this. Can we simplify this?
-    intakePivotMotorEncoder = m_IntakePiviot.getEncoder();
-    intakePivotMotorEncoder.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
-    intakePivotMotorEncoder.setPosition(intakePivotEncoder.getPosition().getValue());
-    intakePivotMotorEncoder.setVelocityConversionFactor(360 / intakePivotMotorGearRatio);
+    intakePivotIntegratedEncoder = m_IntakePiviot.getEncoder();
+    intakePivotIntegratedEncoder.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
+    intakePivotIntegratedEncoder.setPosition(intakePivotEncoder.getPosition().getValue());
+    intakePivotIntegratedEncoder.setVelocityConversionFactor(360 / intakePivotMotorGearRatio);
 
     // create PID loop for intake pivot
     pid = new PIDController(intakePValue, intakeIValue, intakeDValue);
@@ -115,16 +118,25 @@ public class Intake extends SubsystemBase {
     m_setPoint = setpoint;
   }
 
+  /*
+   * This method will run the intake motor to intake a game piece.
+   * 
+   * parameters:
+   * none
+   * 
+   * returns:
+   * none
+   */
   public void intake() {
-    intakeMotor.setVoltage(-12);
+    m_IntakeMotor.setVoltage(-intakeSpeedVoltage);
     }
 
   public void stopIntake() {
-    intakeMotor.setVoltage(0);
+    m_IntakeMotor.setVoltage(intakeRestVoltage);
   }
 
   public void outake() {
-    intakeMotor.setVoltage(12);
+    m_IntakeMotor.setVoltage(intakeSpeedVoltage);
   }
 
   public double cancoderInDegrees() {
@@ -137,12 +149,12 @@ public class Intake extends SubsystemBase {
    @Override
    public void periodic() {
     //double feedForward = intakePivotFeedforward.calculate(Units.degreesToRadians(cancoderInDegrees()), Units.degreesToRadians(cancoder.getVelocity()));
-    m_IntakePiviotVoltage = pid.calculate(cancoderInDegrees(), m_setPoint); //m_IntakePiviotVoltage = pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward;
-    m_IntakePiviot.setVoltage(m_IntakePiviotVoltage);
+    intakePivotVoltage = pid.calculate(cancoderInDegrees(), m_setPoint); //m_IntakePiviotVoltage = pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward;
+    m_IntakePiviot.setVoltage(intakePivotVoltage);
 
-    SmartDashboard.putNumber("Intake Voltage", m_IntakePiviotVoltage);
+    SmartDashboard.putNumber("Intake Voltage", intakePivotVoltage);
     SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
-    SmartDashboard.putNumber("Intake Pivot Motor Position", intakePivotMotorEncoder.getPosition());
+    SmartDashboard.putNumber("Intake Pivot Motor Position", intakePivotIntegratedEncoder.getPosition());
     SmartDashboard.putNumber("Intake setpoint", m_setPoint);
    }
 }
