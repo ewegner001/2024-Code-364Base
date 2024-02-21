@@ -119,15 +119,6 @@ public class TeleopSwerve extends Command {
             // If targetRotationVal is 180 degrees the rotationYaw's 0 will be pointing towards 180
             rotationYaw = rotationYaw.rotateBy(targetRotationVal);
 
-            // double error = yaw - targetRotationVal;
-            //SmartDashboard.putNumber("debug/yaw", yaw);
-            // SmartDashboard.putNumber("debug/targetRotationVal", targetRotationVal);
-            // SmartDashboard.putNumber("debug/error", error);
-            // if (Math.abs(error) > 180) {
-            //     yaw = Math.abs(360 - yaw);
-            // }
-            // SmartDashboard.putNumber("debug/calculated yaw", yaw);
-
             SmartDashboard.putNumber("debug/calculated yaw", rotationYaw.getDegrees());
             rotationVal = PID.calculate(rotationYaw.getDegrees(), 0.0); 
         }
@@ -137,7 +128,7 @@ public class TeleopSwerve extends Command {
             new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
             rotationVal * Constants.Swerve.maxAngularVelocity, 
             !robotCentricSup.getAsBoolean(), 
-            false
+            true
         );
     }
 }
