@@ -86,12 +86,6 @@ public class Shooter extends SubsystemBase {
     slotConfigsL.kI = lShooterMotorIGains;
     slotConfigsL.kD = lShooterMotorDGains;
 
-    // PID Velocity target
-    rm_request = new VelocityVoltage(0).withSlot(0);
-    lm_request = new VelocityVoltage(0);
-
-  
-
     // set shooter motors to coast mode
     m_leftShooter.setNeutralMode(NeutralModeValue.Coast);
     m_rightShooter.setNeutralMode(NeutralModeValue.Coast);
@@ -106,6 +100,10 @@ public class Shooter extends SubsystemBase {
 
     // configure shooter motors
     shootingMotorsConfig();
+
+    // PID Velocity target
+    rm_request = new VelocityVoltage(0);
+    lm_request = new VelocityVoltage(0);
   }
 
   /*
