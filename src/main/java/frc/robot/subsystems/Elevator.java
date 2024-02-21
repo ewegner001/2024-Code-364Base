@@ -195,11 +195,12 @@ if (motor1.getEncoder().getPosition() == shootingPosition){
             
             SmartDashboard.putNumber("ELEVATOR PID VOLTAGE", voltage);
         }
-        logData();
+        //logData();
         SmartDashboard.putNumber("ELEVATOR TARGET POSITION", targetElevatorPosition);
         SmartDashboard.putNumber("Elevator Encoder Value: ", getEncoderPosition());
+        SmartDashboard.putNumber("Current Elevator Position",getPosition());
         
-        logData();
+       // logData();
       
   }
    
@@ -211,15 +212,15 @@ public Command SetElevatorPosition (double inches){
         return Commands.waitUntil(() -> atPosition());
     }
 
-    private void logData() {
+   // private void logData() {
         /* Elevator Motor */
-        elevatorMotorTemperature.append(elevatorMotor.getMotorTemperature());
-        elevatorMotorAppliedOutput.append(elevatorMotor.getAppliedOutput());
+       // elevatorMotorTemperature.append(elevatorMotor.getMotorTemperature());
+        //elevatorMotorAppliedOutput.append(elevatorMotor.getAppliedOutput());
        // elevatorMotorBusVoltage.append(elevatorMotor.getBusVoltage());
-        elevatorMotorOutputCurrent.append(elevatorMotor.getOutputCurrent());
+        //elevatorMotorOutputCurrent.append(elevatorMotor.getOutputCurrent());
       //  elevatorMotorClosedLoopRampRate.append(elevatorMotor.getClosedLoopRampRate());
     //    elevatorMotorOpenLoopRampRate.append(elevatorMotor.getOpenLoopRampRate());
-        elevatorMotorFaults.append(elevatorMotor.getFaults());
+       // elevatorMotorFaults.append(elevatorMotor.getFaults());
     //    elevatorMotorIdleMode.append(elevatorMotor.getIdleMode().toString());
     //    elevatorMotorInverted.append(elevatorMotor.getInverted());
      //   elevatorMotorLastError.append(elevatorMotor.getLastError().toString());
@@ -227,5 +228,5 @@ public Command SetElevatorPosition (double inches){
         // /* Elevator Encoder */
         // elevatorEncoderPosition.append(getEncoderPosition());
         // elevatorEncoderVelocity.append(elevatorEncoder.getVelocity());
-      }
+     // }
     }
