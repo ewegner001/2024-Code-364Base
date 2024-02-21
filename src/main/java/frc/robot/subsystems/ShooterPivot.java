@@ -47,18 +47,19 @@ public class ShooterPivot extends SubsystemBase {
 
     CANcoderConfigurator cancoderConfigurator = cancoder.getConfigurator();
     cancoderConfigurator.apply(
-      new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf).withMagnetOffset(magnetOffset)
+      new MagnetSensorConfigs()
+        .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
+        .withMagnetOffset(magnetOffset)
     );
     shooterPivotMotorEncoder = m_ShooterPivot.getEncoder();
     shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
     shooterPivotMotorEncoder.setPosition(cancoderInDegrees());
     shooterPivotMotorEncoder.setVelocityConversionFactor(360 / shooterPivotGearRatio);
 
-
-    m_setPoint = 115;
     pid = new PIDController(ShooterPivotPGains, ShooterPivotIGains, ShooterPivotDGains);
     shooterPivotFeedforward = new ArmFeedforward(0, ShooterPivotGGains, 0, 0);
 
+    moveShooterPivot(115);
   }
 
   public void moveShooterPivot(double setPoint) {

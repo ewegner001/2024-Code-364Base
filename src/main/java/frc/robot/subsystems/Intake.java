@@ -36,12 +36,12 @@ public class Intake extends SubsystemBase {
   public final double intakeGroundPosition = 0;
   public final double intakeLoadPosition = 0;
 
-  // shooter PID
+  // PID values
   private final double intakePValue = 0.2;
   private final double intakeIValue = 0.0;
   private final double intakeDValue = 0.0;
 
-  // feed forward PID
+  // feed forward controller values
   private final double intakeSValue = 0.0;
   private final double intakeGValue = 0.0;
   private final double intakeVValue = 0.0;

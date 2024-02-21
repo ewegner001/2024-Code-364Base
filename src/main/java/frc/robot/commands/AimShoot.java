@@ -1,7 +1,8 @@
 /*
  * This command will use linear interpolation to adjust the
  * shooter angle and shooter power based upon the distance from the target,
- * which is determined using the robot pose estimator.
+ * which is determined using the robot pose estimator. This command assumes
+ * that there is a note in the loader and not touching the shooter wheels.
  * 
  * Parameters:
  * 
