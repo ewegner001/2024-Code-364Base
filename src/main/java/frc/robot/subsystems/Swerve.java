@@ -105,9 +105,9 @@ public class Swerve extends SubsystemBase {
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        4.5, // Max module speed, in m/s
+                        Constants.Swerve.maxSpeed, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig(false, false) // Default path replanning config. See the API for the options here
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 () -> {
                     // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -166,10 +166,6 @@ public class Swerve extends SubsystemBase {
 
     public void setChassisSpeed(ChassisSpeeds chassisSpeed) {
 
-        SmartDashboard.putNumber("SetChassisSpeedX", chassisSpeed.vxMetersPerSecond);
-        SmartDashboard.putNumber("SetChassisSpeedY", chassisSpeed.vyMetersPerSecond);
-        SmartDashboard.putNumber("SetChassisSpeedOmega", chassisSpeed.omegaRadiansPerSecond);
-
         SwerveModuleState[] desiredStates = swerveKinematics.toSwerveModuleStates(chassisSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
         moduleStatePublisher.set(new double[] {
@@ -186,13 +182,6 @@ public class Swerve extends SubsystemBase {
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
-        
-        // moduleStatePublisher.set(new double[] {
-        //     desiredStates[0].angle.getDegrees(), desiredStates[0].speedMetersPerSecond,
-        //     desiredStates[1].angle.getDegrees(), desiredStates[1].speedMetersPerSecond,
-        //     desiredStates[2].angle.getDegrees(), desiredStates[2].speedMetersPerSecond,
-        //     desiredStates[3].angle.getDegrees(), desiredStates[3].speedMetersPerSecond,
-        // });
 
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
@@ -245,8 +234,6 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-
-
     public double getTargetRotation() {
 
         Pose2d robotPose = m_poseEstimator.getEstimatedPosition();
@@ -278,26 +265,24 @@ public class Swerve extends SubsystemBase {
 
         if(DriverStation.getAlliance().get() == Alliance.Blue) {
 
-            distance = Math.sqrt(Math.pow((Constants.Positions.speakerBlueX - m_poseEstimator.getEstimatedPosition().getX()), 2) - Math.pow((Constants.Positions.speakerBlueY - m_poseEstimator.getEstimatedPosition().getY()), 2));
+            double xDistanceToSpeaker = Constants.Positions.speakerBlueX - m_poseEstimator.getEstimatedPosition().getX();
+            double yDistanceToSpeaker = Constants.Positions.speakerBlueY - m_poseEstimator.getEstimatedPosition().getY();
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) - Math.pow(yDistanceToSpeaker, 2));
 
         } else {
 
-            distance = Math.sqrt(Math.pow((Constants.Positions.speakerRedX - m_poseEstimator.getEstimatedPosition().getX()), 2) - Math.pow((Constants.Positions.speakerRedY - m_poseEstimator.getEstimatedPosition().getY()), 2));
+            double xDistanceToSpeaker = Constants.Positions.speakerRedX - m_poseEstimator.getEstimatedPosition().getX();
+            double yDistanceToSpeaker = Constants.Positions.speakerRedY - m_poseEstimator.getEstimatedPosition().getY();
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) - Math.pow(yDistanceToSpeaker, 2));
 
         }
 
         return distance;
     }
 
-
-
-
     @Override
     public void periodic(){
-
         swerveOdometry.update(getGyroYaw(), getModulePositions());
-
-
 
         SmartDashboard.putNumber("ChassisSpeedX", getChassisSpeed().vxMetersPerSecond);
         SmartDashboard.putNumber("ChassisSpeedY", getChassisSpeed().vyMetersPerSecond);
@@ -306,7 +291,10 @@ public class Swerve extends SubsystemBase {
         m_poseEstimator.update(getGyroYaw(), getModulePositions());
 
         if (LimelightHelpers.getTV("") == true) {
-            m_poseEstimator.addVisionMeasurement(eyes.getRobotPose(), Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0));
+            m_poseEstimator.addVisionMeasurement(
+                eyes.getRobotPose(), 
+                Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0)
+            );
         }
 
         for(SwerveModule mod : mSwerveMods){
@@ -320,8 +308,8 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("gyro angle", getGyroYaw().getDegrees());
 
         SmartDashboard.putNumber("Pose estimator rotations", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-        SmartDashboard.putNumber("robot X", m_poseEstimator.getEstimatedPosition().getX());
-        SmartDashboard.putNumber("robot Y", m_poseEstimator.getEstimatedPosition().getY());
+        SmartDashboard.putNumber("Pose Estimator X", m_poseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("Pose Estimator Y", m_poseEstimator.getEstimatedPosition().getY());
         SmartDashboard.putNumber("target X", eyes.getTargetPose().getX());
         SmartDashboard.putNumber("target Y", eyes.getTargetPose().getY());
 
