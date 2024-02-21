@@ -1,27 +1,12 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -29,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
-import frc.robot.Constants;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -100,8 +84,6 @@ public class RobotContainer {
     private final int operatorRightTriggerAxis = XboxController.Axis.kRightTrigger.value;
 
     /* operator triggers */
-    final Trigger elevatorManualUpTrigger = new Trigger(() -> -operator.getRawAxis(operatorLeftYAxis) > 0.5);
-    final Trigger elevatorManualDownTrigger = new Trigger(() -> -operator.getRawAxis(operatorLeftYAxis) < -0.5);
     final Trigger operatorLeftTrigger = new Trigger(() -> operator.getRawAxis(operatorLeftTriggerAxis) > 0.1);
     final Trigger operatorRightTrigger = new Trigger(() -> operator.getRawAxis(operatorRightTriggerAxis) > 0.1);
     
@@ -109,9 +91,7 @@ public class RobotContainer {
     /* Subsystems */
     private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
-    // Intake
-    private final Intake intake = new Intake();
-
+    private final Intake s_Intake = new Intake();
     private final Shooter s_Shooter = new Shooter();
     private final Eyes s_Eyes = new Eyes();
 
@@ -146,10 +126,6 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        // driverA.whileTrue(new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter));
-        
-        //driverA.whileTrue(new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))).onFalse(new InstantCommand(() -> s_Shooter.stop()));
-        //driverX.onTrue(new ShooterFrontRollerRun(s_Shooter));
         driverB.toggleOnTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(driverLeftY), 
@@ -164,49 +140,47 @@ public class RobotContainer {
             //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
         );
 
+        // Go To Intake Position and back again
         driverX.onTrue(new ParallelCommandGroup(
-                new InstantCommand(() -> intake.setIntakePivotPosition(12.56)),
-                new InstantCommand(() -> intake.setIntakeVoltage(intake.runIntakeVoltage)),
-                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)),
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)),
-                new InstantCommand(() -> s_Shooter.setShooterVoltage(-3, 3))
-            ))
-            .onFalse(new ParallelCommandGroup(
-                new InstantCommand(() -> intake.setIntakePivotPosition(105.73)),
-                new InstantCommand(() -> intake.setIntakeVoltage(intake.stopIntakeVoltage)),
-                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)),
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)),
-                new InstantCommand(() -> s_Shooter.stop())
-            ));
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(12.56)), // Move Intake Pivot to intaking position
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)), // Run Intake
+            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)), // Move Shooter Pivot to intaking position
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), // Run the Shooter Loader
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(-3, 3)) // Run the Shooter backwards slightly to avoid the notes touching the shooter wheels
+        ))
+        .onFalse(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(105.73)), // Move Intake Pivot to safe position
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)), // Stop Intake
+            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)), // Move Shooter Pivot to stow position
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
+            new InstantCommand(() -> s_Shooter.stop()) // Stop the Shooter
+        ));
         
+        /* Operator Buttons */
+        // Reverse Shooter and Shooter Loader
         operatorLB.onTrue(new ParallelCommandGroup(
-            
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)),
-                new InstantCommand(() -> s_Shooter.setShooterVoltage(-6, 6))
-
-            )).onFalse(new ParallelCommandGroup(
-
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)),
-                new InstantCommand(() -> s_Shooter.stop())
-            ));
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)), // Reverse the Shooter Loader
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(-6, 6)) // Reverse the Shooter
+        ))
+        .onFalse(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
+            new InstantCommand(() -> s_Shooter.stop()) // Stop the Shooter
+        ));
         
+        // Run the Shooter
         operatorLeftTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))
-
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6)) 
         ).onFalse(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.stop())
         ));
 
+        // Run the Shooter Loader
         operatorRightTrigger.whileTrue(
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
-
         ).onFalse(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
         ));
-
     }
-
-    
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -214,11 +188,6 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-
-        // Load the path you want to follow using its name in the GUI
-        //PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path123");
-        //s_Swerve.swerveOdometry.resetPosition(new Rotation2d(), s_Swerve.getModulePositions(), new Pose2d(new Translation2d(0,0), new Rotation2d()));
-
         // Create a path following command using AutoBuilder. This will also trigger event markers.
         return new PathPlannerAuto("Example Auto");
         
