@@ -45,6 +45,8 @@ public class ShooterPivot extends SubsystemBase {
     m_ShooterPivot = new CANSparkMax(ShooterPivotMotorID, MotorType.kBrushless);
     cancoder = new CANcoder(ShooterPivotCANCoderID);
 
+    m_ShooterPivot.setSmartCurrentLimit(10);
+
     CANcoderConfigurator cancoderConfigurator = cancoder.getConfigurator();
     cancoderConfigurator.apply(
       new MagnetSensorConfigs().withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf).withMagnetOffset(magnetOffset)
