@@ -29,6 +29,11 @@ public class Shooter extends SubsystemBase {
   public final double reverseLoaderVoltage = -3.0;
   public final double stopLoaderVoltage = 0.0;
 
+  // shooter speeds
+  public final double runShooterVoltage = 6.0;
+  public final double reverseShooterVoltage = 3.0;
+  public final double stopShooterVoltage = 0.0;
+
   // left shooter motor PID
   private final double lShooterMotorPGains = 0.05;
   private final double lShooterMotorIGains = 0.0;
@@ -156,6 +161,17 @@ public class Shooter extends SubsystemBase {
     m_leftShooter.getConfigurator().apply(slotConfigsL);
   }
 
+  /*
+   * This method will set the speed of the shooter motors using a PID loop
+   * with a velocity input.
+   * 
+   * parameters:
+   * right shooter motor velocity       (double)
+   * left shooter motor velocity        (double)
+   * 
+   * returns:
+   * none
+   */
   public void shootingMotorsSetControl(double rightShooterSpeed, double leftShooterSpeed) {
 
     m_rightShooter.setControl(rm_request.withVelocity(rightShooterSpeed));
@@ -163,22 +179,30 @@ public class Shooter extends SubsystemBase {
 
   }
 
+  /*
+   * This method will set the speed of the shooter by assigning a voltage to
+   * the motors.
+   * 
+   * parameters:
+   * right shooter motor voltage         (double)
+   * left shooter motor voltage          (double)
+   * 
+   * returns:
+   * none
+   */
   public void setShooterVoltage(double rightVoltage, double leftVoltage) {
+
     m_rightShooter.setVoltage(rightVoltage);
     m_leftShooter.setVoltage(leftVoltage);
-  }
 
-  public void stop() {
-    m_rightShooter.setControl(rm_request.withVelocity(0));
-    m_leftShooter.setControl(rm_request.withVelocity(0));
   }
 
 
-  
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run    
+
+    // log shooting data
     SmartDashboard.putNumber("Right Shooter Speed", m_rightShooter.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Left Shooter Speed", m_leftShooter.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Right Shooter Temp", m_rightShooter.getDeviceTemp().getValueAsDouble());

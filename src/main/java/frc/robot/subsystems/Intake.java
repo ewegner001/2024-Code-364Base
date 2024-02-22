@@ -1,7 +1,6 @@
 /*
- * This subsystem controls the robot intake. It manages
- * positional control of the intake through a PID loop.
- * It also controls the intake motors.
+ * This subsystem controls the robot intake. It includes
+ * both the intake pivot motor and the intake rollers.
  */
 
 package frc.robot.subsystems;
@@ -33,8 +32,7 @@ public class Intake extends SubsystemBase {
   // positions
   // NOTE: these positions are also used in robotcontainer.
   public final double intakeSafePosition = 105.73;
-  public final double intakeGroundPosition = 0;
-  public final double intakeLoadPosition = 0;
+  public final double intakeGroundPosition = 12.56;
 
   // PID values
   private final double intakePValue = 0.2;

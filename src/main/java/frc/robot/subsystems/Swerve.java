@@ -1,3 +1,7 @@
+/*
+ * This subsystem manages the 
+ */
+
 package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
@@ -13,7 +17,6 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -48,33 +51,37 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 public class Swerve extends SubsystemBase {
+
+    // subsystems
+    public Eyes eyes;
+
+    // WPILib class objects
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
-
     public SwerveDriveKinematics swerveKinematics = Constants.Swerve.swerveKinematics;
     public Translation2d frontLeftModule;
     public Translation2d frontRightModule;
     public Translation2d backLeftModule;
     public Translation2d backRightModule;
     public SwerveModuleState[] swerveModuleStates;
-    private final Field2d m_field = new Field2d();
-    private DoubleArrayPublisher moduleStatePublisher = NetworkTableInstance.getDefault()
-            .getDoubleArrayTopic("/ModuleStates").publish();
+    private Field2d m_field;
+    private DoubleArrayPublisher moduleStatePublisher;
     private StructPublisher<Pose2d> posePublisher;
-
-    public Eyes eyes;
     public StructArrayPublisher<SwerveModuleState> swerveKinematicsPublisher;
     public StructPublisher<Pose2d> estimatedRobotPosePublisher;
-
     public SwerveDrivePoseEstimator m_poseEstimator;
+    
 
-
+    // constructor
     public Swerve() {
 
+        // instantiate objects 
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         eyes = new Eyes();
+        m_field = new Field2d();
 
+        // set gyro
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(Constants.Swerve.gyroOffset);
 
@@ -85,18 +92,21 @@ public class Swerve extends SubsystemBase {
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-         
+        // delay reseting modules utill robRIO finishes startup
         Timer.delay(1.0);
         resetModulesToAbsolute();
         swerveOdometry = new SwerveDriveOdometry(swerveKinematics, getGyroYaw(), getModulePositions());
       
+        // create loggers
+        moduleStatePublisher = NetworkTableInstance.getDefault()
+            .getDoubleArrayTopic("/ModuleStates").publish();
         posePublisher = NetworkTableInstance.getDefault().getStructTopic("/MyPose", Pose2d.struct).publish();
         swerveKinematicsPublisher = NetworkTableInstance.getDefault().getStructArrayTopic("/SwerveModuleStates", SwerveModuleState.struct).publish();
         estimatedRobotPosePublisher = NetworkTableInstance.getDefault().getStructTopic("/EstimatedRobotPose", Pose2d.struct).publish();
-
         posePublisher = NetworkTableInstance.getDefault()
             .getStructTopic("RobotPose", Pose2d.struct).publish();
 
+        // create autobuilder
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
@@ -123,7 +133,7 @@ public class Swerve extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
         );
       
-      
+        // create pose estimator
         m_poseEstimator =
           new SwerveDrivePoseEstimator(
              Constants.Swerve.swerveKinematics,
@@ -136,6 +146,16 @@ public class Swerve extends SubsystemBase {
     }
 
 
+    /*
+     * This method will drive the swerve drive using translation and rotation vectors
+     * 
+     * Parameters:
+     * translation X           (double)
+     * translation Y           (double)
+     * Rotation                (double)
+     * is field relative       (boolean)
+     * is open loop            (boolean)
+     */
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             swerveKinematics.toSwerveModuleStates(
@@ -157,13 +177,32 @@ public class Swerve extends SubsystemBase {
         }
     } 
     
-    
+    /*
+     * This method will get the modules states and convert
+     * them into a ChassisSpeeds object
+     * 
+     * parameters:
+     * none
+     * 
+     * returns:
+     * swerve ChassiSpeeds object
+     */
     public ChassisSpeeds getChassisSpeed() {
 
         return swerveKinematics.toChassisSpeeds(getModuleStates());
 
     }
 
+    /*
+     * This method will set the swerve modules to match a
+     * ChassisSpeed parameter.
+     * 
+     * parameters:
+     * ChassisSpeeds input         (ChassisSpeeds)
+     * 
+     * returns:
+     * none
+     */
     public void setChassisSpeed(ChassisSpeeds chassisSpeed) {
 
         SwerveModuleState[] desiredStates = swerveKinematics.toSwerveModuleStates(chassisSpeed);

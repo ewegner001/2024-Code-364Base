@@ -1,6 +1,6 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*
+ * This subsytem controls the shooter angle.
+ */
 
 package frc.robot.subsystems;
 
@@ -22,52 +22,91 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class ShooterPivot extends SubsystemBase {
-  private int ShooterPivotMotorID = 12;
-  private int ShooterPivotCANCoderID = 15;
-  private double ShooterPivotPGains = 0.3;
-  private double ShooterPivotIGains = 0;
-  private double ShooterPivotDGains = 0;
-  private double ShooterPivotGGains = 0;
-  private double shooterPivotGearRatio = 54.545;
+
+  // local constants
+
+  // IDs
+  private final int shooterPivotMotorID = 12;
+  private final int shooterPivotCANCoderID = 15;
+
+  // positions
+  private final double shooterPivotSafePosition = 115.0;
+
+  // pivot motor PID
+  private final double shooterPivotPGains = 0.3;
+  private final double shooterPivotIGains = 0;
+  private final double shooterPivotDGains = 0;
+  private final double shooterPivotGGains = 0;
+
+  private final double shooterPivotGearRatio = 54.545;
   private final double magnetOffset = 0.0;
 
+  // WPILib class objects
   private CANSparkMax m_ShooterPivot;
-  private CANcoder cancoder;
+  private CANcoder e_ShooterPivot;
   private double m_setPoint;
-  private PIDController pid;
-  private ArmFeedforward shooterPivotFeedforward;
-  private RelativeEncoder shooterPivotMotorEncoder;
+  private PIDController shooterPivotPID;
+  private ArmFeedforward shooterPivotFeedForward;
+  private RelativeEncoder e_ShooterPivotIntegrated;
   private double m_ShooterPivotVoltage;
 
-  /** Creates a new ShooterPivot. */
+  // constructor
   public ShooterPivot() {
     
-    m_ShooterPivot = new CANSparkMax(ShooterPivotMotorID, MotorType.kBrushless);
-    cancoder = new CANcoder(ShooterPivotCANCoderID);
+    // instantiate objects
 
-    CANcoderConfigurator cancoderConfigurator = cancoder.getConfigurator();
+    m_ShooterPivot = new CANSparkMax(shooterPivotMotorID, MotorType.kBrushless);
+    e_ShooterPivot = new CANcoder(shooterPivotCANCoderID);
+
+    CANcoderConfigurator cancoderConfigurator = e_ShooterPivot.getConfigurator();
     cancoderConfigurator.apply(
       new MagnetSensorConfigs()
         .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
         .withMagnetOffset(magnetOffset)
     );
-    shooterPivotMotorEncoder = m_ShooterPivot.getEncoder();
-    shooterPivotMotorEncoder.setPositionConversionFactor(360 / shooterPivotGearRatio);
-    shooterPivotMotorEncoder.setPosition(cancoderInDegrees());
-    shooterPivotMotorEncoder.setVelocityConversionFactor(360 / shooterPivotGearRatio);
 
-    pid = new PIDController(ShooterPivotPGains, ShooterPivotIGains, ShooterPivotDGains);
-    shooterPivotFeedforward = new ArmFeedforward(0, ShooterPivotGGains, 0, 0);
+    shooterPivotPID = new PIDController(shooterPivotPGains, shooterPivotIGains, shooterPivotDGains);
+    shooterPivotFeedForward = new ArmFeedforward(0, shooterPivotGGains, 0, 0);
 
-    moveShooterPivot(115);
+
+    // set integrated encoder to cancoder position
+    e_ShooterPivotIntegrated = m_ShooterPivot.getEncoder();
+
+    // configure integrated ercoder
+    e_ShooterPivotIntegrated.setPositionConversionFactor(360 / shooterPivotGearRatio);
+    e_ShooterPivotIntegrated.setPosition(cancoderInDegrees());
+    e_ShooterPivotIntegrated.setVelocityConversionFactor(360 / shooterPivotGearRatio);
+
+    // set shooter angle to safe position on startup
+    moveShooterPivot(shooterPivotSafePosition);
   }
 
+  /*
+   * This method will move the move the shooter pivot motor 
+   * to a point provided as a parameter.
+   * 
+   * parameters:
+   * setpoint         (double)
+   * 
+   * returns:
+   * none
+   */
   public void moveShooterPivot(double setPoint) {
     m_setPoint = setPoint;
   }
 
+  /*
+   * This method will get the postition of the cancoder and
+   * return it in degrees
+   * 
+   * parameters:
+   * none
+   * 
+   * returns:
+   * cancoder degrees
+   */
   private double cancoderInDegrees() {
-    return cancoder.getPosition().getValue() * 360;
+    return e_ShooterPivot.getPosition().getValue() * 360;
   }
 
 
@@ -76,12 +115,15 @@ public class ShooterPivot extends SubsystemBase {
   @Override
   public void periodic() {
     //double feedForward = shooterPivotFeedforward.calculate(Units.degreesToRadians(shooterPivotMotorEncoder.getPosition()), Units.degreesToRadians(shooterPivotMotorEncoder.getVelocity()));
-    m_ShooterPivotVoltage = pid.calculate(cancoderInDegrees(), m_setPoint); //m_IntakePivotVoltage = pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward;
+
+    // constantly move shooter pivot to the setpoint
+    m_ShooterPivotVoltage = shooterPivotPID.calculate(cancoderInDegrees(), m_setPoint); //m_IntakePivotVoltage = pid.calculate(intakePivotMotorEncoder.getPosition(), m_setPoint) + feedForward;
     m_ShooterPivot.setVoltage(m_ShooterPivotVoltage);
 
+    // log data
     SmartDashboard.putNumber("Shooter Voltage", m_ShooterPivotVoltage);
     SmartDashboard.putNumber("Shooter CANcoder", cancoderInDegrees());
-    SmartDashboard.putNumber("Shooter Pivot Motor Position", shooterPivotMotorEncoder.getPosition());
+    SmartDashboard.putNumber("Shooter Pivot Motor Position", e_ShooterPivotIntegrated.getPosition());
     SmartDashboard.putNumber("Shooter setpoint", m_setPoint);
   }
 }

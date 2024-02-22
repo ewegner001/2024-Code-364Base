@@ -142,36 +142,36 @@ public class RobotContainer {
 
         // Go To Intake Position and back again
         driverX.onTrue(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Intake.setIntakePivotPosition(12.56)), // Move Intake Pivot to intaking position
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition)), // Move Intake Pivot to intaking position
             new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)), // Run Intake
             new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(136.75)), // Move Shooter Pivot to intaking position
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), // Run the Shooter Loader
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(-3, 3)) // Run the Shooter backwards slightly to avoid the notes touching the shooter wheels
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(-s_Shooter.reverseShooterVoltage, s_Shooter.reverseShooterVoltage)) // Run the Shooter backwards slightly to avoid the notes touching the shooter wheels
         ))
         .onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Intake.setIntakePivotPosition(105.73)), // Move Intake Pivot to safe position
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)), // Move Intake Pivot to safe position
             new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)), // Stop Intake
-            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115)), // Move Shooter Pivot to stow position
+            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(115.0)), // Move Shooter Pivot to stow position
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
-            new InstantCommand(() -> s_Shooter.stop()) // Stop the Shooter
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage)) // Stop the Shooter
         ));
         
         /* Operator Buttons */
         // Reverse Shooter and Shooter Loader
         operatorLB.onTrue(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)), // Reverse the Shooter Loader
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(-6, 6)) // Reverse the Shooter
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(-s_Shooter.runShooterVoltage, s_Shooter.runShooterVoltage)) // Reverse the Shooter
         ))
         .onFalse(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
-            new InstantCommand(() -> s_Shooter.stop()) // Stop the Shooter
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage)) // Stop the Shooter
         ));
         
         // Run the Shooter
         operatorLeftTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6)) 
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.runShooterVoltage, -s_Shooter.runShooterVoltage)) 
         ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.stop())
+            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage))
         ));
 
         // Run the Shooter Loader
