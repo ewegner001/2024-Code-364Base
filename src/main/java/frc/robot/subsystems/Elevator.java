@@ -6,11 +6,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.IntegerLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,8 +26,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+import com.revrobotics.SparkRelativeEncoder;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkRelativeEncoder.Type;
 
 public class Elevator extends SubsystemBase {
   /* Instance Variables
@@ -35,6 +40,7 @@ public class Elevator extends SubsystemBase {
    * or angle of the wrist.
    */
 
+  private static final ProfiledPIDController ff = null;
   /* These are variable declarations. Their access modifiers,
    * types, and names are specified but they are not given a 
    * value yet. They should be given a value in the 
@@ -44,6 +50,10 @@ public class Elevator extends SubsystemBase {
   private CANSparkMax motor1;
   private CANSparkMax motor2;
   private SparkPIDController pidController; 
+  private RelativeEncoder elevatorEncoder;
+  private ProfiledPIDController controller;
+
+  public double targetElevatorPosition;
 
   private float heightlimit = 10;
   public double elevatorspeed = 1.0;
@@ -66,7 +76,11 @@ public class Elevator extends SubsystemBase {
      */
     motor1 = new CANSparkMax(0, MotorType.kBrushless);
     motor2 = new CANSparkMax(1, MotorType.kBrushless);
+
+    elevatorEncoder = motor1.getEncoder();
+
     motor1.restoreFactoryDefaults();
+
     pidController = motor1.getPIDController();
     motor1.setSoftLimit(SoftLimitDirection.kForward, heightlimit);
     motor1.setSoftLimit(SoftLimitDirection.kReverse,restingposition);
@@ -119,7 +133,7 @@ public class Elevator extends SubsystemBase {
 
   /* Sets the Target Elevator Position in inches.*/
   public double getTargetElevatorPosition(){
-      return targetElevatorPosition;
+      return getTargetElevatorPosition();
   }
 
 
@@ -133,7 +147,7 @@ public class Elevator extends SubsystemBase {
 
     public boolean atPosition() {
 
-        double error = Math.abs(elevatorEncoder.getPosition() - targetElevatorPosition);
+        double error = Math.abs(elevatorEncoder.getPosition() - getTargetElevatorPosition());
 
         if (Constants.ELEVATOR_TOLERANCE >= error) {
             return true;
@@ -184,49 +198,40 @@ if (motor1.getEncoder().getPosition() == shootingPosition){
   public void periodic() {
     // This method will be called once per scheduler run
     if (DriverStation.isEnabled()){
+
             // This method will be called once per scheduler run
             // TODO: Test that .getPosition() gives us the elevator position in inches
             double voltage = controller.calculate(elevatorEncoder.getPosition(), targetElevatorPosition);
-            // double feedforward = ff.calculate(/*double */elevatorEncoder.getVelocity());
+            double feedforward = ff.calculate(/*double*/ elevatorEncoder.getVelocity());
             MathUtil.clamp(voltage, -12, 12);
 
-            elevatorMotor.setVoltage(voltage);
+            motor1.setVoltage(voltage);
 
             
             SmartDashboard.putNumber("ELEVATOR PID VOLTAGE", voltage);
         }
         //logData();
-        SmartDashboard.putNumber("ELEVATOR TARGET POSITION", targetElevatorPosition);
-        SmartDashboard.putNumber("Elevator Encoder Value: ", getEncoderPosition());
+        SmartDashboard.getNumber("ELEVATOR TARGET POSITION", targetElevatorPosition);
+        SmartDashboard.putNumber("Elevator Encoder Value: ", getPosition());
         SmartDashboard.putNumber("Current Elevator Position",getPosition());
         
        // logData();
       
   }
    
-public Command SetElevatorPosition (double inches){
-        return new InstantCommand(() -> setTargetElevatorPosition(inches), this);
-    }
+private double getPosition() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
+  }
 
-    public Command ElevatorAtPosition(){
-        return Commands.waitUntil(() -> atPosition());
-    }
+  public Command SetElevatorPosition (double inches){
+          return new InstantCommand(() -> setTargetElevatorPosition(inches), this);
+      }
 
-   // private void logData() {
-        /* Elevator Motor */
-       // elevatorMotorTemperature.append(elevatorMotor.getMotorTemperature());
-        //elevatorMotorAppliedOutput.append(elevatorMotor.getAppliedOutput());
-       // elevatorMotorBusVoltage.append(elevatorMotor.getBusVoltage());
-        //elevatorMotorOutputCurrent.append(elevatorMotor.getOutputCurrent());
-      //  elevatorMotorClosedLoopRampRate.append(elevatorMotor.getClosedLoopRampRate());
-    //    elevatorMotorOpenLoopRampRate.append(elevatorMotor.getOpenLoopRampRate());
-       // elevatorMotorFaults.append(elevatorMotor.getFaults());
-    //    elevatorMotorIdleMode.append(elevatorMotor.getIdleMode().toString());
-    //    elevatorMotorInverted.append(elevatorMotor.getInverted());
-     //   elevatorMotorLastError.append(elevatorMotor.getLastError().toString());
+      public Command ElevatorAtPosition(){
+          return Commands.waitUntil(() -> atPosition());
+  }
+         
+}
 
-        // /* Elevator Encoder */
-        // elevatorEncoderPosition.append(getEncoderPosition());
-        // elevatorEncoderVelocity.append(elevatorEncoder.getVelocity());
-     // }
-    }
+            
