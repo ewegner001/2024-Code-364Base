@@ -29,9 +29,9 @@ public class RobotContainer {
     private final Joystick driver = new Joystick(0);
     private final Joystick operator = new Joystick(1);
     /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
+    private final int leftY = XboxController.Axis.kLeftY.value;
+    private final int leftX = XboxController.Axis.kLeftX.value;
+    private final int rightX = XboxController.Axis.kRightX.value;
     /*Operator Buttons */
     private final JoystickButton operatorButtonY = new JoystickButton(operator, XboxController.Button.kY.value);
     private final JoystickButton operatorButtonA = new JoystickButton(operator, XboxController.Button.kA.value);
@@ -104,9 +104,9 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(driverLeftY), 
-                () -> -driver.getRawAxis(driverLeftX), 
-                () -> -driver.getRawAxis(driverRightX),
+                () -> -driver.getRawAxis(leftY), 
+                () -> -driver.getRawAxis(leftX), 
+                () -> -driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
@@ -127,8 +127,7 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+
         /*Operator Buttons */
         operatorButtonY.onTrue(new InstantCommand(()-> s_Elevator.lift()));
         operatorButtonB.onTrue(new InstantCommand(()-> s_Elevator.stop()));
@@ -140,9 +139,9 @@ public class RobotContainer {
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
         driverB.toggleOnTrue(new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(driverLeftY), 
-                () -> -driver.getRawAxis(driverLeftX), 
-                () -> -driver.getRawAxis(driverRightX),
+                () -> -driver.getRawAxis(leftY), 
+                () -> -driver.getRawAxis(leftX), 
+                () -> -driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Swerve.getTargetRotation(),
                 () -> driverLeftTrigger.getAsBoolean(),
