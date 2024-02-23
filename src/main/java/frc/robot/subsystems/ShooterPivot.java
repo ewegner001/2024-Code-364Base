@@ -30,7 +30,8 @@ public class ShooterPivot extends SubsystemBase {
   private final int shooterPivotCANCoderID = 15;
 
   // positions
-  private final double shooterPivotSafePosition = 115.0;
+  public final double shooterPivotStowPosition = 115.0;
+  public final double shooterPivotIntakePosition = 136.75;
 
   // pivot motor PID
   private final double shooterPivotPGains = 0.3;
@@ -78,7 +79,7 @@ public class ShooterPivot extends SubsystemBase {
     e_ShooterPivotIntegrated.setVelocityConversionFactor(360 / shooterPivotGearRatio);
 
     // set shooter angle to safe position on startup
-    moveShooterPivot(shooterPivotSafePosition);
+    moveShooterPivot(shooterPivotStowPosition);
   }
 
   /*
