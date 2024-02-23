@@ -29,10 +29,14 @@ public class Shooter extends SubsystemBase {
   public final double reverseLoaderVoltage = -3.0;
   public final double stopLoaderVoltage = 0.0;
 
-  // shooter speeds
+  // shooter voltage speeds
   public final double runShooterVoltage = 6.0;
   public final double reverseShooterVoltage = 3.0;
   public final double stopShooterVoltage = 0.0;
+
+  // shooter control speeds
+  public final double stopShooterControl = 0.0;
+
 
   // left shooter motor PID
   private final double lShooterMotorPGains = 0.05;

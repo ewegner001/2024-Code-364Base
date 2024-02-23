@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.time.Instant;
+
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -182,7 +184,12 @@ public class RobotContainer {
                 new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter)
             ).withTimeout(1.5),
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
-        ));
+        )).onFalse(
+            new ParallelCommandGroup(
+                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(s_Shooter.stopShooterControl, s_Shooter.stopShooterControl)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
+            )
+        );
     }
 
     /**
