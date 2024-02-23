@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -18,6 +19,8 @@ import frc.lib.util.AbsoluteEncoder;
 import frc.lib.util.SwerveModuleConstants;
 
 public class SwerveModule {
+    private final int swerveCurrentLimit = 60;
+
     public int moduleNumber;
     private Rotation2d angleOffset;
     private Rotation2d lastAngle;
@@ -46,12 +49,18 @@ public class SwerveModule {
 
         /* Angle Motor Config */
         mAngleMotor = new TalonFX(moduleConstants.angleMotorID);
-        mAngleMotor.getConfigurator().apply(Robot.ctreConfigs.swerveAngleFXConfig); 
+        mAngleMotor.getConfigurator().apply(Robot.ctreConfigs.swerveAngleFXConfig);
+        mAngleMotor.getConfigurator().apply(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimitEnable(true)
+            .withSupplyCurrentLimit(swerveCurrentLimit));
 
         /* Drive Motor Config */
         mDriveMotor = new TalonFX(moduleConstants.driveMotorID);
         mDriveMotor.getConfigurator().apply(Robot.ctreConfigs.swerveDriveFXConfig);
         mDriveMotor.getConfigurator().setPosition(0.0);
+        mDriveMotor.getConfigurator().apply(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimitEnable(true)
+            .withSupplyCurrentLimit(swerveCurrentLimit));
 
         lastAngle = getState().angle;
     }

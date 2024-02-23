@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -26,6 +27,7 @@ public class Shooter extends SubsystemBase {
   private final double rShooterMotorPGains = 0.05;
   private final double rShooterMotorIGains = 0.0;
   private final double rShooterMotorDGains = 0.0;
+  private final int m_CurrentLimit = 40;
   
 
 
@@ -38,7 +40,10 @@ public class Shooter extends SubsystemBase {
   private Slot0Configs slotConfigsL;
   private VelocityVoltage rm_request;
   private VelocityVoltage lm_request;
-  private CurrentLimitsConfigs config;
+  private TalonFXConfigurator configL;
+  private TalonFXConfigurator configR;
+  private TalonFXConfigurator configF;
+
   
   /** Creates a new Shooter. */
   public Shooter() {
@@ -46,10 +51,25 @@ public class Shooter extends SubsystemBase {
     rightShooterMotor = new TalonFX(14);
     frontShooterMotor = new TalonFX(16);
     inputSensor = new DigitalInput(3);
-    config = new CurrentLimitsConfigs();
-    config.SupplyCurrentLimitEnable = true;
-    config.SupplyCurrentLimit = 40;
-    
+    configL = leftShooterMotor.getConfigurator();
+
+    configL.apply(
+      new CurrentLimitsConfigs()
+      .withSupplyCurrentLimitEnable(true)
+      .withSupplyCurrentLimit(m_CurrentLimit)
+    );
+
+    configR.apply(
+      new CurrentLimitsConfigs()
+      .withSupplyCurrentLimitEnable(true)
+      .withSupplyCurrentLimit(m_CurrentLimit)
+    );
+
+    configF.apply(
+      new CurrentLimitsConfigs()
+      .withSupplyCurrentLimitEnable(true)
+      .withSupplyCurrentLimit(m_CurrentLimit)
+    );
 
     slotConfigsR = new Slot0Configs();
     slotConfigsR.kS = rShooterMotorSGains;

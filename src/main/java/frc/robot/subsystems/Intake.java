@@ -31,6 +31,7 @@ public class Intake extends SubsystemBase {
   private final double intakeGValue = 0.0;
   private final double intakeVValue = 0.0;
   private final double magnetOffSet = 0.0;
+  private final int intakeCurrentLimit = 20;
 
   private CANSparkMax intakeMotor;
   private CANSparkMax m_IntakePiviot;
@@ -55,6 +56,8 @@ public class Intake extends SubsystemBase {
         .withMagnetOffset(magnetOffSet)
     );
 
+    intakeMotor.setSmartCurrentLimit(intakeCurrentLimit);
+    m_IntakePiviot.setSmartCurrentLimit(intakeCurrentLimit);
     intakePivotMotorEncoder = m_IntakePiviot.getEncoder();
     intakePivotMotorEncoder.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
     intakePivotMotorEncoder.setPosition(intakePivotEncoder.getPosition().getValue());
