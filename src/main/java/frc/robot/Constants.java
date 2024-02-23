@@ -18,11 +18,27 @@ public final class Constants {
     public static final double ELEVATOR_TOLERANCE = 0;
     public static final double ELEVATOR_HIGH_LEVEL = 0;
 
+
+    /* PID Rotation */ 
+    public static final double ROTATE_KP = 0.02; //0.0222
+    public static final double ROTATE_KI = 0.0;
+    public static final double ROTATE_KD = 0.001;
+    public static final double ROTATE_VELOCITY = 200.0;
+    public static final double ROTATE_ACCELERATION = 400.0;
+
+    /* slow mode */
+    public static final double SLOW_MODE_PERCENT_TRANSLATION = 0.5;
+    public static final double SLOW_MODE_PERCENT_STRAFE = 0.5;
+    public static final double SLOW_MODE_PERCENT_ROTATION = 0.5;
+
+    public static final double AUTO_ROTATE_DEADBAND = 0.0;
+
     public static final class Swerve {
 
-        public static final double maxEncoderVoltage = 5;
-        public static final int pigeonID = 1;
+        public static final double maxEncoderVoltage = 5.057;
+        public static final int pigeonID = 8;
         public static final double gyroOffset = 0;
+
 
         public static final COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
         COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
@@ -64,7 +80,7 @@ public final class Constants {
 
         /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
          * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
-        public static final double openLoopRamp = 0.25;
+        public static final double openLoopRamp = 0.0;
         public static final double closedLoopRamp = 0.0;
 
         /* Angle Motor PID Values */
@@ -85,7 +101,8 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4.5; //TODO: This must be tuned to specific robot
+        //4.5
+        public static final double maxSpeed = 4.5*0.8; //TODO: This must be tuned to specific robot
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
@@ -93,13 +110,13 @@ public final class Constants {
         public static final NeutralModeValue angleNeutralMode = NeutralModeValue.Coast;
         public static final NeutralModeValue driveNeutralMode = NeutralModeValue.Brake;
 
-        /* Module Specific Constants */
+       /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         public static final class Mod0 { //TODO: This must be tuned to specific robot
             public static final int driveMotorID = 0;
             public static final int angleMotorID = 1;
-            public static final int cancoderID = 0;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(20.55);
+            public static final int cancoderID = 3;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(139.04);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, cancoderID, angleOffset);
         }
@@ -108,8 +125,8 @@ public final class Constants {
         public static final class Mod1 { //TODO: This must be tuned to specific robot
             public static final int driveMotorID = 2;
             public static final int angleMotorID = 3;
-            public static final int cancoderID = 1;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(274.412);
+            public static final int cancoderID = 0;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(211.775);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, cancoderID, angleOffset);
         }
@@ -119,7 +136,7 @@ public final class Constants {
             public static final int driveMotorID = 4;
             public static final int angleMotorID = 5;
             public static final int cancoderID = 2;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(201.62);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(277.732);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, cancoderID, angleOffset);
         }
@@ -128,8 +145,8 @@ public final class Constants {
         public static final class Mod3 { //TODO: This must be tuned to specific robot
             public static final int driveMotorID = 6;
             public static final int angleMotorID = 7;
-            public static final int cancoderID = 3;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(141.92);
+            public static final int cancoderID = 1;
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(162.937);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, cancoderID, angleOffset);
         }
@@ -149,5 +166,27 @@ public final class Constants {
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+    }
+
+    public static final class Positions {
+
+        public static final double speakerBlueX = 0;
+        public static final double speakerBlueY = 5.5;
+        public static final double speakerBlueR = 0;
+
+        public static final double speakerRedX = 16.5;
+        public static final double speakerRedY = 5.5;
+        public static final double speakerRedR = 180;
+
+        public static final double ampBlueX = 1.9;
+        public static final double ampBlueY = 8.0;
+        public static final double ampBlueR = 270;
+
+        public static final double ampRedX = 16.45;
+        public static final double ampRedY = 8.0;
+        public static final double ampRedR = 270;
+
+        
+
     }
 }
