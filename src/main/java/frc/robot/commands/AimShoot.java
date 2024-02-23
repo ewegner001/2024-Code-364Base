@@ -86,12 +86,6 @@ public class AimShoot extends Command {
         // set shooter speed power to calculated value
         shooter.shootingMotorsSetControl(shooterSpeed, shooterSpeed);
 
-        // wait for robot to reach correct configuration
-        Timer.delay(0.5);
-
-        // fire by running loader
-        shooter.setLoaderVoltage(shooter.runLoaderVoltage);
-
     }
 
     // Called once the command ends or is interrupted.

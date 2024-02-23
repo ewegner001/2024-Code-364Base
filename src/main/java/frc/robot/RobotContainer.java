@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -174,11 +175,13 @@ public class RobotContainer {
             new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage))
         ));
 
-        // Run the Shooter Loader
-        operatorRightTrigger.whileTrue(
+        // aim and shoot
+        operatorRightTrigger.onTrue(new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)),
+                new AimShoot(s_Swerve, s_ShooterPivot, s_Shooter)
+            ).withTimeout(1.5),
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
-        ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
         ));
     }
 
