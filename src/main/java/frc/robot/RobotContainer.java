@@ -32,12 +32,14 @@ public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
     private final Joystick operator = new Joystick(1);
-
     /* Drive Controls */
-    private final int driverLeftY = XboxController.Axis.kLeftY.value;
-    private final int driverLeftX = XboxController.Axis.kLeftX.value;
-    private final int driverRightX = XboxController.Axis.kRightX.value;
-
+    private final int leftY = XboxController.Axis.kLeftY.value;
+    private final int leftX = XboxController.Axis.kLeftX.value;
+    private final int rightX = XboxController.Axis.kRightX.value;
+    /*Operator Buttons */
+    private final JoystickButton operatorButtonY = new JoystickButton(operator, XboxController.Button.kY.value);
+    private final JoystickButton operatorButtonA = new JoystickButton(operator, XboxController.Button.kA.value);
+    private final JoystickButton operatorButtonB = new JoystickButton(operator, XboxController.Button.kB.value);
     /* Driver Buttons */
     private final JoystickButton driverA = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton driverB = new JoystickButton(driver, XboxController.Button.kB.value);
@@ -94,10 +96,10 @@ public class RobotContainer {
     
     /* Subsystems */
     private final ShooterPivot s_ShooterPivot = new ShooterPivot();
+    private final Swerve s_Swerve = new Swerve();
+    //private final Elevator s_Elevator = new Elevator();
     private final Intake s_Intake = new Intake();
     private final Shooter s_Shooter = new Shooter();
-
-    private final Swerve s_Swerve = new Swerve();
     private final Eyes s_Eyes = new Eyes(s_Swerve);
 
 
@@ -106,9 +108,9 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(driverLeftY), 
-                () -> -driver.getRawAxis(driverLeftX), 
-                () -> -driver.getRawAxis(driverRightX),
+                () -> -driver.getRawAxis(leftY), 
+                () -> -driver.getRawAxis(leftX), 
+                () -> -driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
@@ -129,14 +131,22 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /* Driver Buttons */
+
+        /*Operator Buttons */
+        /*operatorButtonY.onTrue(new InstantCommand(()-> s_Elevator.lift()));
+        operatorButtonB.onTrue(new InstantCommand(()-> s_Elevator.stop()));
+        operatorButtonA.onTrue(new InstantCommand(()-> s_Elevator.down()));
+        if(operatorButtonY.getAsBoolean() == false && operatorButtonA.getAsBoolean() == false){
+            
+        }*/
+
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
         driverB.toggleOnTrue(new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(driverLeftY), 
-                () -> -driver.getRawAxis(driverLeftX), 
-                () -> -driver.getRawAxis(driverRightX),
+                () -> -driver.getRawAxis(leftY), 
+                () -> -driver.getRawAxis(leftX), 
+                () -> -driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Eyes.getTargetRotation(),
                 () -> driverLeftTrigger.getAsBoolean(),
