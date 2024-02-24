@@ -221,6 +221,7 @@ if (motor1.getEncoder().getPosition() == shootingPosition){
    
 private double getPosition() {
     // TODO Auto-generated method stub
+    //return elevatorEncoder.getPosition();
     throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
   }
 

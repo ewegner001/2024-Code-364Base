@@ -142,7 +142,7 @@ public class RobotContainer {
 
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
-        driverB.toggleOnTrue(new TeleopSwerve(
+        driverLeftTrigger.toggleOnTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(leftY), 
                 () -> -driver.getRawAxis(leftX), 
@@ -159,8 +159,15 @@ public class RobotContainer {
         // Go To Intake Position and back again
         driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
 
+        // Run the Shooter Loader
+        driverRightTrigger.whileTrue(
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
+        ).onFalse(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
+        ));
+
         /* Operator Buttons */
-        // Reverse Shooter and Shooter Loader
+        // Reverse Shooter and Loader
         operatorLB.onTrue(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)), // Reverse the Shooter Loader
             new InstantCommand(() -> s_Shooter.setShooterVoltage(-s_Shooter.runShooterVoltage, s_Shooter.runShooterVoltage)) // Reverse the Shooter
@@ -169,20 +176,18 @@ public class RobotContainer {
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
             new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage)) // Stop the Shooter
         ));
-        
-        // Run the Shooter
-        operatorLeftTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(90, 90)) 
-        ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage))
+
+        operatorLeftTrigger.onTrue(new ParallelCommandGroup(
+
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition)),
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.reverseIntakeVoltage)),
+            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage))
+
         ));
 
-        // Run the Shooter Loader
-        operatorRightTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
-        ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
-        ));
+        
+
     }
 
     /**
