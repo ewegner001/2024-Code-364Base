@@ -42,15 +42,25 @@ public class AimShoot extends Command {
     private double rightShooterSpeed;
 
     // positions
-    private final double d1Distance = 1.25;
-    private final double d1Angle = 115.0;
-    private final double d1LeftShooterSpeed = 90.0;
-    private final double d1RightShooterSpeed = d1LeftShooterSpeed;
+    private final double subWooferDistance = 1.25;
+    private final double subWooferAngle = 115.0;
+    private final double subWooferLeftShooterSpeed = 90.0;
+    private final double subWooferRightShooterSpeed = subWooferLeftShooterSpeed;
 
-    private final double d2Distance = 2.0;
-    private final double d2Angle = 128.0;
+    private final double d2Distance = 2.15;
+    private final double d2Angle = 130.0;
     private final double d2LeftShooterSpeed = 90.0;
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
+
+    private final double podiumDistance = 3.17;
+    private final double podiumAngle = 137.0;
+    private final double podiumLeftShooterSpeed = 90.0;
+    private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
+
+    private final double d3Distance = 4.0;
+    private final double d3Angle = 137.0;
+    private final double d3LeftShooterSpeed = 90.0;
+    private final double d3RightShooterSpeed = d2LeftShooterSpeed;
 
     // constructor
     public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
@@ -75,16 +85,22 @@ public class AimShoot extends Command {
 
         // create points in angle linear interpolation line
         // TODO tune these values
-        shooterAngleInterpolation.put(d1Distance, d1Angle);
+        shooterAngleInterpolation.put(subWooferDistance, subWooferAngle);
         shooterAngleInterpolation.put(d2Distance, d2Angle);
+        shooterAngleInterpolation.put(podiumDistance, podiumAngle);
+        shooterAngleInterpolation.put(d3Distance, d3Angle);
 
         // create points in shooter power linear interpolation line
         // TODO tune these values
-        shooterLeftSpeedInterpolation.put(d1Distance, d1LeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(subWooferDistance, subWooferLeftShooterSpeed);
         shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(podiumDistance, podiumLeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(d3Distance, d3LeftShooterSpeed);
 
-        shooterRightSpeedInterpolation.put(d1Distance, d1RightShooterSpeed);
+        shooterRightSpeedInterpolation.put(subWooferDistance, subWooferRightShooterSpeed);
         shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
+        shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
+        shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
     
         // get desired shooter angle using the linear interpolation
         // x (input) = distance

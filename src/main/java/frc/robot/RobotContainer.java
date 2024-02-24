@@ -4,9 +4,12 @@ import java.time.Instant;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -105,12 +108,30 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        s_Swerve.setDefaultCommand(
+
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(leftY), 
                 () -> -driver.getRawAxis(leftX), 
                 () -> -driver.getRawAxis(rightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Swerve.getGyroYaw().getDegrees()+180.0,
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                false
+            )
+        );
+        
+        } else {
+
+        s_Swerve.setDefaultCommand(
+            new TeleopSwerve(
+                s_Swerve, 
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
@@ -119,7 +140,7 @@ public class RobotContainer {
             )
         );
 
-     
+        }
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -142,7 +163,7 @@ public class RobotContainer {
 
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
-        driverLeftTrigger.toggleOnTrue(new TeleopSwerve(
+        driverLeftTrigger.whileTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(leftY), 
                 () -> -driver.getRawAxis(leftX), 
@@ -184,7 +205,16 @@ public class RobotContainer {
             new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage))
 
-        ));
+        )).onFalse(
+
+            new ParallelCommandGroup(
+
+                new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
+                new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)),
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
+            )
+        );
 
         
 

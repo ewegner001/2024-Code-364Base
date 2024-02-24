@@ -184,13 +184,13 @@ public class Eyes extends SubsystemBase {
 
             double xDistanceToSpeaker = Constants.Positions.speakerBlueX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
             double yDistanceToSpeaker = Constants.Positions.speakerBlueY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
-            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) - Math.pow(yDistanceToSpeaker, 2));
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
 
         } else {
 
             double xDistanceToSpeaker = Constants.Positions.speakerRedX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
             double yDistanceToSpeaker = Constants.Positions.speakerRedY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
-            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) - Math.pow(yDistanceToSpeaker, 2));
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
 
         }
 
@@ -201,7 +201,6 @@ public class Eyes extends SubsystemBase {
 
     @Override
     public void periodic() {
-
         s_Swerve.m_poseEstimator.update(s_Swerve.getGyroYaw(), s_Swerve.getModulePositions());
 
         if (LimelightHelpers.getTV("") == true) {

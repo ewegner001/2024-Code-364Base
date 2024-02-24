@@ -1,5 +1,6 @@
 {
   "download": {
+    "localDir": "C:\\Logs",
     "serverTeam": "10.17.14.2"
   }
 }
