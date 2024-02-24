@@ -44,7 +44,6 @@ public class RunIntake extends Command {
         s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage);
         s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition);
         s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage);
-        s_Eyes.limelight.setLEDMode_ForceOff("");
         
     }
 
@@ -56,7 +55,6 @@ public class RunIntake extends Command {
         s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage);
         s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition);
         s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage);
-        s_Eyes.limelight.setLEDMode_ForceOff("");
 
     }
 

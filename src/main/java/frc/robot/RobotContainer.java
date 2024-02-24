@@ -94,10 +94,11 @@ public class RobotContainer {
     
     /* Subsystems */
     private final ShooterPivot s_ShooterPivot = new ShooterPivot();
-    private final Swerve s_Swerve = new Swerve();
     private final Intake s_Intake = new Intake();
     private final Shooter s_Shooter = new Shooter();
-    private final Eyes s_Eyes = new Eyes();
+
+    private final Swerve s_Swerve = new Swerve();
+    private final Eyes s_Eyes = new Eyes(s_Swerve);
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -130,22 +131,23 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+
         driverB.toggleOnTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> -driver.getRawAxis(driverLeftY), 
                 () -> -driver.getRawAxis(driverLeftX), 
                 () -> -driver.getRawAxis(driverRightX),
                 () -> driverDpadUp.getAsBoolean(),
-                () -> s_Swerve.getTargetRotation(),
+                () -> s_Eyes.getTargetRotation(),
                 () -> driverLeftTrigger.getAsBoolean(),
                 rotationSpeed,
                 true
-            )//.until(() -> Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) < s_Swerve.getTargetRotation() + Constants.AUTO_ROTATE_DEADBAND && 
+            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter))//.until(() -> Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) < s_Swerve.getTargetRotation() + Constants.AUTO_ROTATE_DEADBAND && 
             //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
         );
 
         // Go To Intake Position and back again
-        driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(s_Shooter.getBreakBeamTrigger()));
+        driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
 
         /* Operator Buttons */
         // Reverse Shooter and Shooter Loader

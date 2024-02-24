@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class AimShoot extends Command {
 
     // required subystems
-    private Swerve swerve;
     private Eyes eyes;
     private ShooterPivot shooterPivot;  
     private Shooter shooter;
@@ -43,24 +42,23 @@ public class AimShoot extends Command {
     private double rightShooterSpeed;
 
     // positions
-    private final double d1Distance = 0.0;
-    private final double d1Angle = shooterPivot.shooterPivotStowPosition;
-    private final double d1LeftShooterSpeed = 0.0;
-    private final double d1RightShooterSpeed = 0.0;
+    private final double d1Distance = 1.25;
+    private final double d1Angle = 115.0;
+    private final double d1LeftShooterSpeed = 90.0;
+    private final double d1RightShooterSpeed = d1LeftShooterSpeed;
 
-    private final double d2Distance = 1.0;
-    private final double d2Angle = shooterPivot.shooterPivotStowPosition;
-    private final double d2LeftShooterSpeed = 1.0;
-    private final double d2RightShooterSpeed = 1.0;
+    private final double d2Distance = 2.0;
+    private final double d2Angle = 128.0;
+    private final double d2LeftShooterSpeed = 90.0;
+    private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
     // constructor
-    public AimShoot(Swerve swerve, ShooterPivot shooterPivot, Shooter shooter) {
-
-        this.swerve = swerve;
+    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
+        this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
 
-        addRequirements(swerve, shooterPivot, shooter);
+        addRequirements(eyes, shooterPivot, shooter);
 
         // instantiate objects
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
@@ -73,7 +71,7 @@ public class AimShoot extends Command {
     public void execute() {
 
         // assign target distance as variable
-        distance = swerve.getDistanceFromTarget();
+        distance = eyes.getDistanceFromTarget();
 
         // create points in angle linear interpolation line
         // TODO tune these values
@@ -113,6 +111,7 @@ public class AimShoot extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.setLoaderVoltage(shooter.stopLoaderVoltage);
+        shooter.setShooterVoltage(shooter.stopShooterVoltage, shooter.stopShooterVoltage);
     }
 
     // Returns true when the command should end.
