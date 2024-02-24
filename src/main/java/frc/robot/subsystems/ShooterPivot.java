@@ -122,7 +122,7 @@ public class ShooterPivot extends SubsystemBase {
     m_ShooterPivot.setVoltage(m_ShooterPivotVoltage);
 
     // log data
-    SmartDashboard.putNumber("Shooter Voltage", m_ShooterPivotVoltage);
+    SmartDashboard.putNumber("Shooter Pivot Voltage", m_ShooterPivotVoltage);
     SmartDashboard.putNumber("Shooter CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Shooter Pivot Motor Position", e_ShooterPivotIntegrated.getPosition());
     SmartDashboard.putNumber("Shooter setpoint", m_setPoint);

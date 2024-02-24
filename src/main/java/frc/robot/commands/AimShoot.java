@@ -34,11 +34,24 @@ public class AimShoot extends Command {
 
     // required WPILib class objects
     private InterpolatingDoubleTreeMap shooterAngleInterpolation;
-    private InterpolatingDoubleTreeMap shooterSpeedInterpolation;
+    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolation;
+    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolation;
 
     // local variables
     private double shooterAngle;
-    private double shooterSpeed;
+    private double leftShooterSpeed;
+    private double rightShooterSpeed;
+
+    // positions
+    private final double d1Distance = 0.0;
+    private final double d1Angle = shooterPivot.shooterPivotStowPosition;
+    private final double d1LeftShooterSpeed = 0.0;
+    private final double d1RightShooterSpeed = 0.0;
+
+    private final double d2Distance = 1.0;
+    private final double d2Angle = shooterPivot.shooterPivotStowPosition;
+    private final double d2LeftShooterSpeed = 1.0;
+    private final double d2RightShooterSpeed = 1.0;
 
     // constructor
     public AimShoot(Swerve swerve, ShooterPivot shooterPivot, Shooter shooter) {
@@ -51,6 +64,8 @@ public class AimShoot extends Command {
 
         // instantiate objects
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
+        shooterLeftSpeedInterpolation = new InterpolatingDoubleTreeMap();
+        shooterRightSpeedInterpolation = new InterpolatingDoubleTreeMap();
 
     }
 
@@ -62,13 +77,16 @@ public class AimShoot extends Command {
 
         // create points in angle linear interpolation line
         // TODO tune these values
-        shooterAngleInterpolation.put(0.0, 0.0);
-        shooterAngleInterpolation.put(1.0, 1.0);
+        shooterAngleInterpolation.put(d1Distance, d1Angle);
+        shooterAngleInterpolation.put(d2Distance, d2Angle);
 
         // create points in shooter power linear interpolation line
         // TODO tune these values
-        shooterSpeedInterpolation.put(0.0, 0.0);
-        shooterSpeedInterpolation.put(1.0, 1.0);
+        shooterLeftSpeedInterpolation.put(d1Distance, d1LeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
+
+        shooterRightSpeedInterpolation.put(d1Distance, d1RightShooterSpeed);
+        shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
     
         // get desired shooter angle using the linear interpolation
         // x (input) = distance
@@ -78,19 +96,16 @@ public class AimShoot extends Command {
         // get desired shooter power using the linear interpolation
         // x (input) = distance
         // y (output) = shooter power
-        shooterSpeed = shooterSpeedInterpolation.get(distance);
+        leftShooterSpeed = shooterLeftSpeedInterpolation.get(distance);
+        rightShooterSpeed = shooterRightSpeedInterpolation.get(distance);
+        
+
 
         // move shooter to calculated angle
         shooterPivot.moveShooterPivot(shooterAngle);
 
         // set shooter speed power to calculated value
-        shooter.shootingMotorsSetControl(shooterSpeed, shooterSpeed);
-
-        // wait for robot to reach correct configuration
-        Timer.delay(0.5);
-
-        // fire by running loader
-        shooter.setLoaderVoltage(shooter.runLoaderVoltage);
+        shooter.shootingMotorsSetControl(rightShooterSpeed, leftShooterSpeed);
 
     }
 
