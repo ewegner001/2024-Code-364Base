@@ -1,14 +1,19 @@
 package frc.robot;
 
+import java.time.Instant;
+import java.util.function.BooleanSupplier;
+
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -32,12 +37,14 @@ public class RobotContainer {
     /* Controllers */
     private final Joystick driver = new Joystick(0);
     private final Joystick operator = new Joystick(1);
-
     /* Drive Controls */
-    private final int driverLeftY = XboxController.Axis.kLeftY.value;
-    private final int driverLeftX = XboxController.Axis.kLeftX.value;
-    private final int driverRightX = XboxController.Axis.kRightX.value;
-
+    private final int leftY = XboxController.Axis.kLeftY.value;
+    private final int leftX = XboxController.Axis.kLeftX.value;
+    private final int rightX = XboxController.Axis.kRightX.value;
+    /*Operator Buttons */
+    private final JoystickButton operatorButtonY = new JoystickButton(operator, XboxController.Button.kY.value);
+    private final JoystickButton operatorButtonA = new JoystickButton(operator, XboxController.Button.kA.value);
+    private final JoystickButton operatorButtonB = new JoystickButton(operator, XboxController.Button.kB.value);
     /* Driver Buttons */
     private final JoystickButton driverA = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton driverB = new JoystickButton(driver, XboxController.Button.kB.value);
@@ -95,21 +102,40 @@ public class RobotContainer {
     /* Subsystems */
     private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
+    private final Elevator s_Elevator = new Elevator();
     private final Intake s_Intake = new Intake();
     private final Shooter s_Shooter = new Shooter();
-    private final Eyes s_Eyes = new Eyes();
+    private final Eyes s_Eyes = new Eyes(s_Swerve);
 
     public final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            s_Swerve.setDefaultCommand(
+            new TeleopSwerve(
+                s_Swerve, 
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Swerve.getGyroYaw().getDegrees()+180.0,
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                false
+            )
+        );
+        
+        } else {
+
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(driverLeftY), 
-                () -> -driver.getRawAxis(driverLeftX), 
-                () -> -driver.getRawAxis(driverRightX),
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
@@ -118,7 +144,7 @@ public class RobotContainer {
             )
         );
 
-     
+        }
         // Configure the button bindings
         configureButtonBindings();
 
@@ -136,40 +162,43 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /* Driver Buttons */
+
+        /*Operator Buttons */
+        /*operatorButtonY.onTrue(new InstantCommand(()-> s_Elevator.lift()));
+        operatorButtonB.onTrue(new InstantCommand(()-> s_Elevator.stop()));
+        operatorButtonA.onTrue(new InstantCommand(()-> s_Elevator.down()));
+        if(operatorButtonY.getAsBoolean() == false && operatorButtonA.getAsBoolean() == false){
+            
+        }*/
+
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
-        driverB.toggleOnTrue(new TeleopSwerve(
+
+        driverLeftTrigger.whileTrue(new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(driverLeftY), 
-                () -> -driver.getRawAxis(driverLeftX), 
-                () -> -driver.getRawAxis(driverRightX),
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
-                () -> s_Swerve.getTargetRotation(),
+                () -> s_Eyes.getTargetRotation(),
                 () -> driverLeftTrigger.getAsBoolean(),
                 rotationSpeed,
                 true
-            )//.until(() -> Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) < s_Swerve.getTargetRotation() + Constants.AUTO_ROTATE_DEADBAND && 
+            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter))//.until(() -> Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) < s_Swerve.getTargetRotation() + Constants.AUTO_ROTATE_DEADBAND && 
             //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
         );
 
         // Go To Intake Position and back again
-        driverX.onTrue(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition)), // Move Intake Pivot to intaking position
-            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)), // Run Intake
-            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)), // Move Shooter Pivot to intaking position
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), // Run the Shooter Loader
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(-s_Shooter.reverseShooterVoltage, s_Shooter.reverseShooterVoltage)) // Run the Shooter backwards slightly to avoid the notes touching the shooter wheels
-        ))
-        .onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)), // Move Intake Pivot to safe position
-            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)), // Stop Intake
-            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)), // Move Shooter Pivot to stow position
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage)) // Stop the Shooter
+        driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
+
+        // Run the Shooter Loader
+        driverRightTrigger.whileTrue(
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
+        ).onFalse(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
         ));
-        
+
         /* Operator Buttons */
-        // Reverse Shooter and Shooter Loader
+        // Reverse Shooter and Loader
         operatorLB.onTrue(new ParallelCommandGroup(
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)), // Reverse the Shooter Loader
             new InstantCommand(() -> s_Shooter.setShooterVoltage(-s_Shooter.runShooterVoltage, s_Shooter.runShooterVoltage)) // Reverse the Shooter
@@ -178,20 +207,36 @@ public class RobotContainer {
             new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
             new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage)) // Stop the Shooter
         ));
-        
-        // Run the Shooter
-        operatorLeftTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.runShooterVoltage, -s_Shooter.runShooterVoltage)) 
-        ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage))
-        ));
 
-        // Run the Shooter Loader
-        operatorRightTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
-        ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
-        ));
+        operatorLeftTrigger.onTrue(new ParallelCommandGroup(
+
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition)),
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.reverseIntakeVoltage)),
+            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage))
+
+        )).onFalse(
+
+            new ParallelCommandGroup(
+
+                new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
+                new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)),
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
+            )
+        );
+
+        operatorA.onTrue(
+
+            new InstantCommand(() -> s_Elevator.SetElevatorPosition(10))
+
+        ).onFalse(
+
+            new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+        );
+
+        
+
     }
 
     /**

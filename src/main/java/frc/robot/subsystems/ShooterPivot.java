@@ -32,6 +32,7 @@ public class ShooterPivot extends SubsystemBase {
   // positions
   public final double shooterPivotStowPosition = 115.0;
   public final double shooterPivotIntakePosition = 136.75;
+  public final double shooterPivotAmpPosition = 115.0;
 
   // pivot motor PID
   private final double shooterPivotPGains = 0.3;
@@ -122,7 +123,7 @@ public class ShooterPivot extends SubsystemBase {
     m_ShooterPivot.setVoltage(m_ShooterPivotVoltage);
 
     // log data
-    SmartDashboard.putNumber("Shooter Voltage", m_ShooterPivotVoltage);
+    SmartDashboard.putNumber("Shooter Pivot Voltage", m_ShooterPivotVoltage);
     SmartDashboard.putNumber("Shooter CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Shooter Pivot Motor Position", e_ShooterPivotIntegrated.getPosition());
     SmartDashboard.putNumber("Shooter setpoint", m_setPoint);
