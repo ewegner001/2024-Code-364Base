@@ -152,7 +152,7 @@ public class Elevator extends SubsystemBase {
    */
 
    /* This method makes the elevator go up until it hits the soft limit*/
-  public void lift(double speed) {
+  public void move(double speed) {
     m_elevator1.set(speed);
   }
 
@@ -199,7 +199,7 @@ public class Elevator extends SubsystemBase {
    * `internalData` to change it's value.
    */
   public void stop() {
-  m_elevator1.set(0);
+    m_elevator1.set(0);
   }
 /*This method makes the elevator go down until */
 public void down() {
@@ -210,7 +210,7 @@ private void goToShootingPos(){
 if (m_elevator1.getEncoder().getPosition() == shootingPosition){
   stop();
 }else if(m_elevator1.getEncoder().getPosition() < shootingPosition){
-  lift(elevatorspeed);
+  move(elevatorspeed);
 }else{
   down();
 }

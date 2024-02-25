@@ -252,7 +252,9 @@ public class RobotContainer {
         */
 
         
-
+        operatorY.onTrue(new InstantCommand(() -> s_Elevator.move(0.5))).onFalse(new InstantCommand(() -> s_Elevator.move(0)));
+        operatorX.onTrue(new InstantCommand(() -> s_Elevator.move(-0.5))).onFalse(new InstantCommand(() -> s_Elevator.move(0)));
+        
     }
 
     /**
