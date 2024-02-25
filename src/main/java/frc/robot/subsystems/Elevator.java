@@ -5,7 +5,9 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.util.datalog.BooleanLogEntry;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
@@ -27,6 +29,7 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkRelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkRelativeEncoder.Type;
@@ -47,18 +50,24 @@ public class Elevator extends SubsystemBase {
    * constructor. In this example, they is private, which 
    * means that nothing outside of this class can access it.
    */
-  private CANSparkMax motor1;
-  private CANSparkMax motor2;
+  private CANSparkMax m_elevator1;
+  private CANSparkMax m_elevator2;
   private SparkPIDController pidController; 
-  private RelativeEncoder elevatorEncoder;
+  private RelativeEncoder e_Elevator;
   private ProfiledPIDController controller;
 
-  public double targetElevatorPosition;
+  public double targetElevatorPosition = 0;
 
-  private float heightlimit = 10;
-  public double elevatorspeed = 1.0;
-  public float restingposition = 0;
-  public double shootingPosition = 10;
+  private double heightlimit = 16;
+  public double elevatorspeed = 0.1;
+  public double restingposition = 0;
+  public double shootingPosition = 12.0;
+
+  private double elevatorP = 4.0;
+  private double elevatorI = 0.0;
+  private double elevatorD = 0.0;
+
+  private double voltage = 0.0;
  
 
   /* Constructor
@@ -74,22 +83,43 @@ public class Elevator extends SubsystemBase {
      * used to create a new CANSparkMax object and give it 
      * to `motor` as it's value. 
      */
-    motor1 = new CANSparkMax(0, MotorType.kBrushless);
-    motor2 = new CANSparkMax(1, MotorType.kBrushless);
+    m_elevator1 = new CANSparkMax(17, MotorType.kBrushless);
+    m_elevator2 = new CANSparkMax(18, MotorType.kBrushless);
 
-    elevatorEncoder = motor1.getEncoder();
+    controller = new ProfiledPIDController(elevatorP, elevatorI, elevatorD, new Constraints(80, 1000));
+    controller.setTolerance(100, 100);
 
-    motor1.restoreFactoryDefaults();
+    e_Elevator = m_elevator1.getEncoder();
 
-    pidController = motor1.getPIDController();
-    motor1.setSoftLimit(SoftLimitDirection.kForward, heightlimit);
-    motor1.setSoftLimit(SoftLimitDirection.kReverse,restingposition);
+    m_elevator1.restoreFactoryDefaults();
+    m_elevator1.setInverted(true);
+
+    pidController = m_elevator1.getPIDController();
     
-    motor2.restoreFactoryDefaults();
-    pidController = motor2.getPIDController();
-    motor2.setSoftLimit(SoftLimitDirection.kForward, heightlimit);
-    motor2.setSoftLimit(SoftLimitDirection.kReverse,restingposition);
-    motor2.follow(motor1, false);
+
+
+    m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float)inchesToMotorRotations(heightlimit));
+    m_elevator1.setSoftLimit(SoftLimitDirection.kReverse,(float)inchesToMotorRotations(restingposition));
+    
+    m_elevator2.restoreFactoryDefaults();
+    m_elevator2.follow(m_elevator1, true);
+
+    pidController = m_elevator2.getPIDController();
+    m_elevator2.setSoftLimit(SoftLimitDirection.kForward, (float)inchesToMotorRotations(heightlimit));
+    m_elevator2.setSoftLimit(SoftLimitDirection.kReverse,(float)inchesToMotorRotations(restingposition));
+
+    m_elevator1.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_elevator1.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+    m_elevator2.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_elevator2.enableSoftLimit(SoftLimitDirection.kReverse, true);
+
+
+    m_elevator1.setIdleMode(IdleMode.kBrake);
+    m_elevator2.setIdleMode(IdleMode.kBrake);
+
+    e_Elevator.setPositionConversionFactor(Constants.ELEVATOR_ROTATIONS_TO_IN);
+    e_Elevator.setVelocityConversionFactor(Constants.ELEVATOR_ROTATIONS_TO_IN);
 
     double kP = 0.1; 
     double kI = 1e-4;
@@ -122,18 +152,18 @@ public class Elevator extends SubsystemBase {
    */
 
    /* This method makes the elevator go up until it hits the soft limit*/
-  public void lift() {
-  motor1.set(elevatorspeed);
+  public void lift(double speed) {
+    m_elevator1.set(speed);
   }
 
     /* Sets the Target Elevator Position in inches.*/
-    public void setTargetElevatorPosition(double inches){
+  public void setTargetElevatorPosition(double inches){
       targetElevatorPosition = inches;
   }
 
   /* Sets the Target Elevator Position in inches.*/
   public double getTargetElevatorPosition(){
-      return getTargetElevatorPosition();
+      return targetElevatorPosition;
   }
 
 
@@ -147,7 +177,7 @@ public class Elevator extends SubsystemBase {
 
     public boolean atPosition() {
 
-        double error = Math.abs(elevatorEncoder.getPosition() - getTargetElevatorPosition());
+        double error = Math.abs(e_Elevator.getPosition() - getTargetElevatorPosition());
 
         if (Constants.ELEVATOR_TOLERANCE >= error) {
             return true;
@@ -169,18 +199,18 @@ public class Elevator extends SubsystemBase {
    * `internalData` to change it's value.
    */
   public void stop() {
-  motor1.set(0);
+  m_elevator1.set(0);
   }
 /*This method makes the elevator go down until */
 public void down() {
-  motor1.set(elevatorspeed);
+  m_elevator1.set(elevatorspeed);
 }
 /*This method sets the elevator to a shooting position */
 private void goToShootingPos(){
-if (motor1.getEncoder().getPosition() == shootingPosition){
+if (m_elevator1.getEncoder().getPosition() == shootingPosition){
   stop();
-}else if(motor1.getEncoder().getPosition() < shootingPosition){
-  lift();
+}else if(m_elevator1.getEncoder().getPosition() < shootingPosition){
+  lift(elevatorspeed);
 }else{
   down();
 }
@@ -201,19 +231,20 @@ if (motor1.getEncoder().getPosition() == shootingPosition){
 
             // This method will be called once per scheduler run
             // TODO: Test that .getPosition() gives us the elevator position in inches
-            double voltage = controller.calculate(elevatorEncoder.getPosition(), targetElevatorPosition);
-            double feedforward = ff.calculate(/*double*/ elevatorEncoder.getVelocity());
+            voltage = controller.calculate(e_Elevator.getPosition(), targetElevatorPosition);
+            //double feedforward = ff.calculate(/*double*/ e_Elevator.getVelocity());
             MathUtil.clamp(voltage, -12, 12);
 
-            motor1.setVoltage(voltage);
+            m_elevator1.setVoltage(voltage);
+            m_elevator2.setVoltage(voltage);
 
             
-            SmartDashboard.putNumber("ELEVATOR PID VOLTAGE", voltage);
         }
         //logData();
-        SmartDashboard.getNumber("ELEVATOR TARGET POSITION", targetElevatorPosition);
+        SmartDashboard.putNumber("ELEVATOR TARGET POSITION", targetElevatorPosition);
         SmartDashboard.putNumber("Elevator Encoder Value: ", getPosition());
-        SmartDashboard.putNumber("Current Elevator Position",getPosition());
+        SmartDashboard.putNumber("Current Elevator Position",e_Elevator.getPosition());
+        SmartDashboard.putNumber("Elevator Voltage", voltage);
         
        // logData();
       
@@ -221,13 +252,12 @@ if (motor1.getEncoder().getPosition() == shootingPosition){
    
 private double getPosition() {
     // TODO Auto-generated method stub
-    //return elevatorEncoder.getPosition();
-    throw new UnsupportedOperationException("Unimplemented method 'getPosition'");
+    return e_Elevator.getPosition();
   }
 
-  public Command SetElevatorPosition (double inches){
-          return new InstantCommand(() -> setTargetElevatorPosition(inches), this);
-      }
+  public void SetElevatorPosition (double inches){
+          targetElevatorPosition = inches;
+  }
 
       public Command ElevatorAtPosition(){
           return Commands.waitUntil(() -> atPosition());

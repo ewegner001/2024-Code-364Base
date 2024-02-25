@@ -14,9 +14,12 @@ import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
     public static final double stickDeadband = 0.1;
-    public static final double ELEVATOR_ROTATIONS_TO_IN = 0;
+
+    public static final double ELEVATOR_GEAR_RATIO = 45.0;
+    public static final double ELEVATOR_SPROCKET_DIAMETER = 1.273;
+    public static final double ELEVATOR_ROTATIONS_TO_IN = (1.0 / 45.0) * ELEVATOR_SPROCKET_DIAMETER * Math.PI * 2.0;
     public static final double ELEVATOR_TOLERANCE = 0;
-    public static final double ELEVATOR_HIGH_LEVEL = 0;
+    public static final double ELEVATOR_HIGH_LEVEL = 5.0;
 
 
     /* PID Rotation */ 
@@ -102,7 +105,7 @@ public final class Constants {
         /* Swerve Profiling Values */
         /** Meters per Second */
         //4.5
-        public static final double maxSpeed = 4.5*0.8; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 5.0; //TODO: This must be tuned to specific robot
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
@@ -116,7 +119,7 @@ public final class Constants {
             public static final int driveMotorID = 0;
             public static final int angleMotorID = 1;
             public static final int cancoderID = 3;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(139.04);
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(137.65);
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, cancoderID, angleOffset);
         }

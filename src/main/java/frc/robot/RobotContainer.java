@@ -100,7 +100,7 @@ public class RobotContainer {
     /* Subsystems */
     private final ShooterPivot s_ShooterPivot = new ShooterPivot();
     private final Swerve s_Swerve = new Swerve();
-    //private final Elevator s_Elevator = new Elevator();
+    private final Elevator s_Elevator = new Elevator();
     private final Intake s_Intake = new Intake();
     private final Shooter s_Shooter = new Shooter();
     private final Eyes s_Eyes = new Eyes(s_Swerve);
@@ -113,9 +113,9 @@ public class RobotContainer {
             s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(leftY), 
-                () -> -driver.getRawAxis(leftX), 
-                () -> -driver.getRawAxis(rightX),
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Swerve.getGyroYaw().getDegrees()+180.0,
                 () -> driverLeftTrigger.getAsBoolean(),
@@ -165,9 +165,9 @@ public class RobotContainer {
 
         driverLeftTrigger.whileTrue(new TeleopSwerve(
                 s_Swerve, 
-                () -> -driver.getRawAxis(leftY), 
-                () -> -driver.getRawAxis(leftX), 
-                () -> -driver.getRawAxis(rightX),
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Eyes.getTargetRotation(),
                 () -> driverLeftTrigger.getAsBoolean(),
@@ -214,6 +214,15 @@ public class RobotContainer {
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
             )
+        );
+
+        operatorA.onTrue(
+
+            new InstantCommand(() -> s_Elevator.SetElevatorPosition(10))
+
+        ).onFalse(
+
+            new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
         );
 
         
