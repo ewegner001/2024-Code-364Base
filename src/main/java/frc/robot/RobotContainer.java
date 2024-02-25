@@ -255,8 +255,14 @@ public class RobotContainer {
         */
 
         
-        operatorY.onTrue(new InstantCommand(() -> s_Elevator.move(0.5))).onFalse(new InstantCommand(() -> s_Elevator.move(0)));
-        operatorX.onTrue(new InstantCommand(() -> s_Elevator.move(-0.5))).onFalse(new InstantCommand(() -> s_Elevator.move(0)));
+        operatorY.onTrue(new InstantCommand(() -> s_Elevator.SetElevatorPosition(15)));
+        operatorX.onTrue(
+            new ParallelCommandGroup(
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(3))
+                
+            )
+        );
 
     }
 
@@ -267,7 +273,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return autoChooser.getSelected();
+        return new PathPlannerAuto("Example Auto");
         
     }
 }
