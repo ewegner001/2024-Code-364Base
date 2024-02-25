@@ -149,7 +149,10 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        NamedCommands.registerCommand("intake", new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)));
+        NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()));
+        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter));
+        NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
+
         autoChooser.addOption("Example Auto", new PathPlannerAuto("Example Auto"));
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -254,7 +257,7 @@ public class RobotContainer {
         
         operatorY.onTrue(new InstantCommand(() -> s_Elevator.move(0.5))).onFalse(new InstantCommand(() -> s_Elevator.move(0)));
         operatorX.onTrue(new InstantCommand(() -> s_Elevator.move(-0.5))).onFalse(new InstantCommand(() -> s_Elevator.move(0)));
-        
+
     }
 
     /**
