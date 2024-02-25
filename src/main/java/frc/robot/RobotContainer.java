@@ -3,17 +3,20 @@ package frc.robot;
 import java.time.Instant;
 import java.util.function.BooleanSupplier;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -105,6 +108,8 @@ public class RobotContainer {
     private final Shooter s_Shooter = new Shooter();
     private final Eyes s_Eyes = new Eyes(s_Swerve);
 
+    public final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -143,6 +148,12 @@ public class RobotContainer {
         }
         // Configure the button bindings
         configureButtonBindings();
+
+        NamedCommands.registerCommand("intake", new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)));
+        autoChooser.addOption("Example Auto", new PathPlannerAuto("Example Auto"));
+
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        
     }
 
     /**
@@ -224,6 +235,21 @@ public class RobotContainer {
 
             new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
         );
+        
+        /*
+        operatorB.onTrue(
+
+            new SequentialCommandGroup(
+                new AmpElevator(s_Elevator).until(() -> s_Elevator.isAtTargetPosition(Constants.ELEVATOR_HIGH_LEVEL)),
+                new AmpShooterPivot(s_ShooterPivot).until(() -> s_ShooterPivot.isAtTargetPosition(s_ShooterPivot.shooterPivotAmpPosition)),
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(3, -3)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(3)),
+                new AmpShooterPivotRetract(s_ShooterPivot),
+                new AmpElevatorRetract(s_Elevator)
+            )
+        );
+
+        */
 
         
 
@@ -236,7 +262,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return new PathPlannerAuto("Example Auto");
+        return autoChooser.getSelected();
         
     }
 }

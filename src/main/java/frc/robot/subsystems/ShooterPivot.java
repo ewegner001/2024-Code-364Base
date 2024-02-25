@@ -112,6 +112,10 @@ public class ShooterPivot extends SubsystemBase {
   }
 
 
+  public Boolean isAtTargetPosition(double position){
+    return cancoderInDegrees() == position;
+  }
+
 
  
   @Override

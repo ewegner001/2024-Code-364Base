@@ -188,8 +188,8 @@ public class Elevator extends SubsystemBase {
 
         }
 
-        public Boolean isHigh(){
-          return getTargetElevatorPosition() == Constants.ELEVATOR_HIGH_LEVEL;
+        public Boolean isAtTargetPosition(double position){
+          return getTargetElevatorPosition() == position;
       }
 
   /* The below method is public, which means that it can be 
