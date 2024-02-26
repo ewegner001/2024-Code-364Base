@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.239415861547773,
+        "y": 7.167706187264226
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.23941586154777,
+        "y": 7.167706187264226
+      },
+      "isLocked": false,
+      "linkedName": "Duluth Ampside Note"
+    },
+    {
+      "anchor": {
+        "x": 2.5989582843363217,
+        "y": 5.561921247299285
+      },
+      "prevControl": {
+        "x": -0.501227669122005,
+        "y": 6.499402628434886
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.4,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 0.5,
+    "maxAcceleration": 0.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -3.8140748342904027,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 57.89374404488219,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

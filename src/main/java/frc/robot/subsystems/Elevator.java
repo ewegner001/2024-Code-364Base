@@ -188,10 +188,6 @@ public class Elevator extends SubsystemBase {
 
         }
 
-        public Boolean isAtTargetPosition(double position){
-          return getTargetElevatorPosition() == position;
-      }
-
   /* The below method is public, which means that it can be 
    * accessed outside of this class. It also takes in a 
    * single double value as a parameter. It then takes that 

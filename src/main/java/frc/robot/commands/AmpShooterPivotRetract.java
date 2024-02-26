@@ -23,7 +23,7 @@ public class AmpShooterPivotRetract extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotAmpPosition);
+    s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

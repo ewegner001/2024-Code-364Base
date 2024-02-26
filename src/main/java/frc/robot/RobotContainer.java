@@ -3,9 +3,12 @@ package frc.robot;
 import java.time.Instant;
 import java.util.function.BooleanSupplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -16,7 +19,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -108,21 +113,24 @@ public class RobotContainer {
     private final Shooter s_Shooter = new Shooter();
     private final Eyes s_Eyes = new Eyes(s_Swerve);
 
-    public final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+
+    private final SendableChooser<Command> autoChooser;
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
     public RobotContainer() {
 
         if (DriverStation.getAlliance().get() == Alliance.Blue) {
             s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
-                () -> driver.getRawAxis(leftY), 
-                () -> driver.getRawAxis(leftX), 
+                () -> -driver.getRawAxis(leftY), 
+                () -> -driver.getRawAxis(leftX), 
                 () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
-                () -> s_Swerve.getGyroYaw().getDegrees()+180.0,
+                () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
                 rotationSpeed,
                 false
@@ -130,7 +138,7 @@ public class RobotContainer {
         );
         
         } else {
-
+        s_Swerve.setPose(new Pose2d(16.54, 0, new Rotation2d(Math.PI)));
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
@@ -149,11 +157,26 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
+        //Command ElevatorAtPosition = new s_Elevator.ElevatorAtPosition();
+
+        Command AimThenShoot = new ParallelRaceGroup(
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+            new SequentialCommandGroup(
+                new WaitCommand(2.0), 
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
+                new WaitCommand(1.0))
+                );
+
         NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()));
+        NamedCommands.registerCommand("Score", AimThenShoot);
         NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
+        
+        autoChooser = AutoBuilder.buildAutoChooser();
 
-        autoChooser.addOption("Example Auto", new PathPlannerAuto("Example Auto"));
+        //autoChooser.addOption("Duluth Auto", new PathPlannerAuto("Duluth Auto"));
+
+        //autoChooser.addOption("Example Auto", new PathPlannerAuto("Example Auto"));
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
         
@@ -239,20 +262,28 @@ public class RobotContainer {
             new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
         );
         
-        /*
+        
         operatorB.onTrue(
 
             new SequentialCommandGroup(
-                new AmpElevator(s_Elevator).until(() -> s_Elevator.isAtTargetPosition(Constants.ELEVATOR_HIGH_LEVEL)),
-                new AmpShooterPivot(s_ShooterPivot).until(() -> s_ShooterPivot.isAtTargetPosition(s_ShooterPivot.shooterPivotAmpPosition)),
+                new AmpElevator(s_Elevator),
+                s_Elevator.ElevatorAtPosition(),
+                new AmpShooterPivot(s_ShooterPivot),
+                s_ShooterPivot.ShooterPivotAtPosition(),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(3, -3)),
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(3)),
-                new AmpShooterPivotRetract(s_ShooterPivot),
-                new AmpElevatorRetract(s_Elevator)
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(3))
             )
+        ).onFalse(
+                new SequentialCommandGroup(
+                    new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0)),
+                    new InstantCommand(() -> s_Shooter.setLoaderVoltage(0)),
+                    new AmpShooterPivotRetract(s_ShooterPivot),
+                    s_ShooterPivot.ShooterPivotAtPosition(),
+                    new AmpElevatorRetract(s_Elevator)
+                )
         );
 
-        */
+        
 
         
         operatorY.onTrue(new InstantCommand(() -> s_Elevator.SetElevatorPosition(15)));
@@ -273,7 +304,8 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
-        return new PathPlannerAuto("Example Auto");
+        //s_Swerve.swerveOdometry.update()
+        return autoChooser.getSelected();
         
     }
 }

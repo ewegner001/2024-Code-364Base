@@ -18,6 +18,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -32,7 +34,7 @@ public class ShooterPivot extends SubsystemBase {
   // positions
   public final double shooterPivotStowPosition = 115.0;
   public final double shooterPivotIntakePosition = 136.75;
-  public final double shooterPivotAmpPosition = 115.0;
+  public final double shooterPivotAmpPosition = 130.0;
   public final double shooterPivotClimbPosition = 170.77;
 
   // pivot motor PID
@@ -43,6 +45,8 @@ public class ShooterPivot extends SubsystemBase {
 
   private final double shooterPivotGearRatio = 54.545;
   private final double magnetOffset = 0.0;
+
+  private final double pivotTolerance = 1.0;
 
   // WPILib class objects
   private CANSparkMax m_ShooterPivot;
@@ -113,8 +117,21 @@ public class ShooterPivot extends SubsystemBase {
   }
 
 
-  public Boolean isAtTargetPosition(double position){
-    return cancoderInDegrees() == position;
+  public boolean atPosition() {
+
+    double error = Math.abs(cancoderInDegrees() - m_setPoint);
+
+    if (pivotTolerance >= error) {
+        return true;
+
+    } else {
+        return false;
+    }
+
+    }
+
+  public Command ShooterPivotAtPosition(){
+          return Commands.waitUntil(() -> atPosition());
   }
 
 

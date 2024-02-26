@@ -106,7 +106,7 @@ public class Swerve extends SubsystemBase {
 
         // create autobuilder
         AutoBuilder.configureHolonomic(
-                this::getPose, // Robot pose supplier
+                this::getEstimatedPose, // Robot pose supplier use getPose to disable apriltags for auto
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeed, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
@@ -246,9 +246,15 @@ public class Swerve extends SubsystemBase {
         return swerveOdometry.getPoseMeters();
     }
 
+    public Pose2d getEstimatedPose() {
+        return m_poseEstimator.getEstimatedPosition();
+    }
+
     public void setPose(Pose2d pose) {
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        m_poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
+
 
     public Rotation2d getHeading(){
         return getPose().getRotation();
@@ -259,7 +265,13 @@ public class Swerve extends SubsystemBase {
     }
 
     public void zeroHeading(){
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        } else {
+            swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(180)));
+        }
+        
     }
 
     public Rotation2d getGyroYaw(){
