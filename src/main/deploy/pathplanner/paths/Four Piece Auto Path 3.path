@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.2191731551342397,
+        "y": 5.524300973408458
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.3160154641111295,
+        "y": 5.51401363454356
+      },
+      "isLocked": false,
+      "linkedName": "Four Piece Auto Path 2 Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 3.2191731551342397,
+        "y": 6.995390431883621
+      },
+      "prevControl": {
+        "x": 1.3674521584632144,
+        "y": 7.396596647829888
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.45,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
