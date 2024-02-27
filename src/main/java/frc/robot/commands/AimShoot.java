@@ -75,14 +75,6 @@ public class AimShoot extends Command {
         shooterLeftSpeedInterpolation = new InterpolatingDoubleTreeMap();
         shooterRightSpeedInterpolation = new InterpolatingDoubleTreeMap();
 
-    }
-
-    @Override
-    public void execute() {
-
-        // assign target distance as variable
-        distance = eyes.getDistanceFromTarget();
-
         // create points in angle linear interpolation line
         // TODO tune these values
         shooterAngleInterpolation.put(subWooferDistance, subWooferAngle);
@@ -101,6 +93,15 @@ public class AimShoot extends Command {
         shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
         shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
         shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
+
+    }
+
+    @Override
+    public void execute() {
+
+        // assign target distance as variable
+        distance = eyes.getDistanceFromTarget();
+
     
         // get desired shooter angle using the linear interpolation
         // x (input) = distance

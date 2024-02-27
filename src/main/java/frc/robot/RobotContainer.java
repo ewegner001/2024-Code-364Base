@@ -235,23 +235,7 @@ public class RobotContainer {
             new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage)) // Stop the Shooter
         ));
 
-        operatorLeftTrigger.onTrue(new ParallelCommandGroup(
 
-            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition)),
-            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.reverseIntakeVoltage)),
-            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage))
-
-        )).onFalse(
-
-            new ParallelCommandGroup(
-
-                new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
-                new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)),
-                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
-            )
-        );
 
         operatorA.onTrue(
 
