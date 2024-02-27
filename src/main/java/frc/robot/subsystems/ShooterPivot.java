@@ -38,7 +38,7 @@ public class ShooterPivot extends SubsystemBase {
   public final double shooterPivotClimbPosition = 170.77;
 
   // pivot motor PID
-  private final double shooterPivotPGains = 0.3;
+  private final double shooterPivotPGains = 0.35;
   private final double shooterPivotIGains = 0;
   private final double shooterPivotDGains = 0;
   private final double shooterPivotGGains = 0;

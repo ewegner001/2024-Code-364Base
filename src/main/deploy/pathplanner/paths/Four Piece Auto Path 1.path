@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.75624290596547,
-        "y": 4.0943608704204815
+        "x": 2.7194867201122306,
+        "y": 4.304281158977503
       },
       "prevControl": {
-        "x": 1.75624290596547,
-        "y": 4.0943608704204815
+        "x": 1.7194867201122306,
+        "y": 4.304281158977503
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.2,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,7 +57,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": -32.31961650818022,
     "rotateFast": false
   },
   "reversed": false,

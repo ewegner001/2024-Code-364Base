@@ -173,7 +173,7 @@ public class Eyes extends SubsystemBase {
         SmartDashboard.putNumber("angle", angle);
         SmartDashboard.putNumber(" inverted angle", -angle);
 
-        return -angle+180;
+        return -angle + 180;
     }
 
     public double getDistanceFromTarget() {

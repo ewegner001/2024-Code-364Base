@@ -28,30 +28,6 @@
           "data": {
             "name": "Score"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Duluth Auto Center 2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "New Path"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score"
-          }
         }
       ]
     }

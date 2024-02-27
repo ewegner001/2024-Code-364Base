@@ -162,7 +162,7 @@ public class RobotContainer {
         Command AimThenShoot = new ParallelRaceGroup(
             new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
             new SequentialCommandGroup(
-                new WaitCommand(2.0), 
+                new WaitCommand(1.0), 
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
                 new WaitCommand(1.0))
                 );

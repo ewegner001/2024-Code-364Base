@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.75624290596547,
-        "y": 4.0943608704204815
+        "x": 2.7194867201122306,
+        "y": 4.304281158977503
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1205560255691527,
-        "y": 4.238383614606321
+        "x": 1.0837998397159132,
+        "y": 4.4483039031633425
       },
       "isLocked": false,
       "linkedName": "Four Piece Auto Path 1 Endpoint"
@@ -33,7 +33,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.4,
+      "waypointRelativePos": 0.15,
       "command": {
         "type": "parallel",
         "data": {
