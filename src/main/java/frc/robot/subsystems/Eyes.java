@@ -25,6 +25,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Swerve;
 
 
@@ -198,6 +199,89 @@ public class Eyes extends SubsystemBase {
 
     }
 
+    public double getDistanceFromTargetBlind() {
+
+        double distance;
+
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+
+            double xDistanceToSpeaker = Constants.Positions.speakerBlueX - s_Swerve.getPose().getX();
+            double yDistanceToSpeaker = Constants.Positions.speakerBlueY - s_Swerve.getPose().getX();
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
+
+        } else {
+
+            double xDistanceToSpeaker = Constants.Positions.speakerRedX - s_Swerve.getPose().getX();
+            double yDistanceToSpeaker = Constants.Positions.speakerRedY - s_Swerve.getPose().getX();
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
+
+        }
+
+        return distance;
+
+    }
+
+    public double getDistanceFromTargetAuto() {
+
+        double distance;
+
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+
+            double xDistanceToSpeaker = Constants.Positions.speakerBlueX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
+            double yDistanceToSpeaker = Constants.Positions.speakerBlueY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
+
+        } else {
+
+            double xDistanceToSpeaker = Constants.Positions.speakerRedX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
+            double yDistanceToSpeaker = Constants.Positions.speakerRedY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
+
+        }
+
+        return distance;
+
+    }
+
+    /*public void updatePoseEstimatorWithVisionBotPose() {
+        //invalid limelight
+        if (LimelightHelpers.getTV("") == false) {
+          return;
+        }
+        
+        // distance from current pose to vision estimated pose
+        double poseDifference = s_Swerve.m_poseEstimator.getEstimatedPosition().getTranslation()
+            .getDistance(getRobotPose().getTranslation());
+    
+          double xyStds;
+          double degStds;
+          // multiple targets detected
+          if (limelight.getNumberOfTargetsVisible() >= 2) {
+            xyStds = 0.5;
+            degStds = 6;
+          }
+          // 1 target with large area and close to estimated pose
+          else if (LimelightHelpers.getTA() > 0.8 && poseDifference < 0.5) {
+            xyStds = 1.0;
+            degStds = 12;
+          }
+          // 1 target farther away and estimated pose is close
+          else if (limelight.getBestTargetArea() > 0.1 && poseDifference < 0.3) {
+            xyStds = 2.0;
+            degStds = 30;
+          }
+          // conditions don't match to add a vision measurement
+          else {
+            return;
+          }
+    
+          s_Swerve.m_poseEstimator.setVisionMeasurementStdDevs(
+              VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
+          s_Swerve.m_poseEstimator.addVisionMeasurement(getRobotPose(),
+              Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0));
+        }
+      }
+/* */
 
     @Override
     public void periodic() {

@@ -106,7 +106,7 @@ public class Swerve extends SubsystemBase {
 
         // create autobuilder
         AutoBuilder.configureHolonomic(
-                this::getEstimatedPose, // Robot pose supplier use getPose to disable apriltags for auto
+                this::getPose, // Robot pose supplier use getPose to disable apriltags for auto
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeed, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
@@ -269,7 +269,7 @@ public class Swerve extends SubsystemBase {
         if (DriverStation.getAlliance().get() == Alliance.Blue) {
             swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
         } else {
-            swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+            swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI)));
         }
         
     }

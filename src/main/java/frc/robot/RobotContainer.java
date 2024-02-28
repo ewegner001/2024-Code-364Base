@@ -217,12 +217,6 @@ public class RobotContainer {
         // Go To Intake Position and back again
         driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
 
-        // Run the Shooter Loader
-        driverRightTrigger.whileTrue(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
-        ).onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
-        ));
 
         /* Operator Buttons */
         // Reverse Shooter and Loader
@@ -247,26 +241,32 @@ public class RobotContainer {
         );
         
         
-        operatorB.onTrue(
+        operatorY.onTrue(
 
             new SequentialCommandGroup(
                 new AmpElevator(s_Elevator),
                 s_Elevator.ElevatorAtPosition(),
-                new AmpShooterPivot(s_ShooterPivot),
-                s_ShooterPivot.ShooterPivotAtPosition(),
-                new InstantCommand(() -> s_Shooter.setShooterVoltage(3, -3)),
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(3))
+                new AmpShooterPivot(s_ShooterPivot)
             )
         ).onFalse(
                 new SequentialCommandGroup(
-                    new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0)),
-                    new InstantCommand(() -> s_Shooter.setLoaderVoltage(0)),
                     new AmpShooterPivotRetract(s_ShooterPivot),
                     s_ShooterPivot.ShooterPivotAtPosition(),
                     new AmpElevatorRetract(s_Elevator)
                 )
         );
 
+        operatorRightTrigger.onTrue(
+            new ParallelCommandGroup(
+                //new InstantCommand(() -> s_Shooter.setShooterVoltage(3, -3)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(-3))
+            )
+        ).onFalse(
+            new ParallelCommandGroup(
+                //new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
+            )
+        );
         
 
         

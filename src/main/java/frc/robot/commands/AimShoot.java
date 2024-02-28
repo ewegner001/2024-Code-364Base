@@ -19,6 +19,7 @@ import frc.robot.subsystems.Eyes;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -36,31 +37,58 @@ public class AimShoot extends Command {
     private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolation;
     private InterpolatingDoubleTreeMap shooterRightSpeedInterpolation;
 
+    private InterpolatingDoubleTreeMap shooterAngleInterpolationAuto;
+    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationAuto;
+    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationAuto;
+
     // local variables
     private double shooterAngle;
     private double leftShooterSpeed;
     private double rightShooterSpeed;
 
-    // positions
+    // positions 
+
+    //Higher note shot is lower angle!!!
     private final double subWooferDistance = 1.25;
     private final double subWooferAngle = 115.0;
     private final double subWooferLeftShooterSpeed = 90.0;
     private final double subWooferRightShooterSpeed = subWooferLeftShooterSpeed;
 
     private final double d2Distance = 2.15;
-    private final double d2Angle = 130.0;
+    private final double d2Angle = 128.0;
     private final double d2LeftShooterSpeed = 90.0;
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
     private final double podiumDistance = 3.17;
-    private final double podiumAngle = 137.0;
+    private final double podiumAngle = 135;
     private final double podiumLeftShooterSpeed = 90.0;
     private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
 
     private final double d3Distance = 4.0;
     private final double d3Angle = 137.0;
-    private final double d3LeftShooterSpeed = 90.0;
+    private final double d3LeftShooterSpeed = 95.0;
     private final double d3RightShooterSpeed = d2LeftShooterSpeed;
+
+
+    private final double subWooferDistanceAuto = 1.25;
+    private final double subWooferAngleAuto = 115.0;
+    private final double subWooferLeftShooterSpeedAuto = 90.0;
+    private final double subWooferRightShooterSpeedAuto = subWooferLeftShooterSpeed;
+
+    private final double d2DistanceAuto = 2.15;
+    private final double d2AngleAuto = 128.0;
+    private final double d2LeftShooterSpeedAuto = 90.0;
+    private final double d2RightShooterSpeedAuto = d2LeftShooterSpeed;
+
+    private final double podiumDistanceAuto = 3.17;
+    private final double podiumAngleAuto = 135;
+    private final double podiumLeftShooterSpeedAuto = 90.0;
+    private final double podiumRightShooterSpeedAuto = d2LeftShooterSpeed;
+
+    private final double d3DistanceAuto = 4.0;
+    private final double d3AngleAuto = 137.0;
+    private final double d3LeftShooterSpeedAuto = 95.0;
+    private final double d3RightShooterSpeedAuto = d2LeftShooterSpeed;
 
     // constructor
     public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
@@ -74,6 +102,10 @@ public class AimShoot extends Command {
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
         shooterLeftSpeedInterpolation = new InterpolatingDoubleTreeMap();
         shooterRightSpeedInterpolation = new InterpolatingDoubleTreeMap();
+
+        shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
+        shooterLeftSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
+        shooterRightSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
 
         // create points in angle linear interpolation line
         // TODO tune these values
@@ -94,15 +126,38 @@ public class AimShoot extends Command {
         shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
         shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
 
+
+
+        shooterAngleInterpolationAuto.put(subWooferDistanceAuto, subWooferAngleAuto);
+        shooterAngleInterpolationAuto.put(d2DistanceAuto, d2AngleAuto);
+        shooterAngleInterpolationAuto.put(podiumDistanceAuto, podiumAngleAuto);
+        shooterAngleInterpolationAuto.put(d3DistanceAuto, d3AngleAuto);
+
+        // create points in shooter power linear interpolation line
+        // TODO tune these values
+        shooterLeftSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferLeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolationAuto.put(d2DistanceAuto, d2LeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolationAuto.put(podiumDistanceAuto, podiumLeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolationAuto.put(d3DistanceAuto, d3LeftShooterSpeedAuto);
+
+        shooterRightSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferRightShooterSpeedAuto);
+        shooterRightSpeedInterpolationAuto.put(d2DistanceAuto, d2RightShooterSpeedAuto);
+        shooterRightSpeedInterpolationAuto.put(podiumDistanceAuto, podiumRightShooterSpeedAuto);
+        shooterRightSpeedInterpolationAuto.put(d3DistanceAuto, d3RightShooterSpeedAuto);
+
     }
 
     @Override
     public void execute() {
 
         // assign target distance as variable
-        distance = eyes.getDistanceFromTarget();
 
-    
+        if (DriverStation.isAutonomous()) {
+            distance = eyes.getDistanceFromTargetAuto();
+        } else {
+            distance = eyes.getDistanceFromTarget();
+        }
+        
         // get desired shooter angle using the linear interpolation
         // x (input) = distance
         // y (output) = shooter angle
