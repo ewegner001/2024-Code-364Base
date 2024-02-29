@@ -198,8 +198,10 @@ public class RobotContainer {
             
         }*/
 
+        // zero gyro
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
+        // aim speaker
         driverLeftTrigger.whileTrue(new TeleopSwerve(
                 s_Swerve, 
                 () -> driver.getRawAxis(leftY), 
@@ -214,34 +216,49 @@ public class RobotContainer {
             //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
         );
 
-        // Go To Intake Position and back again
+        // shoot speaker
+        driverRightTrigger.onTrue(
+            new ParallelCommandGroup(
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(12))
+            )
+        ).onFalse(
+            new ParallelCommandGroup(
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
+            )
+        );
+
+        // intake
         driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
+
+        // outake
+        driverA.whileTrue(new ParallelCommandGroup(
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition)),
+            new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.reverseIntakeVoltage))
+        ));
+
+        // climb reach
+        driverLB.onTrue(
+            new ParallelCommandGroup(
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(15)),
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition))
+            )
+        );
+
+
+        // climb pull up
+        driverRB.onTrue(
+            new ParallelCommandGroup(
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(3))
+                
+            )
+        );
 
 
         /* Operator Buttons */
-        // Reverse Shooter and Loader
-        operatorLB.onTrue(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage)), // Reverse the Shooter Loader
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(-s_Shooter.runShooterVoltage, s_Shooter.runShooterVoltage)) // Reverse the Shooter
-        ))
-        .onFalse(new ParallelCommandGroup(
-            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)), // Stop the Shooter Loader
-            new InstantCommand(() -> s_Shooter.setShooterVoltage(s_Shooter.stopShooterVoltage, s_Shooter.stopShooterVoltage)) // Stop the Shooter
-        ));
-
-
-
-        operatorA.onTrue(
-
-            new InstantCommand(() -> s_Elevator.SetElevatorPosition(10))
-
-        ).onFalse(
-
-            new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
-        );
         
-        
-        operatorY.onTrue(
+        // aim amp
+        operatorLeftTrigger.onTrue(
 
             new SequentialCommandGroup(
                 new AmpElevator(s_Elevator),
@@ -256,6 +273,7 @@ public class RobotContainer {
                 )
         );
 
+        // shoot amp
         operatorRightTrigger.onTrue(
             new ParallelCommandGroup(
                 //new InstantCommand(() -> s_Shooter.setShooterVoltage(3, -3)),
@@ -267,17 +285,14 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
             )
         );
-        
 
-        
-        operatorY.onTrue(new InstantCommand(() -> s_Elevator.SetElevatorPosition(15)));
-        operatorX.onTrue(
-            new ParallelCommandGroup(
-                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(3))
-                
-            )
+        // move elevator down (emergency use)
+        operatorA.onTrue(
+
+            new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+
         );
+        
 
     }
 
