@@ -48,6 +48,8 @@ public class Intake extends SubsystemBase {
 
   private final double magnetOffSet = 0.0;
 
+  private final int intakeCurrentLimit = 60;
+  private final int intakePivotCurrentLimit = 60;
 
   // local variables
   public double runIntakeVoltage = -12.0;
@@ -81,6 +83,9 @@ public class Intake extends SubsystemBase {
         .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
         .withMagnetOffset(magnetOffSet)
     );
+
+    m_Intake.setSmartCurrentLimit(intakeCurrentLimit);
+    m_IntakePivot.setSmartCurrentLimit(intakePivotCurrentLimit);
 
     // set integrated encoder to position from cancoder
 

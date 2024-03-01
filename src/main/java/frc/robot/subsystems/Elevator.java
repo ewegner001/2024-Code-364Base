@@ -56,6 +56,8 @@ public class Elevator extends SubsystemBase {
   private RelativeEncoder e_Elevator;
   private ProfiledPIDController controller;
 
+  private int elevatorCurrentLimit = 60;
+
   public double targetElevatorPosition = 0;
 
   private double heightlimit = 16;
@@ -96,7 +98,8 @@ public class Elevator extends SubsystemBase {
 
     pidController = m_elevator1.getPIDController();
     
-
+    m_elevator1.setSmartCurrentLimit(elevatorCurrentLimit);
+    m_elevator2.setSmartCurrentLimit(elevatorCurrentLimit);
 
     m_elevator1.setSoftLimit(SoftLimitDirection.kForward, (float)inchesToMotorRotations(heightlimit));
     m_elevator1.setSoftLimit(SoftLimitDirection.kReverse,(float)inchesToMotorRotations(restingposition));
