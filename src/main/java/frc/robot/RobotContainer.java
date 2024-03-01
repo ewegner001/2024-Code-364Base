@@ -231,15 +231,18 @@ public class RobotContainer {
         driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
 
         // outake
-        driverA.whileTrue(new ParallelCommandGroup(
+        driverA.whileTrue(new SequentialCommandGroup(
             new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition)),
             new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
-            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.reverseIntakeVoltage))
+            new WaitCommand(0.25),
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.reverseIntakeVoltage)),
+            new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.reverseLoaderVoltage))
         )).onFalse(
             new ParallelCommandGroup(
                 new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
-                new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage))
+                new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage))
             )
         );
 
