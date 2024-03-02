@@ -264,11 +264,16 @@ public class RobotContainer {
         */
 
         // climb reach
+        
         driverLB.onTrue(
             new SequentialCommandGroup(
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(15)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
-                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition))
+                
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16))
+                )
             )
         );
 
@@ -293,17 +298,22 @@ public class RobotContainer {
             )
 
         );
+        
 
 
         /* Operator Buttons */
         
         // aim amp
+        
         operatorLeftTrigger.whileTrue(
 
             new SequentialCommandGroup(
-                new AmpElevator(s_Elevator),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
-                new AmpShooterPivot(s_ShooterPivot)
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16)),
+                    new AmpShooterPivot(s_ShooterPivot)
+                )
             )
         ).onFalse(
                 new SequentialCommandGroup(
@@ -325,6 +335,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
             )
         );
+        
         
 
     }

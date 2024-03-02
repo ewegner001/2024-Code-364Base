@@ -50,7 +50,7 @@ public class Intake extends SubsystemBase {
 
   private final double magnetOffSet = 0.0;
 
-  private final int intakeCurrentLimit = 80;
+  private final int intakeCurrentLimit = 120;
   private final int intakePivotCurrentLimit = 60;
 
   // local variables
