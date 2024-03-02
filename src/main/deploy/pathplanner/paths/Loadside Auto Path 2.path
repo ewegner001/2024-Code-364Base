@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 8.153398228504642,
-        "y": 0.7693172207222235
+        "y": 0.5063860187032359
       },
       "prevControl": null,
       "nextControl": {
         "x": 8.192350999174122,
-        "y": 0.7693172207222235
+        "y": 0.5063860187032359
       },
       "isLocked": false,
       "linkedName": "Loadside Auto Path 1 Endpoint"

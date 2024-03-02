@@ -61,7 +61,7 @@ public class RobotContainer {
     private final JoystickButton driverLStick = new JoystickButton(driver, XboxController.Button.kLeftStick.value);
     private final JoystickButton driverRStick = new JoystickButton(driver, XboxController.Button.kRightStick.value);
     private final JoystickButton driverStart = new JoystickButton(driver, XboxController.Button.kStart.value);
-    private final JoystickButton driverBack = new JoystickButton(driver, XboxController.Button.kBack.value);
+    private final JoystickButton driverSelect = new JoystickButton(driver, XboxController.Button.kBack.value);
     private final POVButton driverDpadUp = new POVButton(driver, 0);
     private final POVButton driverDpadRight = new POVButton(driver, 90);
     private final POVButton driverDpadDown = new POVButton(driver, 180);
@@ -167,8 +167,17 @@ public class RobotContainer {
                 new WaitCommand(1.0))
                 );
 
+        Command AimThenShootFar = new ParallelRaceGroup(
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+            new SequentialCommandGroup(
+                new WaitCommand(1.5), 
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
+                new WaitCommand(1.0))
+                );
+
         NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()));
         NamedCommands.registerCommand("Score", AimThenShoot);
+        NamedCommands.registerCommand("Score Far", AimThenShootFar);
         NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
         
@@ -246,6 +255,14 @@ public class RobotContainer {
             )
         );
 
+        /*
+        driverB.whileTrue(new SequentialCommandGroup(
+            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage))
+        )).onFalse(
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)));
+        */
+
         // climb reach
         driverLB.onTrue(
             new SequentialCommandGroup(
@@ -268,7 +285,7 @@ public class RobotContainer {
         driverStart.onTrue(
 
             new SequentialCommandGroup(
-                new InstantCommand(() -> s_Elevator.setTargetElevatorPosition(15)),
+                new InstantCommand(() -> s_Elevator.setTargetElevatorPosition(16)),
                 s_Elevator.ElevatorAtPosition(),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
                 s_ShooterPivot.ShooterPivotAtPosition(),

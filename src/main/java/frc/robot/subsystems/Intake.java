@@ -34,6 +34,7 @@ public class Intake extends SubsystemBase {
   // NOTE: these positions are also used in robotcontainer.
   public final double intakeSafePosition = 102.91;
   public final double intakeGroundPosition = 9.14;
+  public final double intakeSourcePosition = intakeSafePosition;
 
   // PID values
   private final double intakePValue = 0.2;
@@ -49,7 +50,7 @@ public class Intake extends SubsystemBase {
 
   private final double magnetOffSet = 0.0;
 
-  private final int intakeCurrentLimit = 60;
+  private final int intakeCurrentLimit = 80;
   private final int intakePivotCurrentLimit = 60;
 
   // local variables
@@ -163,5 +164,6 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Intake Pivot Motor Position", e_intakePivotIntegrated.getPosition());
     SmartDashboard.putNumber("Intake setpoint", m_setPoint);
+    SmartDashboard.putNumber("Intake Current", m_Intake.getOutputCurrent());
    }
 }
