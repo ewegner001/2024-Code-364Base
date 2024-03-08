@@ -183,9 +183,7 @@ public class RobotContainer {
         
         autoChooser = AutoBuilder.buildAutoChooser();
 
-        //autoChooser.addOption("Duluth Auto", new PathPlannerAuto("Duluth Auto"));
 
-        //autoChooser.addOption("Example Auto", new PathPlannerAuto("Example Auto"));
 
         SmartDashboard.putData("Auto Chooser", autoChooser);
         
@@ -199,13 +197,6 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        /*Operator Buttons */
-        /*operatorButtonY.onTrue(new InstantCommand(()-> s_Elevator.lift()));
-        operatorButtonB.onTrue(new InstantCommand(()-> s_Elevator.stop()));
-        operatorButtonA.onTrue(new InstantCommand(()-> s_Elevator.down()));
-        if(operatorButtonY.getAsBoolean() == false && operatorButtonA.getAsBoolean() == false){
-            
-        }*/
 
         // zero gyro
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
@@ -221,8 +212,7 @@ public class RobotContainer {
                 () -> driverLeftTrigger.getAsBoolean(),
                 rotationSpeed,
                 true
-            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter))//.until(() -> Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) < s_Swerve.getTargetRotation() + Constants.AUTO_ROTATE_DEADBAND && 
-            //Math.abs(s_Swerve.getGyroYaw().getDegrees() % 360) > s_Swerve.getTargetRotation() - Constants.AUTO_ROTATE_DEADBAND)
+            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter))
         );
 
         // shoot speaker
@@ -255,13 +245,6 @@ public class RobotContainer {
             )
         );
 
-        /*
-        driverB.whileTrue(new SequentialCommandGroup(
-            new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
-            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage))
-        )).onFalse(
-            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)));
-        */
 
         // climb reach
         
@@ -326,12 +309,10 @@ public class RobotContainer {
         // shoot amp
         operatorRightTrigger.onTrue(
             new ParallelCommandGroup(
-                //new InstantCommand(() -> s_Shooter.setShooterVoltage(3, -3)),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(-6))
             )
         ).onFalse(
             new ParallelCommandGroup(
-                //new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0)),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
             )
         );
