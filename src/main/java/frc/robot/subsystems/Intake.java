@@ -10,12 +10,8 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,24 +27,18 @@ public class Intake extends SubsystemBase {
 
   // positions
   // NOTE: these positions are also used in robotcontainer.
-  public final double intakeSafePosition = 105.73;
-  public final double intakeGroundPosition = 12.56;
+  public final double intakeSafePosition = 102.91;
+  public final double intakeGroundPosition = 9.14;
+  public final double intakeSourcePosition = intakeSafePosition;
 
   // PID values
   private final double intakePValue = 0.2;
   private final double intakeIValue = 0.0;
   private final double intakeDValue = 0.0;
 
-  // feed forward controller values
-  private final double intakeSValue = 0.0;
-  private final double intakeGValue = 0.0;
-  private final double intakeVValue = 0.0;
-
   private final double intakePivotMotorGearRatio = 100.0;
 
   private final double magnetOffSet = 0.0;
-  private final int intakeCurrentLimit = 20;
-
 
   // local variables
   public double runIntakeVoltage = -12.0;
@@ -64,7 +54,6 @@ public class Intake extends SubsystemBase {
   private CANcoder e_intakePivot;
   private RelativeEncoder e_intakePivotIntegrated;
   private PIDController pid;
-  private ArmFeedforward intakePivotFeedforward;
 
 
   // constructor
@@ -83,8 +72,6 @@ public class Intake extends SubsystemBase {
         .withMagnetOffset(magnetOffSet)
     );
 
-
-
     // TODO: Go over this part with Dylan and student that wrote this. Can we simplify this?
     e_intakePivotIntegrated = m_IntakePivot.getEncoder();
     e_intakePivotIntegrated.setPositionConversionFactor(360 / intakePivotMotorGearRatio);
@@ -93,9 +80,6 @@ public class Intake extends SubsystemBase {
 
     // create PID loop for intake pivot
     pid = new PIDController(intakePValue, intakeIValue, intakeDValue);
-
-    // create PID feed forward loop for intake pivot
-    intakePivotFeedforward = new ArmFeedforward(intakeSValue, intakeGValue, intakeVValue);
 
     // go to intake safe position on initialization
     m_setPoint = intakeSafePosition;
@@ -158,5 +142,6 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Intake Pivot Motor Position", e_intakePivotIntegrated.getPosition());
     SmartDashboard.putNumber("Intake setpoint", m_setPoint);
+    SmartDashboard.putNumber("Intake Current", m_Intake.getOutputCurrent());
    }
 }

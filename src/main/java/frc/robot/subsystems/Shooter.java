@@ -8,14 +8,20 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.configs.CANcoderConfigurator;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Shooter extends SubsystemBase {
 
@@ -25,7 +31,7 @@ public class Shooter extends SubsystemBase {
   private final int leftShooterMotorID = 13;
   private final int rightShooterMotorID = 14;
   private final int loaderMotorID = 16;
-  private final int breakBeamID = 3;
+  private final int breakBeamID = 0;
 
   // loader speeds
   public final double runLoaderVoltage = 12.0;
@@ -36,6 +42,7 @@ public class Shooter extends SubsystemBase {
   public final double runShooterVoltage = 6.0;
   public final double reverseShooterVoltage = 3.0;
   public final double stopShooterVoltage = 0.0;
+
 
   // left shooter motor PID
   private final double lShooterMotorPGains = 0.05;
@@ -52,6 +59,8 @@ public class Shooter extends SubsystemBase {
   
   private final double rShooterMotorSGains = 0.0;
   private final double rShooterMotorVGains = 0.12;
+
+  private final int loaderCurrentLimit = 30;
 
   // WPILib class objects
   private TalonFX m_leftShooter;
@@ -74,6 +83,7 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
 
     // instantiate objects
+    
 
     // motors
     m_leftShooter = new TalonFX(leftShooterMotorID);
@@ -104,6 +114,7 @@ public class Shooter extends SubsystemBase {
       .withSupplyCurrentLimitEnable(true)
       .withSupplyCurrentLimit(m_CurrentLimit)
     );
+
     // right shooter motor configuration
     slotConfigsR = new Slot0Configs();
     slotConfigsR.kS = rShooterMotorSGains;
@@ -168,6 +179,10 @@ public class Shooter extends SubsystemBase {
     return breakBeam.get();
   }
 
+  public Trigger getBreakBeamTrigger() {
+    return new Trigger(() -> breakBeam.get());
+  }
+
   /*
    * This method will configure the left and right shooting motors.
    * 
@@ -204,7 +219,7 @@ public class Shooter extends SubsystemBase {
   public void shootingMotorsSetControl(double rightShooterSpeed, double leftShooterSpeed) {
 
     m_rightShooter.setControl(rm_request.withVelocity(rightShooterSpeed));
-    m_leftShooter.setControl(lm_request.withVelocity(leftShooterSpeed));
+    m_leftShooter.setControl(lm_request.withVelocity(-leftShooterSpeed));
 
   }
 
