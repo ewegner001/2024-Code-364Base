@@ -19,7 +19,7 @@ public class RunShooterLoader extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.frontShooterIntake();
+    shooter.setLoaderVoltage(12);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -30,13 +30,13 @@ public class RunShooterLoader extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.frontRollersStop();
+    shooter.setLoaderVoltage(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (shooter.sensorValue() == true) {
+    if (shooter.getBreakBeamOutput() == true) {
       return false;
     } else {
       return true;
