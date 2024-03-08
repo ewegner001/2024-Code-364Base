@@ -7,15 +7,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import java.util.function.BooleanSupplier;
-
-import com.ctre.phoenix6.configs.CANcoderConfigurator;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -59,8 +53,6 @@ public class Shooter extends SubsystemBase {
   
   private final double rShooterMotorSGains = 0.0;
   private final double rShooterMotorVGains = 0.12;
-
-  private final int loaderCurrentLimit = 30;
 
   // WPILib class objects
   private TalonFX m_leftShooter;
