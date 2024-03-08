@@ -176,3 +176,9 @@ logs/
 
 # Folder that has CTRE Phoenix Sim device config storage
 ctre_sim/
+
+# WPILib Tool config files
+.DataLogTool/
+networktables.json
+simgui-ds.json
+simgui.json
