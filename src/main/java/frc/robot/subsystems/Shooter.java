@@ -66,17 +66,11 @@ public class Shooter extends SubsystemBase {
   private VelocityVoltage lm_request;
 
   private DigitalInput breakBeam;
-
-  private TalonFXConfigurator configL;
-  private TalonFXConfigurator configR;
+  
   private TalonFXConfigurator configF;
 
   // constructor
   public Shooter() {
-
-    // instantiate objects
-    
-
     // motors
     m_leftShooter = new TalonFX(leftShooterMotorID);
     m_rightShooter = new TalonFX(rightShooterMotorID);
@@ -84,22 +78,8 @@ public class Shooter extends SubsystemBase {
 
     // break beam sensor
     breakBeam = new DigitalInput(breakBeamID);
-    
-    configL = m_leftShooter.getConfigurator();
-    configR = m_rightShooter.getConfigurator();
+
     configF = m_loader.getConfigurator();
-
-    configL.apply(
-      new CurrentLimitsConfigs()
-      .withSupplyCurrentLimitEnable(true)
-      .withSupplyCurrentLimit(m_CurrentLimit)
-    );
-
-    configR.apply(
-      new CurrentLimitsConfigs()
-      .withSupplyCurrentLimitEnable(true)
-      .withSupplyCurrentLimit(m_CurrentLimit)
-    );
 
     configF.apply(
       new CurrentLimitsConfigs()
