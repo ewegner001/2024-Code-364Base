@@ -60,14 +60,14 @@ public class AimShoot extends Command {
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
     private final double podiumDistance = 3.17;
-    private final double podiumAngle = 135;
+    private final double podiumAngle = 140;
     private final double podiumLeftShooterSpeed = 90.0;
     private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
 
     private final double d3Distance = 4.0;
     private final double d3Angle = 137.0;
     private final double d3LeftShooterSpeed = 95.0;
-    private final double d3RightShooterSpeed = d2LeftShooterSpeed;
+    private final double d3RightShooterSpeed = d3LeftShooterSpeed;
 
 
     private final double subWooferDistanceAuto = 1.25;
@@ -80,15 +80,25 @@ public class AimShoot extends Command {
     private final double d2LeftShooterSpeedAuto = 90.0;
     private final double d2RightShooterSpeedAuto = d2LeftShooterSpeed;
 
+    private final double xSpotDistance = 2.4;
+    private final double xSpotAngle = 130.0;
+    private final double xSpotLeftShooterSpeed = 90.0;
+    private final double xSpotRightShooterSpeed = d2LeftShooterSpeed;
+
     private final double podiumDistanceAuto = 3.17;
-    private final double podiumAngleAuto = 135;
+    private final double podiumAngleAuto = 138;
     private final double podiumLeftShooterSpeedAuto = 90.0;
     private final double podiumRightShooterSpeedAuto = d2LeftShooterSpeed;
 
     private final double d3DistanceAuto = 4.0;
     private final double d3AngleAuto = 137.0;
     private final double d3LeftShooterSpeedAuto = 95.0;
-    private final double d3RightShooterSpeedAuto = d2LeftShooterSpeed;
+    private final double d3RightShooterSpeedAuto = d3LeftShooterSpeed;
+
+    private final double xSpotDistanceAuto = 2.4;
+    private final double xSpotAngleAuto = 130.0;
+    private final double xSpotLeftShooterSpeedAuto = 90.0;
+    private final double xSpotRightShooterSpeedAuto = xSpotLeftShooterSpeed;
 
     // constructor
     public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
@@ -113,6 +123,7 @@ public class AimShoot extends Command {
         shooterAngleInterpolation.put(d2Distance, d2Angle);
         shooterAngleInterpolation.put(podiumDistance, podiumAngle);
         shooterAngleInterpolation.put(d3Distance, d3Angle);
+        shooterAngleInterpolation.put(xSpotDistance, xSpotAngle);
 
         // create points in shooter power linear interpolation line
         // TODO tune these values
@@ -120,11 +131,13 @@ public class AimShoot extends Command {
         shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
         shooterLeftSpeedInterpolation.put(podiumDistance, podiumLeftShooterSpeed);
         shooterLeftSpeedInterpolation.put(d3Distance, d3LeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
 
         shooterRightSpeedInterpolation.put(subWooferDistance, subWooferRightShooterSpeed);
         shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
         shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
         shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
+        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeed);
 
 
 
@@ -132,6 +145,7 @@ public class AimShoot extends Command {
         shooterAngleInterpolationAuto.put(d2DistanceAuto, d2AngleAuto);
         shooterAngleInterpolationAuto.put(podiumDistanceAuto, podiumAngleAuto);
         shooterAngleInterpolationAuto.put(d3DistanceAuto, d3AngleAuto);
+        shooterAngleInterpolationAuto.put(xSpotDistanceAuto, xSpotAngleAuto);
 
         // create points in shooter power linear interpolation line
         // TODO tune these values
@@ -139,11 +153,13 @@ public class AimShoot extends Command {
         shooterLeftSpeedInterpolationAuto.put(d2DistanceAuto, d2LeftShooterSpeedAuto);
         shooterLeftSpeedInterpolationAuto.put(podiumDistanceAuto, podiumLeftShooterSpeedAuto);
         shooterLeftSpeedInterpolationAuto.put(d3DistanceAuto, d3LeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
 
         shooterRightSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferRightShooterSpeedAuto);
         shooterRightSpeedInterpolationAuto.put(d2DistanceAuto, d2RightShooterSpeedAuto);
         shooterRightSpeedInterpolationAuto.put(podiumDistanceAuto, podiumRightShooterSpeedAuto);
         shooterRightSpeedInterpolationAuto.put(d3DistanceAuto, d3RightShooterSpeedAuto);
+        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeedAuto);
 
     }
 
@@ -152,11 +168,7 @@ public class AimShoot extends Command {
 
         // assign target distance as variable
 
-        if (DriverStation.isAutonomous()) {
-            distance = eyes.getDistanceFromTargetAuto();
-        } else {
-            distance = eyes.getDistanceFromTarget();
-        }
+        distance = eyes.getDistanceFromTarget();
         
         // get desired shooter angle using the linear interpolation
         // x (input) = distance

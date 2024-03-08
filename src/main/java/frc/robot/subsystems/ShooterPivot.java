@@ -35,7 +35,7 @@ public class ShooterPivot extends SubsystemBase {
   public final double shooterPivotStowPosition = 115.0;
   public final double shooterPivotIntakePosition = 136.75;
   public final double shooterPivotAmpPosition = 374.371;
-  public final double shooterPivotClimbPosition = 170.77;
+  public final double shooterPivotClimbPosition = shooterPivotAmpPosition;
 
   // pivot motor PID
   private final double shooterPivotPGains = 0.5;
@@ -47,6 +47,8 @@ public class ShooterPivot extends SubsystemBase {
   private final double magnetOffset = 0.0;
 
   private final double pivotTolerance = 1.0;
+
+  private final int shooterPivotCurrentLimit = 20;
 
   // WPILib class objects
   private CANSparkMax m_ShooterPivot;
@@ -83,6 +85,8 @@ public class ShooterPivot extends SubsystemBase {
     e_ShooterPivotIntegrated.setPositionConversionFactor(360 / shooterPivotGearRatio);
     e_ShooterPivotIntegrated.setPosition(cancoderInDegrees());
     e_ShooterPivotIntegrated.setVelocityConversionFactor(360 / shooterPivotGearRatio);
+
+    m_ShooterPivot.setSmartCurrentLimit(shooterPivotCurrentLimit);
 
     // set shooter angle to safe position on startup
     moveShooterPivot(shooterPivotStowPosition);

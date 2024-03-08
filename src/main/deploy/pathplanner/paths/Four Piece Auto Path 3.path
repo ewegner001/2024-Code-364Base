@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2191731551342397,
-        "y": 5.524300973408458
+        "x": 1.8430493800489387,
+        "y": 6.388254389794664
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3160154641111295,
-        "y": 5.51401363454356
+        "x": 2.1644097380721457,
+        "y": 6.592756435809432
       },
       "isLocked": false,
       "linkedName": "Four Piece Auto Path 2 Endpoint"
@@ -17,11 +17,27 @@
     {
       "anchor": {
         "x": 2.9337269587943684,
-        "y": 6.81673486715894
+        "y": 7.040713298508448
       },
       "prevControl": {
-        "x": 1.025041195989865,
-        "y": 6.836211252493679
+        "x": 2.436137909440453,
+        "y": 6.898544998693049
+      },
+      "nextControl": {
+        "x": 3.0018943074659585,
+        "y": 7.060189683843188
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.5052464814300928,
+        "y": 6.008464875767237
+      },
+      "prevControl": {
+        "x": 3.1966581608133566,
+        "y": 6.695007458816816
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +49,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.25,
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,13 +73,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 15.154068050312691,
+    "rotation": 10.619655276155157,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 26.146841235580947,
     "velocity": 0
   },
   "useDefaultConstraints": true

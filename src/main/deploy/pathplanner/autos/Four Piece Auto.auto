@@ -26,6 +26,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Score"
           }
         },
@@ -38,6 +44,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Score"
           }
         },
@@ -45,6 +57,12 @@
           "type": "path",
           "data": {
             "pathName": "Four Piece Auto Path 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         },
         {

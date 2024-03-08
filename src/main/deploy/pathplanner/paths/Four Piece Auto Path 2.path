@@ -3,37 +3,59 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.7194867201122306,
-        "y": 4.304281158977503
+        "x": 2.6513193714406413,
+        "y": 4.2361138103059135
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0837998397159132,
-        "y": 4.4483039031633425
+        "x": 2.115718774735296,
+        "y": 4.58668874633123
       },
       "isLocked": false,
       "linkedName": "Four Piece Auto Path 1 Endpoint"
     },
     {
       "anchor": {
-        "x": 3.2191731551342397,
-        "y": 5.524300973408458
+        "x": 2.8752978027901492,
+        "y": 5.67736632507666
       },
       "prevControl": {
-        "x": 1.768658374409481,
-        "y": 5.822633800656073
+        "x": 2.7204087253146287,
+        "y": 5.331143681307852
+      },
+      "nextControl": {
+        "x": 3.040847078135439,
+        "y": 6.047417646436717
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8430493800489387,
+        "y": 6.388254389794664
+      },
+      "prevControl": {
+        "x": 2.4078645547563937,
+        "y": 6.261657885118855
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Four Piece Auto Path 2 Endpoint"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.5,
+      "rotationDegrees": 47.31747671545513,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.15,
+      "waypointRelativePos": 0.0,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,13 +79,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 24.775140568831887,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 9.293308599397136,
     "velocity": 0
   },
   "useDefaultConstraints": true
