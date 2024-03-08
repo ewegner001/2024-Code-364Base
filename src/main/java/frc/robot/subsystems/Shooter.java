@@ -1,7 +1,8 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
+/*
+ * This method controls the shooting mechanism. It
+ * manages both the shooter and the loader.
+ * 
+ */
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -17,41 +18,74 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  private final double lShooterMotorSGains = 0.0;
-  private final double lShooterMotorVGains = 0.0;
-  private final double lShooterMotorPGains = 0.0;
+
+  // local constants
+  
+  //IDs
+  private final int leftShooterMotorID = 13;
+  private final int rightShooterMotorID = 14;
+  private final int loaderMotorID = 16;
+  private final int breakBeamID = 3;
+
+  // loader speeds
+  public final double runLoaderVoltage = 12.0;
+  public final double reverseLoaderVoltage = -3.0;
+  public final double stopLoaderVoltage = 0.0;
+
+  // shooter speeds
+  public final double runShooterVoltage = 6.0;
+  public final double reverseShooterVoltage = 3.0;
+  public final double stopShooterVoltage = 0.0;
+
+  // left shooter motor PID
+  private final double lShooterMotorPGains = 0.05;
   private final double lShooterMotorIGains = 0.0;
   private final double lShooterMotorDGains = 0.0;
-  private final double rShooterMotorSGains = 0.0;
-  private final double rShooterMotorVGains = 0.12;
+  private final double lShooterMotorSGains = 0.0;
+  private final double lShooterMotorVGains = 0.12;
+
+  // right shooter motor PID
   private final double rShooterMotorPGains = 0.05;
   private final double rShooterMotorIGains = 0.0;
   private final double rShooterMotorDGains = 0.0;
   private final int m_CurrentLimit = 40;
   
+  private final double rShooterMotorSGains = 0.0;
+  private final double rShooterMotorVGains = 0.12;
 
+  // WPILib class objects
+  private TalonFX m_leftShooter;
+  private TalonFX m_rightShooter;
+  private TalonFX m_loader;
 
-
-  private TalonFX leftShooterMotor;
-  private TalonFX rightShooterMotor;
-  private TalonFX frontShooterMotor;
-  private DigitalInput inputSensor;
   private Slot0Configs slotConfigsR;
   private Slot0Configs slotConfigsL;
+
   private VelocityVoltage rm_request;
   private VelocityVoltage lm_request;
+
+  private DigitalInput breakBeam;
+
   private TalonFXConfigurator configL;
   private TalonFXConfigurator configR;
   private TalonFXConfigurator configF;
 
-  
-  /** Creates a new Shooter. */
+  // constructor
   public Shooter() {
-    leftShooterMotor = new TalonFX(13);
-    rightShooterMotor = new TalonFX(14);
-    frontShooterMotor = new TalonFX(16);
-    inputSensor = new DigitalInput(3);
-    configL = leftShooterMotor.getConfigurator();
+
+    // instantiate objects
+
+    // motors
+    m_leftShooter = new TalonFX(leftShooterMotorID);
+    m_rightShooter = new TalonFX(rightShooterMotorID);
+    m_loader = new TalonFX(loaderMotorID);
+
+    // break beam sensor
+    breakBeam = new DigitalInput(breakBeamID);
+    
+    configL = m_leftShooter.getConfigurator();
+    configR = m_rightShooter.getConfigurator();
+    configF = m_loader.getConfigurator();
 
     configL.apply(
       new CurrentLimitsConfigs()
@@ -70,92 +104,138 @@ public class Shooter extends SubsystemBase {
       .withSupplyCurrentLimitEnable(true)
       .withSupplyCurrentLimit(m_CurrentLimit)
     );
-
+    // right shooter motor configuration
     slotConfigsR = new Slot0Configs();
     slotConfigsR.kS = rShooterMotorSGains;
     slotConfigsR.kV = rShooterMotorVGains;
     slotConfigsR.kP = rShooterMotorPGains; 
     slotConfigsR.kI = rShooterMotorIGains;
     slotConfigsR.kD = rShooterMotorDGains;
-    rm_request = new VelocityVoltage(0).withSlot(0);
+
+    // left shooter motor configuration
     slotConfigsL = new Slot0Configs();
     slotConfigsL.kS = lShooterMotorSGains;
     slotConfigsL.kV = lShooterMotorVGains;
     slotConfigsL.kP = lShooterMotorPGains;
     slotConfigsL.kI = lShooterMotorIGains;
     slotConfigsL.kD = lShooterMotorDGains;
-    lm_request = new VelocityVoltage(0);
 
-    leftShooterMotor.setNeutralMode(NeutralModeValue.Coast);
-    rightShooterMotor.setNeutralMode(NeutralModeValue.Coast);
+    // set shooter motors to coast mode
+    m_leftShooter.setNeutralMode(NeutralModeValue.Coast);
+    m_rightShooter.setNeutralMode(NeutralModeValue.Coast);
 
+    // log data
     SmartDashboard.putNumber("RShooter kP", slotConfigsR.kP);
     SmartDashboard.putNumber("RShooter kV", slotConfigsR.kV);
     SmartDashboard.putNumber("RShooter Speed", 0);
     SmartDashboard.putNumber("LShooter kP", slotConfigsL.kP);
     SmartDashboard.putNumber("LShooter kV", slotConfigsL.kV);
     SmartDashboard.putNumber("LShooter Speed", 0);
+
+    // configure shooter motors
     shootingMotorsConfig();
+
+    // PID Velocity target
+    rm_request = new VelocityVoltage(0);
+    lm_request = new VelocityVoltage(0);
   }
 
-  public void frontShooterIntake() {
-    frontShooterMotor.setVoltage(12.0);  
+  /*
+   * This method will set the voltage of the loader.
+   * It can be used to start and stop the loader.
+   * 
+   * parameters:
+   * desired voltage      (double)
+   * 
+   * returns:
+   * none
+   */
+  public void setLoaderVoltage(double loaderSpeedVoltage) {
+    m_loader.setVoltage(loaderSpeedVoltage);  
   }
 
-    public void frontShooterOutake() {
-    frontShooterMotor.setVoltage(-3.0);  
+  /*
+   * This method will get the output of the break beam sensor
+   * as a boolean
+   * 
+   * parameters:
+   * none
+   * 
+   * returns:
+   * none
+   */
+  public boolean getBreakBeamOutput() {
+    return breakBeam.get();
   }
 
-  // public void shooterIntakeStop() {
-  //   if (inputSensor.get() == true) {
-  //     frontShooterMotor.stopMotor();
-  //   }
-  // }
-
-  public void frontRollersStop() {
-    frontShooterMotor.setVoltage(0);
-  }
-
-  public boolean sensorValue() {
-    return inputSensor.get();
-  }
-
+  /*
+   * This method will configure the left and right shooting motors.
+   * 
+   * parameters:
+   * none
+   * 
+   * returns:
+   * none
+   */
   public void shootingMotorsConfig() {
+
+    // get configurations
     slotConfigsR.kP = SmartDashboard.getNumber("RShooter kP", 0);
     slotConfigsR.kV = SmartDashboard.getNumber("RShooter kV", 0);
     slotConfigsL.kP = SmartDashboard.getNumber("LShooter kP", 0);
     slotConfigsL.kV = SmartDashboard.getNumber("LShooter kV", 0);
-    rightShooterMotor.getConfigurator().apply(slotConfigsR);
-    leftShooterMotor.getConfigurator().apply(slotConfigsL);
+
+    // set configurations to motors
+    m_rightShooter.getConfigurator().apply(slotConfigsR);
+    m_leftShooter.getConfigurator().apply(slotConfigsL);
   }
 
+  /*
+   * This method will set the speed of the shooter motors using a PID loop
+   * with a velocity input.
+   * 
+   * parameters:
+   * right shooter motor velocity       (double)
+   * left shooter motor velocity        (double)
+   * 
+   * returns:
+   * none
+   */
   public void shootingMotorsSetControl(double rightShooterSpeed, double leftShooterSpeed) {
 
-    rightShooterMotor.setControl(rm_request.withVelocity(rightShooterSpeed));
-    leftShooterMotor.setControl(lm_request.withVelocity(leftShooterSpeed));
+    m_rightShooter.setControl(rm_request.withVelocity(rightShooterSpeed));
+    m_leftShooter.setControl(lm_request.withVelocity(leftShooterSpeed));
 
   }
 
+  /*
+   * This method will set the speed of the shooter by assigning a voltage to
+   * the motors.
+   * 
+   * parameters:
+   * right shooter motor voltage         (double)
+   * left shooter motor voltage          (double)
+   * 
+   * returns:
+   * none
+   */
   public void setShooterVoltage(double rightVoltage, double leftVoltage) {
-    rightShooterMotor.setVoltage(rightVoltage);
-    leftShooterMotor.setVoltage(leftVoltage);
-  }
 
-  public void stop() {
-    rightShooterMotor.setControl(rm_request.withVelocity(0));
-    leftShooterMotor.setControl(rm_request.withVelocity(0));
+    m_rightShooter.setVoltage(rightVoltage);
+    m_leftShooter.setVoltage(leftVoltage);
+
   }
 
 
-  
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run    
-    SmartDashboard.putNumber("Right Shooter Speed", rightShooterMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Left Shooter Speed", leftShooterMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("Right Shooter Temp", rightShooterMotor.getDeviceTemp().getValueAsDouble());
-    SmartDashboard.putNumber("Left Shooter Temp", leftShooterMotor.getDeviceTemp().getValueAsDouble());
-    SmartDashboard.putBoolean("Break Beam Sensor", sensorValue());
+
+    // log shooting data
+    SmartDashboard.putNumber("Right Shooter Speed", m_rightShooter.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Left Shooter Speed", m_leftShooter.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Right Shooter Temp", m_rightShooter.getDeviceTemp().getValueAsDouble());
+    SmartDashboard.putNumber("Left Shooter Temp", m_leftShooter.getDeviceTemp().getValueAsDouble());
+    SmartDashboard.putBoolean("Break Beam Sensor", getBreakBeamOutput());
   }
 }
