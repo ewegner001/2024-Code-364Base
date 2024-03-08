@@ -40,6 +40,10 @@ public class Intake extends SubsystemBase {
 
   private final double magnetOffSet = 0.0;
 
+  // Kermit Limits
+  private final int intakeCurrentLimit = 120;
+  private final int intakePivotCurrentLimit = 60;
+
   // local variables
   public double runIntakeVoltage = -12.0;
   public double reverseIntakeVoltage = 12.0;
@@ -70,7 +74,10 @@ public class Intake extends SubsystemBase {
       new MagnetSensorConfigs()
         .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
         .withMagnetOffset(magnetOffSet)
-    );
+    );    
+    
+    m_Intake.setSmartCurrentLimit(intakeCurrentLimit);
+    m_IntakePivot.setSmartCurrentLimit(intakePivotCurrentLimit);
 
     // TODO: Go over this part with Dylan and student that wrote this. Can we simplify this?
     e_intakePivotIntegrated = m_IntakePivot.getEncoder();
