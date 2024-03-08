@@ -18,6 +18,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -32,15 +34,21 @@ public class ShooterPivot extends SubsystemBase {
   // positions
   public final double shooterPivotStowPosition = 115.0;
   public final double shooterPivotIntakePosition = 136.75;
+  public final double shooterPivotAmpPosition = 374.371;
+  public final double shooterPivotClimbPosition = shooterPivotAmpPosition;
 
   // pivot motor PID
-  private final double shooterPivotPGains = 0.3;
+  private final double shooterPivotPGains = 0.5;
   private final double shooterPivotIGains = 0;
   private final double shooterPivotDGains = 0;
   private final double shooterPivotGGains = 0;
 
   private final double shooterPivotGearRatio = 54.545;
   private final double magnetOffset = 0.0;
+
+  private final double pivotTolerance = 1.0;
+
+  private final int shooterPivotCurrentLimit = 20;
 
   // WPILib class objects
   private CANSparkMax m_ShooterPivot;
@@ -78,6 +86,8 @@ public class ShooterPivot extends SubsystemBase {
     e_ShooterPivotIntegrated.setPosition(cancoderInDegrees());
     e_ShooterPivotIntegrated.setVelocityConversionFactor(360 / shooterPivotGearRatio);
 
+    m_ShooterPivot.setSmartCurrentLimit(shooterPivotCurrentLimit);
+
     // set shooter angle to safe position on startup
     moveShooterPivot(shooterPivotStowPosition);
   }
@@ -111,6 +121,23 @@ public class ShooterPivot extends SubsystemBase {
   }
 
 
+  public boolean atPosition() {
+
+    double error = Math.abs(cancoderInDegrees() - m_setPoint);
+
+    if (pivotTolerance >= error) {
+        return true;
+
+    } else {
+        return false;
+    }
+
+    }
+
+  public Command ShooterPivotAtPosition(){
+          return Commands.waitUntil(() -> atPosition());
+  }
+
 
  
   @Override
@@ -122,7 +149,7 @@ public class ShooterPivot extends SubsystemBase {
     m_ShooterPivot.setVoltage(m_ShooterPivotVoltage);
 
     // log data
-    SmartDashboard.putNumber("Shooter Voltage", m_ShooterPivotVoltage);
+    SmartDashboard.putNumber("Shooter Pivot Voltage", m_ShooterPivotVoltage);
     SmartDashboard.putNumber("Shooter CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Shooter Pivot Motor Position", e_ShooterPivotIntegrated.getPosition());
     SmartDashboard.putNumber("Shooter setpoint", m_setPoint);

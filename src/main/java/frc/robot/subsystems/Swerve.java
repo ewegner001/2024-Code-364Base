@@ -53,7 +53,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 public class Swerve extends SubsystemBase {
 
     // subsystems
-    public Eyes eyes;
 
     // WPILib class objects
     public SwerveDriveOdometry swerveOdometry;
@@ -78,7 +77,6 @@ public class Swerve extends SubsystemBase {
 
         // instantiate objects 
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
-        eyes = new Eyes();
         m_field = new Field2d();
 
         // set gyro
@@ -108,7 +106,7 @@ public class Swerve extends SubsystemBase {
 
         // create autobuilder
         AutoBuilder.configureHolonomic(
-                this::getPose, // Robot pose supplier
+                this::getPose, // Robot pose supplier use getPose to disable apriltags for auto
                 this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
                 this::getChassisSpeed, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 this::setChassisSpeed, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
@@ -133,16 +131,17 @@ public class Swerve extends SubsystemBase {
                 this // Reference to this subsystem to set requirements
         );
       
-        // create pose estimator
+                // create pose estimator
         m_poseEstimator =
-          new SwerveDrivePoseEstimator(
-             Constants.Swerve.swerveKinematics,
-             gyro.getRotation2d(),
-             getModulePositions(),
-             new Pose2d(),
-             VecBuilder.fill(0.1, 0.1, 0.1),
-             VecBuilder.fill(1.5, 1.5, 1.5)
-          );
+                new SwerveDrivePoseEstimator(
+                   Constants.Swerve.swerveKinematics,
+                   gyro.getRotation2d(),
+                   getModulePositions(),
+                   new Pose2d(),
+                   VecBuilder.fill(0.1, 0.1, 0.1),
+                   VecBuilder.fill(1.5, 1.5, 1.5)
+                );
+
     }
 
 
@@ -247,9 +246,15 @@ public class Swerve extends SubsystemBase {
         return swerveOdometry.getPoseMeters();
     }
 
+    public Pose2d getEstimatedPose() {
+        return m_poseEstimator.getEstimatedPosition();
+    }
+
     public void setPose(Pose2d pose) {
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
+        m_poseEstimator.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
+
 
     public Rotation2d getHeading(){
         return getPose().getRotation();
@@ -260,7 +265,13 @@ public class Swerve extends SubsystemBase {
     }
 
     public void zeroHeading(){
-        swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d()));
+        } else {
+            swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), new Pose2d(getPose().getTranslation(), new Rotation2d(Math.PI)));
+        }
+        
     }
 
     public Rotation2d getGyroYaw(){
@@ -273,51 +284,8 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    public double getTargetRotation() {
 
-        Pose2d robotPose = m_poseEstimator.getEstimatedPosition();
-        Pose3d targetPose = eyes.getTargetPose();
 
-        double robotX = robotPose.getX();
-        double robotY = robotPose.getY();
-
-        double targetX = targetPose.getX();
-        double targetY = targetPose.getY();
-
-        double angle =  (Math.atan((targetY - robotY) / (targetX - robotX)) * (180 / Math.PI));
-
-        if (robotX > targetX) {
-
-            angle = angle + 180;
-
-        }
-
-        SmartDashboard.putNumber("angle", angle);
-        SmartDashboard.putNumber(" inverted angle", -angle);
-
-        return -angle;
-    }
-
-    public double getDistanceFromTarget() {
-
-        double distance;
-
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-
-            double xDistanceToSpeaker = Constants.Positions.speakerBlueX - m_poseEstimator.getEstimatedPosition().getX();
-            double yDistanceToSpeaker = Constants.Positions.speakerBlueY - m_poseEstimator.getEstimatedPosition().getY();
-            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) - Math.pow(yDistanceToSpeaker, 2));
-
-        } else {
-
-            double xDistanceToSpeaker = Constants.Positions.speakerRedX - m_poseEstimator.getEstimatedPosition().getX();
-            double yDistanceToSpeaker = Constants.Positions.speakerRedY - m_poseEstimator.getEstimatedPosition().getY();
-            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) - Math.pow(yDistanceToSpeaker, 2));
-
-        }
-
-        return distance;
-    }
 
     @Override
     public void periodic(){
@@ -327,14 +295,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("ChassisSpeedY", getChassisSpeed().vyMetersPerSecond);
         SmartDashboard.putNumber("ChassisSpeedOmega", getChassisSpeed().omegaRadiansPerSecond);
 
-        m_poseEstimator.update(getGyroYaw(), getModulePositions());
 
-        if (LimelightHelpers.getTV("") == true) {
-            m_poseEstimator.addVisionMeasurement(
-                eyes.getRobotPose(), 
-                Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0)
-            );
-        }
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
@@ -346,11 +307,7 @@ public class Swerve extends SubsystemBase {
         SmartDashboard.putNumber("Robot Y", swerveOdometry.getPoseMeters().getY());
         SmartDashboard.putNumber("gyro angle", getGyroYaw().getDegrees());
 
-        SmartDashboard.putNumber("Pose estimator rotations", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
-        SmartDashboard.putNumber("Pose Estimator X", m_poseEstimator.getEstimatedPosition().getX());
-        SmartDashboard.putNumber("Pose Estimator Y", m_poseEstimator.getEstimatedPosition().getY());
-        SmartDashboard.putNumber("target X", eyes.getTargetPose().getX());
-        SmartDashboard.putNumber("target Y", eyes.getTargetPose().getY());
+
 
         posePublisher.set(getPose());
         swerveKinematicsPublisher.set(getModuleStates());

@@ -19,6 +19,7 @@ import frc.robot.subsystems.Eyes;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -26,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class AimShoot extends Command {
 
     // required subystems
-    private Swerve swerve;
     private Eyes eyes;
     private ShooterPivot shooterPivot;  
     private Shooter shooter;
@@ -34,23 +34,132 @@ public class AimShoot extends Command {
 
     // required WPILib class objects
     private InterpolatingDoubleTreeMap shooterAngleInterpolation;
-    private InterpolatingDoubleTreeMap shooterSpeedInterpolation;
+    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolation;
+    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolation;
+
+    private InterpolatingDoubleTreeMap shooterAngleInterpolationAuto;
+    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationAuto;
+    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationAuto;
 
     // local variables
     private double shooterAngle;
-    private double shooterSpeed;
+    private double leftShooterSpeed;
+    private double rightShooterSpeed;
+
+    // positions 
+
+    //Higher note shot is lower angle!!!
+    private final double subWooferDistance = 1.25;
+    private final double subWooferAngle = 115.0;
+    private final double subWooferLeftShooterSpeed = 90.0;
+    private final double subWooferRightShooterSpeed = subWooferLeftShooterSpeed;
+
+    private final double d2Distance = 2.15;
+    private final double d2Angle = 128.0;
+    private final double d2LeftShooterSpeed = 90.0;
+    private final double d2RightShooterSpeed = d2LeftShooterSpeed;
+
+    private final double podiumDistance = 3.17;
+    private final double podiumAngle = 140;
+    private final double podiumLeftShooterSpeed = 90.0;
+    private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
+
+    private final double d3Distance = 4.0;
+    private final double d3Angle = 137.0;
+    private final double d3LeftShooterSpeed = 95.0;
+    private final double d3RightShooterSpeed = d3LeftShooterSpeed;
+
+
+    private final double subWooferDistanceAuto = 1.25;
+    private final double subWooferAngleAuto = 115.0;
+    private final double subWooferLeftShooterSpeedAuto = 90.0;
+    private final double subWooferRightShooterSpeedAuto = subWooferLeftShooterSpeed;
+
+    private final double d2DistanceAuto = 2.15;
+    private final double d2AngleAuto = 128.0;
+    private final double d2LeftShooterSpeedAuto = 90.0;
+    private final double d2RightShooterSpeedAuto = d2LeftShooterSpeed;
+
+    private final double xSpotDistance = 2.4;
+    private final double xSpotAngle = 130.0;
+    private final double xSpotLeftShooterSpeed = 90.0;
+    private final double xSpotRightShooterSpeed = d2LeftShooterSpeed;
+
+    private final double podiumDistanceAuto = 3.17;
+    private final double podiumAngleAuto = 138;
+    private final double podiumLeftShooterSpeedAuto = 90.0;
+    private final double podiumRightShooterSpeedAuto = d2LeftShooterSpeed;
+
+    private final double d3DistanceAuto = 4.0;
+    private final double d3AngleAuto = 137.0;
+    private final double d3LeftShooterSpeedAuto = 95.0;
+    private final double d3RightShooterSpeedAuto = d3LeftShooterSpeed;
+
+    private final double xSpotDistanceAuto = 2.4;
+    private final double xSpotAngleAuto = 130.0;
+    private final double xSpotLeftShooterSpeedAuto = 90.0;
+    private final double xSpotRightShooterSpeedAuto = xSpotLeftShooterSpeed;
 
     // constructor
-    public AimShoot(Swerve swerve, ShooterPivot shooterPivot, Shooter shooter) {
-
-        this.swerve = swerve;
+    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
+        this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
 
-        addRequirements(swerve, shooterPivot, shooter);
+        addRequirements(eyes, shooterPivot, shooter);
 
         // instantiate objects
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
+        shooterLeftSpeedInterpolation = new InterpolatingDoubleTreeMap();
+        shooterRightSpeedInterpolation = new InterpolatingDoubleTreeMap();
+
+        shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
+        shooterLeftSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
+        shooterRightSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
+
+        // create points in angle linear interpolation line
+        // TODO tune these values
+        shooterAngleInterpolation.put(subWooferDistance, subWooferAngle);
+        shooterAngleInterpolation.put(d2Distance, d2Angle);
+        shooterAngleInterpolation.put(podiumDistance, podiumAngle);
+        shooterAngleInterpolation.put(d3Distance, d3Angle);
+        shooterAngleInterpolation.put(xSpotDistance, xSpotAngle);
+
+        // create points in shooter power linear interpolation line
+        // TODO tune these values
+        shooterLeftSpeedInterpolation.put(subWooferDistance, subWooferLeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(podiumDistance, podiumLeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(d3Distance, d3LeftShooterSpeed);
+        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
+
+        shooterRightSpeedInterpolation.put(subWooferDistance, subWooferRightShooterSpeed);
+        shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
+        shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
+        shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
+        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeed);
+
+
+
+        shooterAngleInterpolationAuto.put(subWooferDistanceAuto, subWooferAngleAuto);
+        shooterAngleInterpolationAuto.put(d2DistanceAuto, d2AngleAuto);
+        shooterAngleInterpolationAuto.put(podiumDistanceAuto, podiumAngleAuto);
+        shooterAngleInterpolationAuto.put(d3DistanceAuto, d3AngleAuto);
+        shooterAngleInterpolationAuto.put(xSpotDistanceAuto, xSpotAngleAuto);
+
+        // create points in shooter power linear interpolation line
+        // TODO tune these values
+        shooterLeftSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferLeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolationAuto.put(d2DistanceAuto, d2LeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolationAuto.put(podiumDistanceAuto, podiumLeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolationAuto.put(d3DistanceAuto, d3LeftShooterSpeedAuto);
+        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
+
+        shooterRightSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferRightShooterSpeedAuto);
+        shooterRightSpeedInterpolationAuto.put(d2DistanceAuto, d2RightShooterSpeedAuto);
+        shooterRightSpeedInterpolationAuto.put(podiumDistanceAuto, podiumRightShooterSpeedAuto);
+        shooterRightSpeedInterpolationAuto.put(d3DistanceAuto, d3RightShooterSpeedAuto);
+        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeedAuto);
 
     }
 
@@ -58,18 +167,9 @@ public class AimShoot extends Command {
     public void execute() {
 
         // assign target distance as variable
-        distance = swerve.getDistanceFromTarget();
 
-        // create points in angle linear interpolation line
-        // TODO tune these values
-        shooterAngleInterpolation.put(0.0, 0.0);
-        shooterAngleInterpolation.put(1.0, 1.0);
-
-        // create points in shooter power linear interpolation line
-        // TODO tune these values
-        shooterSpeedInterpolation.put(0.0, 0.0);
-        shooterSpeedInterpolation.put(1.0, 1.0);
-    
+        distance = eyes.getDistanceFromTarget();
+        
         // get desired shooter angle using the linear interpolation
         // x (input) = distance
         // y (output) = shooter angle
@@ -78,19 +178,16 @@ public class AimShoot extends Command {
         // get desired shooter power using the linear interpolation
         // x (input) = distance
         // y (output) = shooter power
-        shooterSpeed = shooterSpeedInterpolation.get(distance);
+        leftShooterSpeed = shooterLeftSpeedInterpolation.get(distance);
+        rightShooterSpeed = shooterRightSpeedInterpolation.get(distance);
+        
+
 
         // move shooter to calculated angle
         shooterPivot.moveShooterPivot(shooterAngle);
 
         // set shooter speed power to calculated value
-        shooter.shootingMotorsSetControl(shooterSpeed, shooterSpeed);
-
-        // wait for robot to reach correct configuration
-        Timer.delay(0.5);
-
-        // fire by running loader
-        shooter.setLoaderVoltage(shooter.runLoaderVoltage);
+        shooter.shootingMotorsSetControl(rightShooterSpeed, leftShooterSpeed);
 
     }
 
@@ -98,6 +195,7 @@ public class AimShoot extends Command {
     @Override
     public void end(boolean interrupted) {
         shooter.setLoaderVoltage(shooter.stopLoaderVoltage);
+        shooter.setShooterVoltage(shooter.stopShooterVoltage, shooter.stopShooterVoltage);
     }
 
     // Returns true when the command should end.

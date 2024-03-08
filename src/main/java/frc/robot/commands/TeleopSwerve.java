@@ -87,7 +87,7 @@ public class TeleopSwerve extends Command {
         // get drive values from controller sticks
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband) * rotationSpeed;
-        double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+        double rotationVal = -MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
         // set drive values to slow mode constants if slow mode is activated
         if (slowModeSup.getAsBoolean()) {

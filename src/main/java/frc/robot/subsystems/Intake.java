@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
@@ -31,8 +32,9 @@ public class Intake extends SubsystemBase {
 
   // positions
   // NOTE: these positions are also used in robotcontainer.
-  public final double intakeSafePosition = 105.73;
-  public final double intakeGroundPosition = 12.56;
+  public final double intakeSafePosition = 102.91;
+  public final double intakeGroundPosition = 9.14;
+  public final double intakeSourcePosition = intakeSafePosition;
 
   // PID values
   private final double intakePValue = 0.2;
@@ -48,6 +50,8 @@ public class Intake extends SubsystemBase {
 
   private final double magnetOffSet = 0.0;
 
+  private final int intakeCurrentLimit = 120;
+  private final int intakePivotCurrentLimit = 60;
 
   // local variables
   public double runIntakeVoltage = -12.0;
@@ -81,6 +85,9 @@ public class Intake extends SubsystemBase {
         .withAbsoluteSensorRange(AbsoluteSensorRangeValue.Signed_PlusMinusHalf)
         .withMagnetOffset(magnetOffSet)
     );
+
+    m_Intake.setSmartCurrentLimit(intakeCurrentLimit);
+    m_IntakePivot.setSmartCurrentLimit(intakePivotCurrentLimit);
 
     // set integrated encoder to position from cancoder
 
@@ -157,5 +164,6 @@ public class Intake extends SubsystemBase {
     SmartDashboard.putNumber("Intake CANcoder", cancoderInDegrees());
     SmartDashboard.putNumber("Intake Pivot Motor Position", e_intakePivotIntegrated.getPosition());
     SmartDashboard.putNumber("Intake setpoint", m_setPoint);
+    SmartDashboard.putNumber("Intake Current", m_Intake.getOutputCurrent());
    }
 }
