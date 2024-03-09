@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.6887664017838722,
+        "y": 6.862550215827963
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.274835434121652,
+        "y": 7.576911245120637
+      },
+      "isLocked": false,
+      "linkedName": "Ampside Auto path 2 Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 8.211702357784173,
+        "y": 7.6003329182121995
+      },
+      "prevControl": {
+        "x": 7.211702357784173,
+        "y": 7.6003329182121995
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ampside Auto path 3 Endpoint"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.2,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Intake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
