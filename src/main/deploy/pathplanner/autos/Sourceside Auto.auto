@@ -20,7 +20,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loadside Auto Path 1"
+            "pathName": "Sourceside Auto Path 1"
           }
         },
         {
@@ -32,7 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loadside Auto Path 2"
+            "pathName": "Sourceside Auto Path 2"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Loadside Auto Path 3"
+            "pathName": "Sourceside Auto Path 3"
           }
         }
       ]

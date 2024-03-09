@@ -160,8 +160,8 @@ public class RobotContainer {
         //spin up shooter when we have a note in the indexer
         s_Shooter.setDefaultCommand(
             new ConditionalCommand(
-                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0)), 
-                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(90, 90)), 
+                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
+                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(90, 90), s_Shooter), 
                 () -> s_Shooter.getBreakBeamOutput())
         );
 
@@ -288,7 +288,7 @@ public class RobotContainer {
                 
                 new ParallelCommandGroup(
                     new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16))
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             )
         );
@@ -306,11 +306,11 @@ public class RobotContainer {
         driverStart.onTrue(
 
             new SequentialCommandGroup(
-                new InstantCommand(() -> s_Elevator.setTargetElevatorPosition(16)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
                 s_ShooterPivot.ShooterPivotAtPosition(),
-                new InstantCommand(() -> s_Elevator.setTargetElevatorPosition(0))
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
             )
 
         );
@@ -327,7 +327,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
                 new ParallelCommandGroup(
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                     new AmpShooterPivot(s_ShooterPivot)
                 )
             )

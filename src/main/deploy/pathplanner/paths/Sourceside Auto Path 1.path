@@ -3,35 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.804096609379459,
-        "y": 3.9342298376174454
+        "x": 0.7036808379666589,
+        "y": 4.401663085651201
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.804096609379459,
-        "y": 1.392561551433899
+        "x": 2.5149846740974624,
+        "y": 1.22701227608861
       },
       "isLocked": false,
-      "linkedName": "Loadside Auto Path 2 Endpoint"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.221565577176232,
-        "y": 2.1716169648234906
+        "x": 8.153398228504642,
+        "y": 0.5063860187032359
       },
       "prevControl": {
-        "x": 6.595287401725457,
-        "y": 0.6037679453769348
+        "x": 7.153398228504642,
+        "y": 0.5063860187032359
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Loadside Auto Path 1 Endpoint"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
-      "rotationDegrees": 23.19029156666067,
+      "waypointRelativePos": 0.65,
+      "rotationDegrees": 0,
       "rotateFast": false
     }
   ],
@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.65,
       "command": {
         "type": "parallel",
         "data": {
@@ -56,20 +56,20 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.75,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 26.075355583948827,
+    "rotation": 0,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": -37.99873244250456,
+    "rotation": -60.94539590092283,
     "velocity": 0
   },
   "useDefaultConstraints": false
