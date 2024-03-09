@@ -36,6 +36,7 @@ public class Shooter extends SubsystemBase {
   public final double runShooterVoltage = 6.0;
   public final double reverseShooterVoltage = 3.0;
   public final double stopShooterVoltage = 0.0;
+  public final double shooterSpeedToleranceRPS = 100.0/60.0; //100 RPM
 
 
   // left shooter motor PID
@@ -214,6 +215,16 @@ public class Shooter extends SubsystemBase {
   }
 
 
+  public boolean isUpToSpeed(double setSpeed) {
+    double actualSpeed = m_leftShooter.getVelocity().getValueAsDouble();
+    double error = Math.abs(actualSpeed - setSpeed);
+    
+    if (error < shooterSpeedToleranceRPS) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   @Override
   public void periodic() {

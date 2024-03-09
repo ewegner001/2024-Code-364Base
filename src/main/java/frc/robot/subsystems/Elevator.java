@@ -65,7 +65,7 @@ public class Elevator extends SubsystemBase {
   public double restingposition = 0;
   public double shootingPosition = 12.0;
 
-  private double elevatorP = 4.0;
+  private double elevatorP = 0.005; //4.0
   private double elevatorI = 0.0;
   private double elevatorD = 0.0;
 

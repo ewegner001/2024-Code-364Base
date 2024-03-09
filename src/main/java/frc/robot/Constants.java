@@ -16,10 +16,11 @@ public final class Constants {
     public static final double stickDeadband = 0.1;
 
     public static final double ELEVATOR_SPROCKET_DIAMETER = 1.273;
-    public static final double ELEVATOR_ROTATIONS_TO_IN = (1.0 / 45.0) * ELEVATOR_SPROCKET_DIAMETER * Math.PI * 2.0;
+    public static final double ELEVATOR_GEAR_RATIO = 20.0;
+    public static final double ELEVATOR_ROTATIONS_TO_IN = (1.0 / ELEVATOR_GEAR_RATIO) * ELEVATOR_SPROCKET_DIAMETER * Math.PI * 2.0;
     public static final double ELEVATOR_TOLERANCE = 0.5;
     public static final double ELEVATOR_HIGH_LEVEL = 15.0;
-    public static final double ELEVATOR_SAFE_LEVEL = 7;
+    public static final double ELEVATOR_SAFE_LEVEL = 7.0;
 
 
     /* PID Rotation */ 
@@ -44,7 +45,7 @@ public final class Constants {
 
 
         public static final COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
-        COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
+        COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2_16T);
 
         /* Drivetrain Constants */
         public static final double trackWidth = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
@@ -104,7 +105,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 5.12; 
+        public static final double maxSpeed = 5.75; 
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 

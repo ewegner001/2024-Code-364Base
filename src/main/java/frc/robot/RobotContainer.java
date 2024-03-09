@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.sql.Driver;
 import java.time.Instant;
 import java.util.function.BooleanSupplier;
 
@@ -16,7 +17,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -103,6 +106,7 @@ public class RobotContainer {
     /* operator triggers */
     final Trigger operatorLeftTrigger = new Trigger(() -> operator.getRawAxis(operatorLeftTriggerAxis) > 0.1);
     final Trigger operatorRightTrigger = new Trigger(() -> operator.getRawAxis(operatorRightTriggerAxis) > 0.1);
+
     
     
     /* Subsystems */
@@ -153,6 +157,15 @@ public class RobotContainer {
             )
         );
 
+        //spin up shooter when we have a note in the indexer
+        s_Shooter.setDefaultCommand(
+            new ConditionalCommand(
+                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0)), 
+                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(90, 90)), 
+                () -> s_Shooter.getBreakBeamOutput())
+        );
+
+
         }
         // Configure the button bindings
         configureButtonBindings();
@@ -167,6 +180,14 @@ public class RobotContainer {
                 new WaitCommand(1.0))
                 );
 
+        Command AimThenShootAuto = new ParallelRaceGroup(
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+            new SequentialCommandGroup(
+                new WaitCommand(1.0), 
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
+                new WaitCommand(1.0)).until(() -> s_Shooter.getBreakBeamOutput())  //add .andThen() delay if this moves to early
+                );
+
         Command AimThenShootFar = new ParallelRaceGroup(
             new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
             new SequentialCommandGroup(
@@ -177,6 +198,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()));
         NamedCommands.registerCommand("Score", AimThenShoot);
+        NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
         NamedCommands.registerCommand("Score Far", AimThenShootFar);
         NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
@@ -227,7 +249,18 @@ public class RobotContainer {
         );
 
         // intake
-        driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
+        driverX.whileTrue(
+            new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
+            .until(() -> !s_Shooter.getBreakBeamOutput())
+            .andThen(new ParallelCommandGroup(
+                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")),
+                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1))
+            )))
+            .onFalse(new ParallelCommandGroup(
+                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")),
+                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))
+                )
+            );
 
         // outake
         driverA.whileTrue(new SequentialCommandGroup(
