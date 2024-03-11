@@ -237,6 +237,27 @@ public class RobotContainer {
             ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter))
         );
 
+        // aim speaker with elevator
+        driverB.whileTrue(
+
+            new ParallelCommandGroup(
+            
+                new TeleopSwerve(
+                    s_Swerve, 
+                    () -> driver.getRawAxis(leftY), 
+                    () -> driver.getRawAxis(leftX), 
+                    () -> driver.getRawAxis(rightX),
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getTargetRotation(),
+                    () -> driverLeftTrigger.getAsBoolean(),
+                    rotationSpeed,
+                    true
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter)),
+
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(16.0))
+            )
+        );
+
         // shoot speaker
         driverRightTrigger.onTrue(
             new ParallelCommandGroup(
@@ -247,6 +268,8 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
             )
         );
+
+        
 
         // intake
         driverX.whileTrue(

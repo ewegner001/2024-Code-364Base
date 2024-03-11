@@ -41,6 +41,10 @@ public class AimShoot extends Command {
     private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationAuto;
     private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationAuto;
 
+    private InterpolatingDoubleTreeMap shooterAngleInterpolationElevator;
+    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationElevator;
+    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationElevator;
+
     // local variables
     private double shooterAngle;
     private double leftShooterSpeed;
@@ -100,6 +104,13 @@ public class AimShoot extends Command {
     private final double xSpotLeftShooterSpeedAuto = 90.0;
     private final double xSpotRightShooterSpeedAuto = xSpotLeftShooterSpeed;
 
+
+    private final double elevatorShotDistance = 3.17;
+    private final double elevatorShotAngle = 138;
+    private final double elevatorShotLeftShooterSpeed = 90;
+    private final double elevatorShotRightShooterSpeed = elevatorShotLeftShooterSpeed;
+
+
     // constructor
     public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
         this.eyes = eyes;
@@ -116,6 +127,10 @@ public class AimShoot extends Command {
         shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
         shooterLeftSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
         shooterRightSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
+
+        shooterAngleInterpolationElevator = new InterpolatingDoubleTreeMap();
+        shooterLeftSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
+        shooterRightSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
 
         // create points in angle linear interpolation line
         // TODO tune these values
@@ -160,6 +175,10 @@ public class AimShoot extends Command {
         shooterRightSpeedInterpolationAuto.put(podiumDistanceAuto, podiumRightShooterSpeedAuto);
         shooterRightSpeedInterpolationAuto.put(d3DistanceAuto, d3RightShooterSpeedAuto);
         shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeedAuto);
+
+        shooterAngleInterpolationElevator.put(elevatorShotDistance, elevatorShotAngle);
+        shooterLeftSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotLeftShooterSpeed);
+        shooterRightSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotRightShooterSpeed);
 
     }
 
