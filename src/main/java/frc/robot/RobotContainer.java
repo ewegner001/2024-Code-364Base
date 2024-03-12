@@ -250,7 +250,7 @@ public class RobotContainer {
                         () -> driver.getRawAxis(rightX),
                         () -> driverDpadUp.getAsBoolean(),
                         () -> s_Eyes.getTargetRotation(),
-                        () -> driverLeftTrigger.getAsBoolean(),
+                        () -> driverB.getAsBoolean(),
                         rotationSpeed,
                         true
                     ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
@@ -310,7 +310,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Eyes.getTargetRotation(),
-                () -> driverLeftTrigger.getAsBoolean(),
+                () -> driverDpadDown.getAsBoolean(),
                 rotationSpeed,
                 true
             ).alongWith(new ShootSubwoofer(s_ShooterPivot, s_Shooter))
@@ -323,7 +323,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Eyes.getTargetRotation(),
-                () -> driverLeftTrigger.getAsBoolean(),
+                () -> driverDpadLeft.getAsBoolean(),
                 rotationSpeed,
                 true
             ).alongWith(new ShootXSpot(s_ShooterPivot, s_Shooter))
@@ -336,7 +336,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(rightX),
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Eyes.getTargetRotation(),
-                () -> driverLeftTrigger.getAsBoolean(),
+                () -> driverDpadUp.getAsBoolean(),
                 rotationSpeed,
                 true
             ).alongWith(new ShootPodium(s_ShooterPivot, s_Shooter))
