@@ -15,6 +15,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Eyes;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
@@ -30,6 +31,8 @@ public class AimShoot extends Command {
     private Eyes eyes;
     private ShooterPivot shooterPivot;  
     private Shooter shooter;
+    private Elevator elevator;
+
     private double distance;
 
     // required WPILib class objects
@@ -49,6 +52,8 @@ public class AimShoot extends Command {
     private double shooterAngle;
     private double leftShooterSpeed;
     private double rightShooterSpeed;
+
+    public boolean isElevatorShot = false;
 
     // positions 
 
@@ -112,7 +117,7 @@ public class AimShoot extends Command {
 
 
     // constructor
-    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
+    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot) {
         this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
@@ -187,11 +192,16 @@ public class AimShoot extends Command {
 
         // assign target distance as variable
 
-        distance = eyes.getDistanceFromTarget();
+        if (isElevatorShot == true) {
+            distance = elevatorShotDistance;
+        } else {
+            distance = eyes.getDistanceFromTarget();
+        }
         
         // get desired shooter angle using the linear interpolation
         // x (input) = distance
         // y (output) = shooter angle
+        
         shooterAngle = shooterAngleInterpolation.get(distance);
 
         // get desired shooter power using the linear interpolation
