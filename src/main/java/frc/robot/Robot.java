@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -33,6 +36,12 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
 
     DataLogManager.start();
+
+    final UsbCamera usbCamera = CameraServer.startAutomaticCapture();
+
+    if (isReal()) {
+      usbCamera.setVideoMode(new VideoMode(VideoMode.pixelFormat.kMJPEG, 160, 120, 30));
+    }
   }
 
   /**

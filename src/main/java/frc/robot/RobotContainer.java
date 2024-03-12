@@ -54,6 +54,7 @@ public class RobotContainer {
     private final JoystickButton operatorButtonY = new JoystickButton(operator, XboxController.Button.kY.value);
     private final JoystickButton operatorButtonA = new JoystickButton(operator, XboxController.Button.kA.value);
     private final JoystickButton operatorButtonB = new JoystickButton(operator, XboxController.Button.kB.value);
+    private final JoystickButton operatorButtonX = new JoystickButton(operator, XboxController.Button.kX.value);
     /* Driver Buttons */
     private final JoystickButton driverA = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton driverB = new JoystickButton(driver, XboxController.Button.kB.value);
@@ -348,6 +349,15 @@ public class RobotContainer {
             new ParallelCommandGroup(
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
             )
+        );
+
+        operatorButtonX.whileTrue(
+            new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
+
+        ) .onFalse(new ParallelCommandGroup(
+                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")),
+                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))
+                )
         );
         
         
