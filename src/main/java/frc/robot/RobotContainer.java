@@ -302,6 +302,47 @@ public class RobotContainer {
             )
         );
 
+        // dummy shoot commands
+        driverDpadDown.whileTrue(new TeleopSwerve(
+                s_Swerve, 
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Eyes.getTargetRotation(),
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                true
+            ).alongWith(new ShootSubwoofer(s_ShooterPivot, s_Shooter))
+        );
+
+        driverDpadLeft.whileTrue(new TeleopSwerve(
+                s_Swerve, 
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Eyes.getTargetRotation(),
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                true
+            ).alongWith(new ShootXSpot(s_ShooterPivot, s_Shooter))
+        );
+
+        driverDpadUp.whileTrue(new TeleopSwerve(
+                s_Swerve, 
+                () -> driver.getRawAxis(leftY), 
+                () -> driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Eyes.getTargetRotation(),
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                true
+            ).alongWith(new ShootPodium(s_ShooterPivot, s_Shooter))
+        );
+
+        // rotate to amp
         driverStart.onTrue(
 
             new TeleopSwerve(
@@ -320,7 +361,6 @@ public class RobotContainer {
 
 
         // climb reach
-        
         driverLB.onTrue(
             new SequentialCommandGroup(
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
