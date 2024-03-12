@@ -69,6 +69,7 @@ public class Shooter extends SubsystemBase {
   private DigitalInput breakBeam;
   
   private TalonFXConfigurator configF;
+  private double m_setSpeed = 0.0;
 
   // constructor
   public Shooter() {
@@ -190,7 +191,7 @@ public class Shooter extends SubsystemBase {
    * none
    */
   public void shootingMotorsSetControl(double rightShooterSpeed, double leftShooterSpeed) {
-
+    m_setSpeed = rightShooterSpeed;
     m_rightShooter.setControl(rm_request.withVelocity(rightShooterSpeed));
     m_leftShooter.setControl(lm_request.withVelocity(-leftShooterSpeed));
 
@@ -215,11 +216,11 @@ public class Shooter extends SubsystemBase {
   }
 
 
-  public boolean isUpToSpeed(double setSpeed) {
+  public boolean isUpToSpeed() {
     double actualSpeed = m_leftShooter.getVelocity().getValueAsDouble();
-    double error = Math.abs(actualSpeed - setSpeed);
+    double error = Math.abs(actualSpeed - m_setSpeed);
     
-    if (error < shooterSpeedToleranceRPS) {
+    if (error <= shooterSpeedToleranceRPS) {
       return true;
     } else {
       return false;

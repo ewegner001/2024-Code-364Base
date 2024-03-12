@@ -236,6 +236,10 @@ public class RobotContainer {
                 rotationSpeed,
                 true
             ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+            .alongWith(new ConditionalCommand(
+                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
+                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0)) ,
+                () -> s_Shooter.isUpToSpeed() && s_ShooterPivot.atPosition()))
         );
 
         // aim speaker with elevator
