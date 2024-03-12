@@ -174,7 +174,7 @@ public class RobotContainer {
         //Command ElevatorAtPosition = new s_Elevator.ElevatorAtPosition();
 
         Command AimThenShoot = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
             new SequentialCommandGroup(
                 new WaitCommand(1.0), 
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
@@ -182,7 +182,7 @@ public class RobotContainer {
                 );
 
         Command AimThenShootAuto = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
             new SequentialCommandGroup(
                 new WaitCommand(1.0), 
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
@@ -190,7 +190,7 @@ public class RobotContainer {
                 );
 
         Command AimThenShootFar = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
             new SequentialCommandGroup(
                 new WaitCommand(1.5), 
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
@@ -201,7 +201,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Score", AimThenShoot);
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
         NamedCommands.registerCommand("Score Far", AimThenShootFar);
-        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter));
+        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
         
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -235,7 +235,28 @@ public class RobotContainer {
                 () -> driverLeftTrigger.getAsBoolean(),
                 rotationSpeed,
                 true
-            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter))
+            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+        );
+
+        // aim speaker with elevator
+        driverB.whileTrue(
+
+            new ParallelCommandGroup(
+
+                new TeleopSwerve(
+                        s_Swerve, 
+                        () -> driver.getRawAxis(leftY), 
+                        () -> driver.getRawAxis(leftX), 
+                        () -> driver.getRawAxis(rightX),
+                        () -> driverDpadUp.getAsBoolean(),
+                        () -> s_Eyes.getTargetRotation(),
+                        () -> driverLeftTrigger.getAsBoolean(),
+                        rotationSpeed,
+                        true
+                    ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
+
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(16.0))
+            )
         );
 
         // shoot speaker
@@ -248,6 +269,8 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
             )
         );
+
+        
 
         // intake
         driverX.whileTrue(
@@ -279,6 +302,22 @@ public class RobotContainer {
             )
         );
 
+        driverStart.onTrue(
+
+            new TeleopSwerve(
+                s_Swerve, 
+                () -> -driver.getRawAxis(leftY), 
+                () -> -driver.getRawAxis(leftX), 
+                () -> Constants.Swerve.rotateToAmpTargetAngle,
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Swerve.getGyroYaw().getDegrees(),
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                false
+            ).until(() -> s_Swerve.getGyroYaw().getDegrees() % 360 < Constants.Swerve.rotateToAmpTargetAngle + Constants.AUTO_ROTATE_DEADBAND && 
+            s_Swerve.getGyroYaw().getDegrees() % 360 > Constants.Swerve.rotateToAmpTargetAngle - Constants.AUTO_ROTATE_DEADBAND)
+        );
+
 
         // climb reach
         
@@ -304,7 +343,7 @@ public class RobotContainer {
         );
 
         // escape climb
-        driverStart.onTrue(
+        driverSelect.onTrue(
 
             new SequentialCommandGroup(
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),

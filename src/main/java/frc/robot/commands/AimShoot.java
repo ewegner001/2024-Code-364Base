@@ -15,6 +15,7 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Eyes;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
@@ -30,6 +31,8 @@ public class AimShoot extends Command {
     private Eyes eyes;
     private ShooterPivot shooterPivot;  
     private Shooter shooter;
+    private Elevator elevator;
+
     private double distance;
 
     // required WPILib class objects
@@ -41,10 +44,16 @@ public class AimShoot extends Command {
     private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationAuto;
     private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationAuto;
 
+    private InterpolatingDoubleTreeMap shooterAngleInterpolationElevator;
+    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationElevator;
+    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationElevator;
+
     // local variables
     private double shooterAngle;
     private double leftShooterSpeed;
     private double rightShooterSpeed;
+
+    public boolean isElevatorShot = false;
 
     // positions 
 
@@ -100,8 +109,15 @@ public class AimShoot extends Command {
     private final double xSpotLeftShooterSpeedAuto = 90.0;
     private final double xSpotRightShooterSpeedAuto = xSpotLeftShooterSpeed;
 
+
+    private final double elevatorShotDistance = 3.17;
+    private final double elevatorShotAngle = 138;
+    private final double elevatorShotLeftShooterSpeed = 90;
+    private final double elevatorShotRightShooterSpeed = elevatorShotLeftShooterSpeed;
+
+
     // constructor
-    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter) {
+    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot) {
         this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
@@ -116,6 +132,10 @@ public class AimShoot extends Command {
         shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
         shooterLeftSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
         shooterRightSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
+
+        shooterAngleInterpolationElevator = new InterpolatingDoubleTreeMap();
+        shooterLeftSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
+        shooterRightSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
 
         // create points in angle linear interpolation line
         // TODO tune these values
@@ -161,6 +181,10 @@ public class AimShoot extends Command {
         shooterRightSpeedInterpolationAuto.put(d3DistanceAuto, d3RightShooterSpeedAuto);
         shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeedAuto);
 
+        shooterAngleInterpolationElevator.put(elevatorShotDistance, elevatorShotAngle);
+        shooterLeftSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotLeftShooterSpeed);
+        shooterRightSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotRightShooterSpeed);
+
     }
 
     @Override
@@ -168,11 +192,16 @@ public class AimShoot extends Command {
 
         // assign target distance as variable
 
-        distance = eyes.getDistanceFromTarget();
+        if (isElevatorShot == true) {
+            distance = elevatorShotDistance;
+        } else {
+            distance = eyes.getDistanceFromTarget();
+        }
         
         // get desired shooter angle using the linear interpolation
         // x (input) = distance
         // y (output) = shooter angle
+        
         shooterAngle = shooterAngleInterpolation.get(distance);
 
         // get desired shooter power using the linear interpolation
