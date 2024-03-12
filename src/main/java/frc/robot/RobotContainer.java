@@ -307,7 +307,7 @@ public class RobotContainer {
                 s_Swerve, 
                 () -> -driver.getRawAxis(leftY), 
                 () -> -driver.getRawAxis(leftX), 
-                () -> driver.getRawAxis(rightX),
+                () -> Constants.Swerve.rotateToAmpTargetAngle,
                 () -> driverDpadUp.getAsBoolean(),
                 () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
