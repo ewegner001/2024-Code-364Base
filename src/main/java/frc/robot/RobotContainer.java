@@ -301,6 +301,22 @@ public class RobotContainer {
             )
         );
 
+        driverStart.onTrue(
+
+            new TeleopSwerve(
+                s_Swerve, 
+                () -> -driver.getRawAxis(leftY), 
+                () -> -driver.getRawAxis(leftX), 
+                () -> driver.getRawAxis(rightX),
+                () -> driverDpadUp.getAsBoolean(),
+                () -> s_Swerve.getGyroYaw().getDegrees(),
+                () -> driverLeftTrigger.getAsBoolean(),
+                rotationSpeed,
+                false
+            ).until(() -> s_Swerve.getGyroYaw().getDegrees() % 360 < Constants.Swerve.rotateToAmpTargetAngle + Constants.AUTO_ROTATE_DEADBAND && 
+            s_Swerve.getGyroYaw().getDegrees() % 360 > Constants.Swerve.rotateToAmpTargetAngle - Constants.AUTO_ROTATE_DEADBAND)
+        );
+
 
         // climb reach
         
@@ -326,7 +342,7 @@ public class RobotContainer {
         );
 
         // escape climb
-        driverStart.onTrue(
+        driverSelect.onTrue(
 
             new SequentialCommandGroup(
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
