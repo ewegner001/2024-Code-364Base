@@ -35,7 +35,7 @@ public final class Constants {
     public static final double SLOW_MODE_PERCENT_STRAFE = 0.5;
     public static final double SLOW_MODE_PERCENT_ROTATION = 0.5;
 
-    public static final double AUTO_ROTATE_DEADBAND = 0.0;
+    public static final double AUTO_ROTATE_DEADBAND = 5.0;
 
     public static final class Swerve {
 

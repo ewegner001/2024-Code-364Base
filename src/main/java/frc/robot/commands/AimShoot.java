@@ -121,6 +121,7 @@ public class AimShoot extends Command {
         this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
+        this.isElevatorShot = isElevatorShot;
 
         addRequirements(eyes, shooterPivot, shooter);
 

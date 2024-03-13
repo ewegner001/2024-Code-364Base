@@ -257,7 +257,15 @@ public class RobotContainer {
 
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(16.0))
             )
+        ).onFalse(
+            new ParallelCommandGroup(
+
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+            )
         );
+
+        
 
         // shoot speaker
         driverRightTrigger.onTrue(
@@ -302,6 +310,8 @@ public class RobotContainer {
             )
         );
 
+        /*
+
         // dummy shoot commands
         driverDpadDown.whileTrue(new TeleopSwerve(
                 s_Swerve, 
@@ -342,7 +352,10 @@ public class RobotContainer {
             ).alongWith(new ShootPodium(s_ShooterPivot, s_Shooter))
         );
 
+        */
+
         // rotate to amp
+        /*
         driverStart.onTrue(
 
             new TeleopSwerve(
@@ -358,6 +371,7 @@ public class RobotContainer {
             ).until(() -> s_Swerve.getGyroYaw().getDegrees() % 360 < Constants.Swerve.rotateToAmpTargetAngle + Constants.AUTO_ROTATE_DEADBAND && 
             s_Swerve.getGyroYaw().getDegrees() % 360 > Constants.Swerve.rotateToAmpTargetAngle - Constants.AUTO_ROTATE_DEADBAND)
         );
+        */
 
 
         // climb reach
