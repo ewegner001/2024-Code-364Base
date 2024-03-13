@@ -348,7 +348,7 @@ public class RobotContainer {
                 
                 new ParallelCommandGroup(
                     new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16))
                 )
             )
         );
@@ -387,7 +387,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
                 new ParallelCommandGroup(
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16)),
                     new AmpShooterPivot(s_ShooterPivot)
                 )
             )
@@ -400,15 +400,17 @@ public class RobotContainer {
         );
 
         // shoot amp
-        operatorRightTrigger.onTrue(
-            new ParallelCommandGroup(
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(3))
-            )
-        ).onFalse(
-            new ParallelCommandGroup(
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
-            )
-        );
+        // operatorRightTrigger.onTrue(
+        //     new ParallelCommandGroup(
+        //         new InstantCommand(() -> s_Shooter.setLoaderVoltage(6)),
+        //         new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))
+        //     )
+        // ).onFalse(
+        //     new ParallelCommandGroup(
+        //         new InstantCommand(() -> s_Shooter.setLoaderVoltage(0)),
+        //         new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0))
+        //     )
+        // );
 
         driverDpadUp.whileTrue(
             new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
