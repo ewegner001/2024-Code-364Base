@@ -21,6 +21,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -292,6 +293,12 @@ public class AimShoot extends Command {
 
         // set shooter speed power to calculated value
         shooter.shootingMotorsSetControl(rightShooterSpeed, leftShooterSpeed);
+
+        if(shooterPivot.atPosition() == true && eyes.swerveAtPosition()) {
+            eyes.controllerRumble = true;
+        } else {
+            eyes.controllerRumble = false;
+        }
 
     }
 

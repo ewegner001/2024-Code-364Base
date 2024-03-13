@@ -406,6 +406,14 @@ public class RobotContainer {
 
     }
 
+    public void rumbleCheck() {
+        if (s_Eyes.controllerRumble == true) {
+            driver.setRumble(RumbleType.kBothRumble, 1);
+        } else {
+            driver.setRumble(RumbleType.kBothRumble, 0);
+        }
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *

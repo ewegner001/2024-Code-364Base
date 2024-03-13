@@ -41,6 +41,8 @@ public class Eyes extends SubsystemBase {
     public double ty;
     public double ta;
     public double tID;
+
+    public boolean controllerRumble = false;
   
     // constuctor
     public Eyes(Swerve swerve) {
