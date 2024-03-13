@@ -391,7 +391,7 @@ public class RobotContainer {
         //     )
         // );
 
-        driverDpadUp.whileTrue(
+        driverStart.whileTrue(
             new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
 
         ) .onFalse(new ParallelCommandGroup(
