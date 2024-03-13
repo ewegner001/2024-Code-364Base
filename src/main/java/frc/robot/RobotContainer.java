@@ -236,10 +236,12 @@ public class RobotContainer {
                 rotationSpeed,
                 true
             ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
-            .alongWith(new ConditionalCommand(
+            /*.alongWith(new ConditionalCommand(
                 new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
                 new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0)) ,
-                () -> s_Shooter.isUpToSpeed() && s_ShooterPivot.atPosition()))
+                () ->  s_ShooterPivot.atPosition() )) // s_Shooter.isUpToSpeed() && && s_Eyes.swerveAtPosition()
+        ).onFalse(
+            new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))/* */
         );
 
         // aim speaker with elevator
@@ -314,49 +316,9 @@ public class RobotContainer {
             )
         );
 
-        /*
+        
 
-        // dummy shoot commands
-        driverDpadDown.whileTrue(new TeleopSwerve(
-                s_Swerve, 
-                () -> driver.getRawAxis(leftY), 
-                () -> driver.getRawAxis(leftX), 
-                () -> driver.getRawAxis(rightX),
-                () -> driverDpadUp.getAsBoolean(),
-                () -> s_Eyes.getTargetRotation(),
-                () -> driverDpadDown.getAsBoolean(),
-                rotationSpeed,
-                true
-            ).alongWith(new ShootSubwoofer(s_ShooterPivot, s_Shooter))
-        );
-
-        driverDpadLeft.whileTrue(new TeleopSwerve(
-                s_Swerve, 
-                () -> driver.getRawAxis(leftY), 
-                () -> driver.getRawAxis(leftX), 
-                () -> driver.getRawAxis(rightX),
-                () -> driverDpadUp.getAsBoolean(),
-                () -> s_Eyes.getTargetRotation(),
-                () -> driverDpadLeft.getAsBoolean(),
-                rotationSpeed,
-                true
-            ).alongWith(new ShootXSpot(s_ShooterPivot, s_Shooter))
-        );
-
-        driverDpadUp.whileTrue(new TeleopSwerve(
-                s_Swerve, 
-                () -> driver.getRawAxis(leftY), 
-                () -> driver.getRawAxis(leftX), 
-                () -> driver.getRawAxis(rightX),
-                () -> driverDpadUp.getAsBoolean(),
-                () -> s_Eyes.getTargetRotation(),
-                () -> driverDpadUp.getAsBoolean(),
-                rotationSpeed,
-                true
-            ).alongWith(new ShootPodium(s_ShooterPivot, s_Shooter))
-        );
-
-        */
+        
 
         // rotate to amp
         /*
@@ -448,7 +410,7 @@ public class RobotContainer {
             )
         );
 
-        operatorButtonX.whileTrue(
+        driverDpadUp.whileTrue(
             new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
 
         ) .onFalse(new ParallelCommandGroup(
@@ -457,6 +419,10 @@ public class RobotContainer {
                 )
         );
         
+        // dummy shoot commands
+        operatorDpadDown.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 1.25)));
+        operatorDpadLeft.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 2.4)));
+        operatorDpadUp.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 3.17)));
         
 
     }

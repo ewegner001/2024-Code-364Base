@@ -177,6 +177,19 @@ public class Eyes extends SubsystemBase {
         return -angle + 180;
     }
 
+    public boolean swerveAtPosition() {
+
+        double error = Math.abs(getTargetRotation() - s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+
+        SmartDashboard.putNumber("rotationError", error);
+
+        if (error <= Constants.Swerve.atPositionTolerance) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public double getDistanceFromTarget() {
 
         double distance;
