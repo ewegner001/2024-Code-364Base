@@ -440,7 +440,7 @@ public class RobotContainer {
         // shoot amp
         operatorRightTrigger.onTrue(
             new ParallelCommandGroup(
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(-6))
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(3))
             )
         ).onFalse(
             new ParallelCommandGroup(
@@ -448,6 +448,7 @@ public class RobotContainer {
             )
         );
 
+        // intake no sensor
         operatorButtonX.whileTrue(
             new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
 
