@@ -159,6 +159,7 @@ public class RobotContainer {
         );
 
         //spin up shooter when we have a note in the indexer
+        //NOTE: IF REMOVED NEED TO ADD SHOOTER SPINUP FOR AMP SCORE
         s_Shooter.setDefaultCommand(
             new ConditionalCommand(
                 new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
@@ -236,6 +237,7 @@ public class RobotContainer {
                 rotationSpeed,
                 true
             ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+            //RUMBLES DON'T WORK SINCE IT ONLY CHECKS ON RUNNING COMMAND
             /*.alongWith(new ConditionalCommand(
                 new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
                 new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0)) ,
@@ -246,9 +248,7 @@ public class RobotContainer {
 
         // aim speaker with elevator
         driverB.whileTrue(
-
             new ParallelCommandGroup(
-
                 new TeleopSwerve(
                         s_Swerve, 
                         () -> driver.getRawAxis(leftY), 
@@ -260,12 +260,10 @@ public class RobotContainer {
                         rotationSpeed,
                         true
                     ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
-
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(16.0))
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
             )
         ).onFalse(
             new ParallelCommandGroup(
-
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
             )
@@ -276,7 +274,7 @@ public class RobotContainer {
         // shoot speaker
         driverRightTrigger.onTrue(
             new ParallelCommandGroup(
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(6))
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
             )
         ).onFalse(
             new ParallelCommandGroup(
@@ -327,7 +325,7 @@ public class RobotContainer {
                 
                 new ParallelCommandGroup(
                     new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16))
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             )
         );
@@ -366,7 +364,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
                 new ParallelCommandGroup(
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                     new AmpShooterPivot(s_ShooterPivot)
                 )
             )
