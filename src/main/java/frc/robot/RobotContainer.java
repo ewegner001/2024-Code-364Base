@@ -318,27 +318,6 @@ public class RobotContainer {
 
         
 
-        
-
-        // rotate to amp
-        /*
-        driverStart.onTrue(
-
-            new TeleopSwerve(
-                s_Swerve, 
-                () -> -driver.getRawAxis(leftY), 
-                () -> -driver.getRawAxis(leftX), 
-                () -> Constants.Swerve.rotateToAmpTargetAngle,
-                () -> driverDpadUp.getAsBoolean(),
-                () -> s_Swerve.getGyroYaw().getDegrees(),
-                () -> driverLeftTrigger.getAsBoolean(),
-                rotationSpeed,
-                false
-            ).until(() -> s_Swerve.getGyroYaw().getDegrees() % 360 < Constants.Swerve.rotateToAmpTargetAngle + Constants.AUTO_ROTATE_DEADBAND && 
-            s_Swerve.getGyroYaw().getDegrees() % 360 > Constants.Swerve.rotateToAmpTargetAngle - Constants.AUTO_ROTATE_DEADBAND)
-        );
-        */
-
 
         // climb reach
         driverLB.onTrue(
