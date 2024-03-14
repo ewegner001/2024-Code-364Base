@@ -28,7 +28,7 @@ public class Shooter extends SubsystemBase {
   private final int breakBeamID = 0;
 
   // loader speeds
-  public final double runLoaderVoltage = 6.0;
+  public final double runLoaderVoltage = 12.0;
   public final double reverseLoaderVoltage = -3.0;
   public final double stopLoaderVoltage = 0.0;
 

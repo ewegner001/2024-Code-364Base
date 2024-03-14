@@ -72,7 +72,7 @@ public class AimShoot extends Command {
     private final double d2LeftShooterSpeed = 90.0;
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
-    private final double podiumDistance = 3.17;
+    private final double podiumDistance = 2.65;
     private final double podiumAngle = 136;
     private final double podiumLeftShooterSpeed = 90.0;
     private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
@@ -103,8 +103,8 @@ public class AimShoot extends Command {
     private final double podiumLeftShooterSpeedAuto = 90.0;
     private final double podiumRightShooterSpeedAuto = d2LeftShooterSpeed;
 
-    private final double d3DistanceAuto = 4.0;
-    private final double d3AngleAuto = 137.0;
+    private final double d3DistanceAuto = 5.5;
+    private final double d3AngleAuto = 136.0;
     private final double d3LeftShooterSpeedAuto = 95.0;
     private final double d3RightShooterSpeedAuto = d3LeftShooterSpeed;
 
@@ -114,8 +114,8 @@ public class AimShoot extends Command {
     private final double xSpotRightShooterSpeedAuto = xSpotLeftShooterSpeed;
 
 
-    private final double elevatorShotDistance = 3.17;
-    private final double elevatorShotAngle = 138;
+    private final double elevatorShotDistance = 2.65;
+    private final double elevatorShotAngle = 144;
     private final double elevatorShotLeftShooterSpeed = 90;
     private final double elevatorShotRightShooterSpeed = elevatorShotLeftShooterSpeed;
 
@@ -270,17 +270,20 @@ public class AimShoot extends Command {
 
         if (isElevatorShot == true) {
             distance = elevatorShotDistance;
+            shooterAngle = elevatorShotAngle;
         } else if(manualDistance == 0) {
             distance = eyes.getDistanceFromTarget();
+            shooterAngle = shooterAngleInterpolation.get(distance);
         } else {
             distance = manualDistance;
+            shooterAngle = shooterAngleInterpolation.get(distance);
         }
         
         // get desired shooter angle using the linear interpolation
         // x (input) = distance
         // y (output) = shooter angle
         
-        shooterAngle = shooterAngleInterpolation.get(distance);
+
 
         // get desired shooter power using the linear interpolation
         // x (input) = distance
