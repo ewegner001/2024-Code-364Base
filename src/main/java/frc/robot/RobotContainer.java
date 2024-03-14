@@ -226,48 +226,83 @@ public class RobotContainer {
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
         // aim speaker
-        driverLeftTrigger.whileTrue(new TeleopSwerve(
-                s_Swerve, 
-                () -> driver.getRawAxis(leftY), 
-                () -> driver.getRawAxis(leftX), 
-                () -> driver.getRawAxis(rightX),
-                () -> driverDpadUp.getAsBoolean(),
-                () -> s_Eyes.getTargetRotation(),
-                () -> driverLeftTrigger.getAsBoolean(),
-                rotationSpeed,
-                true
-            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
-            //RUMBLES DON'T WORK SINCE IT ONLY CHECKS ON RUNNING COMMAND
-            /*.alongWith(new ConditionalCommand(
-                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1)),
-                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0)) ,
-                () ->  s_ShooterPivot.atPosition() )) // s_Shooter.isUpToSpeed() && && s_Eyes.swerveAtPosition()
-        ).onFalse(
-            new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))/* */
-        );
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            driverLeftTrigger.whileTrue(new TeleopSwerve(
+                    s_Swerve, 
+                    () -> -driver.getRawAxis(leftY), 
+                    () -> -driver.getRawAxis(leftX), 
+                    () -> driver.getRawAxis(rightX),
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getTargetRotation(),
+                    () -> driverLeftTrigger.getAsBoolean(),
+                    rotationSpeed,
+                    true
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+
+            );
+        } else {
+            driverLeftTrigger.whileTrue(new TeleopSwerve(
+                    s_Swerve, 
+                    () -> driver.getRawAxis(leftY), 
+                    () -> driver.getRawAxis(leftX), 
+                    () -> driver.getRawAxis(rightX),
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getTargetRotation(),
+                    () -> driverLeftTrigger.getAsBoolean(),
+                    rotationSpeed,
+                    true
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+
+            );
+        }
+        
 
         // aim speaker with elevator
-        driverB.whileTrue(
-            new ParallelCommandGroup(
-                new TeleopSwerve(
-                        s_Swerve, 
-                        () -> driver.getRawAxis(leftY), 
-                        () -> driver.getRawAxis(leftX), 
-                        () -> driver.getRawAxis(rightX),
-                        () -> driverDpadUp.getAsBoolean(),
-                        () -> s_Eyes.getTargetRotation(),
-                        () -> driverB.getAsBoolean(),
-                        rotationSpeed,
-                        true
-                    ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
-            )
-        ).onFalse(
-            new ParallelCommandGroup(
-                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
-            )
-        );
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            driverB.whileTrue(
+                new ParallelCommandGroup(
+                    new TeleopSwerve(
+                            s_Swerve, 
+                            () -> -driver.getRawAxis(leftY), 
+                            () -> -driver.getRawAxis(leftX), 
+                            () -> driver.getRawAxis(rightX),
+                            () -> driverDpadUp.getAsBoolean(),
+                            () -> s_Eyes.getTargetRotation(),
+                            () -> driverB.getAsBoolean(),
+                            rotationSpeed,
+                            true
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
+                )
+            ).onFalse(
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+                )
+            );
+        } else {
+            driverB.whileTrue(
+                new ParallelCommandGroup(
+                    new TeleopSwerve(
+                            s_Swerve, 
+                            () -> driver.getRawAxis(leftY), 
+                            () -> driver.getRawAxis(leftX), 
+                            () -> driver.getRawAxis(rightX),
+                            () -> driverDpadUp.getAsBoolean(),
+                            () -> s_Eyes.getTargetRotation(),
+                            () -> driverB.getAsBoolean(),
+                            rotationSpeed,
+                            true
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
+                )
+            ).onFalse(
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+                )
+            );
+        }
 
         
 
@@ -406,7 +441,7 @@ public class RobotContainer {
 
     }
 
-    public void rumbleCheck() {
+    public void rumbleControllers() {
         if (s_Eyes.controllerRumble == true) {
             driver.setRumble(RumbleType.kBothRumble, 1);
         } else {

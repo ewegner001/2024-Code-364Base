@@ -181,8 +181,12 @@ public class Eyes extends SubsystemBase {
 
     public boolean swerveAtPosition() {
 
-        double error = Math.abs(getTargetRotation() - s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
 
+
+        double error = Math.abs(getTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+
+        SmartDashboard.putNumber("getTargetRotation", getTargetRotation());
+        SmartDashboard.putNumber("estimated rotation", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
         SmartDashboard.putNumber("rotationError", error);
 
         if (error <= Constants.Swerve.atPositionTolerance) {

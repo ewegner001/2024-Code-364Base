@@ -191,7 +191,7 @@ public class Shooter extends SubsystemBase {
    * none
    */
   public void shootingMotorsSetControl(double rightShooterSpeed, double leftShooterSpeed) {
-   // m_setSpeed = rightShooterSpeed;
+    m_setSpeed = rightShooterSpeed;
     m_rightShooter.setControl(rm_request.withVelocity(rightShooterSpeed));
     m_leftShooter.setControl(lm_request.withVelocity(-leftShooterSpeed));
 
@@ -216,16 +216,21 @@ public class Shooter extends SubsystemBase {
   }
 
 
-  // public boolean isUpToSpeed() {
-  //   double actualSpeed = m_leftShooter.getVelocity().getValueAsDouble();
-  //   double error = Math.abs(actualSpeed - m_setSpeed);
+   public boolean isUpToSpeed() {
+
     
-  //   if (error <= shooterSpeedToleranceRPS) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
+     double actualSpeed = m_leftShooter.getVelocity().getValueAsDouble();
+     double error = Math.abs(actualSpeed + m_setSpeed);
+
+     SmartDashboard.putNumber("shooterActualSpeed", actualSpeed);
+     SmartDashboard.putNumber("shooterSetSpeed", m_setSpeed);
+
+     if (error <= shooterSpeedToleranceRPS) {
+       return true;
+     } else {
+       return false;
+     }
+   }
 
   @Override
   public void periodic() {

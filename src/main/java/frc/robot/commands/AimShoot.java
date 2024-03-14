@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 
 
 public class AimShoot extends Command {
@@ -33,6 +34,7 @@ public class AimShoot extends Command {
     private ShooterPivot shooterPivot;  
     private Shooter shooter;
     private Elevator elevator;
+    private RobotContainer robotContainer;
 
     private double distance;
     private double manualDistance = 0.0;
@@ -71,7 +73,7 @@ public class AimShoot extends Command {
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
     private final double podiumDistance = 3.17;
-    private final double podiumAngle = 140;
+    private final double podiumAngle = 136;
     private final double podiumLeftShooterSpeed = 90.0;
     private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
 
@@ -294,7 +296,7 @@ public class AimShoot extends Command {
         // set shooter speed power to calculated value
         shooter.shootingMotorsSetControl(rightShooterSpeed, leftShooterSpeed);
 
-        if(shooterPivot.atPosition() == true && eyes.swerveAtPosition()) {
+        if(shooterPivot.atPosition() == true && eyes.swerveAtPosition() == true && shooter.isUpToSpeed() == true) {
             eyes.controllerRumble = true;
         } else {
             eyes.controllerRumble = false;
@@ -307,6 +309,7 @@ public class AimShoot extends Command {
     public void end(boolean interrupted) {
         shooter.setLoaderVoltage(shooter.stopLoaderVoltage);
         shooter.setShooterVoltage(shooter.stopShooterVoltage, shooter.stopShooterVoltage);
+        eyes.controllerRumble = false;
     }
 
     // Returns true when the command should end.
