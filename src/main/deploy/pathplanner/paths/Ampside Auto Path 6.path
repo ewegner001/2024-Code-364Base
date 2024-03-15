@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.750464883645817,
-        "y": 0.5960545254423838
+        "x": 8.211827384508862,
+        "y": 5.7844864444177295
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.789417654315297,
-        "y": 0.5960545254423838
+        "x": 4.33469113851808,
+        "y": 6.629350542651702
       },
       "isLocked": false,
-      "linkedName": "Loadside Auto Path 1 Endpoint"
+      "linkedName": "Ampside Auto Path 5 Endpoint"
     },
     {
       "anchor": {
-        "x": 1.804096609379459,
-        "y": 3.9342298376174454
+        "x": 1.9863466887427603,
+        "y": 6.610786554906443
       },
       "prevControl": {
-        "x": 1.5509036000278411,
-        "y": 1.3730851660991583
+        "x": 4.0469493284665585,
+        "y": 6.6943244997601115
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Loadside Auto Path 2 Endpoint"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -39,7 +39,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -43.4088597288054,
+    "rotation": 29.47588900324585,
     "rotateFast": false
   },
   "reversed": false,

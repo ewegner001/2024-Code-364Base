@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Score"
+            "name": "AutoScore"
           }
         },
         {
@@ -38,13 +38,43 @@
         {
           "type": "named",
           "data": {
-            "name": "Score"
+            "name": "AutoScore"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Sourceside Auto Path 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Sourceside Auto Path 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Sourceside Auto Path 5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
           }
         }
       ]

@@ -70,6 +70,30 @@
           "data": {
             "name": "AutoScore"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Four Piece Auto Path 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Four Piece Auto Path 5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScore"
+          }
         }
       ]
     }

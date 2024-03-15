@@ -76,6 +76,18 @@
           "data": {
             "name": "Intake"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside Auto Path 6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScore"
+          }
         }
       ]
     }

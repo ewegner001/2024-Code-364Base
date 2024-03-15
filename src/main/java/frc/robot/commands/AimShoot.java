@@ -72,8 +72,8 @@ public class AimShoot extends Command {
     private final double d2LeftShooterSpeed = 90.0;
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
-    private final double podiumDistance = 2.65;
-    private final double podiumAngle = 136;
+    private final double podiumDistance = 3.17;
+    private final double podiumAngle = 137;
     private final double podiumLeftShooterSpeed = 90.0;
     private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
 
@@ -94,7 +94,7 @@ public class AimShoot extends Command {
     private final double d2RightShooterSpeedAuto = d2LeftShooterSpeed;
 
     private final double xSpotDistance = 2.4;
-    private final double xSpotAngle = 130.0;
+    private final double xSpotAngle = 131.0;
     private final double xSpotLeftShooterSpeed = 90.0;
     private final double xSpotRightShooterSpeed = d2LeftShooterSpeed;
 
@@ -103,7 +103,7 @@ public class AimShoot extends Command {
     private final double podiumLeftShooterSpeedAuto = 90.0;
     private final double podiumRightShooterSpeedAuto = d2LeftShooterSpeed;
 
-    private final double d3DistanceAuto = 5.5;
+    private final double d3DistanceAuto = 5.27;
     private final double d3AngleAuto = 136.0;
     private final double d3LeftShooterSpeedAuto = 95.0;
     private final double d3RightShooterSpeedAuto = d3LeftShooterSpeed;
@@ -145,7 +145,7 @@ public class AimShoot extends Command {
         // create points in angle linear interpolation line
         // TODO tune these values
         shooterAngleInterpolation.put(subWooferDistance, subWooferAngle);
-        shooterAngleInterpolation.put(d2Distance, d2Angle);
+        //shooterAngleInterpolation.put(d2Distance, d2Angle);
         shooterAngleInterpolation.put(podiumDistance, podiumAngle);
         shooterAngleInterpolation.put(d3Distance, d3Angle);
         shooterAngleInterpolation.put(xSpotDistance, xSpotAngle);
@@ -153,13 +153,13 @@ public class AimShoot extends Command {
         // create points in shooter power linear interpolation line
         // TODO tune these values
         shooterLeftSpeedInterpolation.put(subWooferDistance, subWooferLeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
+        //shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
         shooterLeftSpeedInterpolation.put(podiumDistance, podiumLeftShooterSpeed);
         shooterLeftSpeedInterpolation.put(d3Distance, d3LeftShooterSpeed);
         shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
 
         shooterRightSpeedInterpolation.put(subWooferDistance, subWooferRightShooterSpeed);
-        shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
+        //shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
         shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
         shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
         shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeed);

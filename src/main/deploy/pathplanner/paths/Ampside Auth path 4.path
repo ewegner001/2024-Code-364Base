@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.211702357784173,
-        "y": 7.6003329182121995
+        "x": 8.149590620168896,
+        "y": 7.325500083098932
       },
       "prevControl": null,
       "nextControl": {
-        "x": 9.211702357784173,
-        "y": 7.6003329182121995
+        "x": 6.65518960667551,
+        "y": 7.121296217901078
       },
       "isLocked": false,
       "linkedName": "Ampside Auto path 3 Endpoint"
@@ -20,8 +20,8 @@
         "y": 6.874261052373746
       },
       "prevControl": {
-        "x": 2.613922488900611,
-        "y": 5.550936522700434
+        "x": 5.151506599309496,
+        "y": 6.963502322066373
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,8 +32,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.75,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -48,5 +48,5 @@
     "rotation": 0,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

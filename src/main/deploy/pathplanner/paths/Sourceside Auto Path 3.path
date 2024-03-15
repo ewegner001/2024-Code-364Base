@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.804096609379459,
-        "y": 1.392561551433899
+        "x": 4.9658667218569015,
+        "y": 0.7909763967676083
       },
       "isLocked": false,
       "linkedName": "Loadside Auto Path 2 Endpoint"
@@ -20,12 +20,12 @@
         "y": 2.1716169648234906
       },
       "prevControl": {
-        "x": 6.595287401725457,
-        "y": 0.6037679453769348
+        "x": 6.915085435109141,
+        "y": 1.7006117962853207
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Sourceside Auto path 3 Endpoint"
     }
   ],
   "rotationTargets": [
