@@ -1,0 +1,63 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.54,
+        "y": 7.03
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.54,
+        "y": 7.03
+      },
+      "isLocked": false,
+      "linkedName": "Ampside Auto Path 1 Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 7.806156846881595,
+        "y": 5.756843118624509
+      },
+      "prevControl": {
+        "x": 6.673753594420767,
+        "y": 6.100276891911808
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ampside Auto (Inside Center) "
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Intake",
+      "waypointRelativePos": 0.6,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": []
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 5.75,
+    "maxAcceleration": 3.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

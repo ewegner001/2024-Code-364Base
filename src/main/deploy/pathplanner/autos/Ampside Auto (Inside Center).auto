@@ -1,0 +1,67 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7987428243044774,
+      "y": 6.68
+    },
+    "rotation": 61.37618733321804
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside Auto path 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScore"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside Auto (Inside Center) Note 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside Auto (Inside Center) Shoot Note 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScore"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
