@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.750464883645817,
-        "y": 0.5960545254423838
+        "x": 8.036539916496203,
+        "y": 0.7887936060569642
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.789417654315297,
-        "y": 0.5960545254423838
+        "x": 8.075492687165683,
+        "y": 0.7887936060569642
       },
       "isLocked": false,
       "linkedName": "Loadside Auto Path 1 Endpoint"
@@ -33,17 +33,17 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.75,
-    "maxAcceleration": 3.5,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -43.4088597288054,
+    "rotation": -30.52970589993407,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Source Side",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

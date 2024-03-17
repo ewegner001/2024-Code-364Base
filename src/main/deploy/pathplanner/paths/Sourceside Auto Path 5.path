@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.689862243922018,
-        "y": 2.192557471534696
+        "x": 4.540528748910404,
+        "y": 0.15581108267791854
       },
       "isLocked": false,
       "linkedName": "Sourceside Auto Path 4 Endpoint"
     },
     {
       "anchor": {
-        "x": 7.954668748843671,
-        "y": 3.7890604176270077
+        "x": 8.153398228504642,
+        "y": 4.060826342293255
       },
       "prevControl": {
-        "x": 6.014732029464059,
-        "y": 0.7909763967676083
+        "x": 6.21346150912503,
+        "y": 1.0627423214338552
       },
       "nextControl": null,
       "isLocked": false,
@@ -61,7 +61,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Source Side",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

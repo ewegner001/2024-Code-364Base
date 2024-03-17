@@ -26,7 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake"
+            "name": "Confirm Intake"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Intake"
+            "name": "Confirm Intake"
           }
         },
         {

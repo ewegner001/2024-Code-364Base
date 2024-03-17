@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 7.750464883645817,
-        "y": 0.5960545254423838
+        "x": 8.036539916496203,
+        "y": 0.7887936060569642
       },
       "prevControl": {
-        "x": 6.750464883645817,
-        "y": 0.5960545254423838
+        "x": 7.036539916496203,
+        "y": 0.7887936060569642
       },
       "nextControl": null,
       "isLocked": false,
@@ -39,7 +39,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.65,
+      "waypointRelativePos": 0.25,
       "command": {
         "type": "parallel",
         "data": {
@@ -67,7 +67,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Source Side",
   "previewStartingState": {
     "rotation": -60.94539590092283,
     "velocity": 0
