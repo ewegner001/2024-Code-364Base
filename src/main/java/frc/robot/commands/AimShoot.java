@@ -75,7 +75,7 @@ public class AimShoot extends Command {
     private final double podiumDistance = 3.17;
     private final double podiumAngle = 137;
     private final double podiumLeftShooterSpeed = 90.0;
-    private final double podiumRightShooterSpeed = d2LeftShooterSpeed;
+    private final double podiumRightShooterSpeed = podiumLeftShooterSpeed;
 
     private final double d3Distance = 4.0;
     private final double d3Angle = 137.0;
@@ -95,13 +95,13 @@ public class AimShoot extends Command {
 
     private final double xSpotDistance = 2.4;
     private final double xSpotAngle = 131.0;
-    private final double xSpotLeftShooterSpeed = 90.0;
-    private final double xSpotRightShooterSpeed = d2LeftShooterSpeed;
+    private final double xSpotLeftShooterSpeed = 92.5;
+    private final double xSpotRightShooterSpeed = xSpotLeftShooterSpeed;
 
     private final double podiumDistanceAuto = 3.17;
     private final double podiumAngleAuto = 138;
     private final double podiumLeftShooterSpeedAuto = 90.0;
-    private final double podiumRightShooterSpeedAuto = d2LeftShooterSpeed;
+    private final double podiumRightShooterSpeedAuto = podiumLeftShooterSpeed;
 
     private final double d3DistanceAuto = 5.27;
     private final double d3AngleAuto = 136.0;
