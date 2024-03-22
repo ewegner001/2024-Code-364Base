@@ -41,6 +41,8 @@ public class Eyes extends SubsystemBase {
     public double ty;
     public double ta;
     public double tID;
+
+    public boolean controllerRumble = false;
   
     // constuctor
     public Eyes(Swerve swerve) {
@@ -135,7 +137,7 @@ public class Eyes extends SubsystemBase {
         Pose3d pose;
 
         // if robot is on blue alliance
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+        if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
 
             // get pose of blue speaker
             pose = new Pose3d(Constants.Positions.speakerBlueX, Constants.Positions.speakerBlueY, 0, new Rotation3d(0,0,Constants.Positions.speakerBlueR));
@@ -177,11 +179,28 @@ public class Eyes extends SubsystemBase {
         return -angle + 180;
     }
 
+    public boolean swerveAtPosition() {
+
+
+
+        double error = Math.abs(getTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+
+        SmartDashboard.putNumber("getTargetRotation", getTargetRotation());
+        SmartDashboard.putNumber("estimated rotation", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+        SmartDashboard.putNumber("rotationError", error);
+
+        if (error <= Constants.Swerve.atPositionTolerance) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public double getDistanceFromTarget() {
 
         double distance;
 
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+        if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
 
             double xDistanceToSpeaker = Constants.Positions.speakerBlueX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
             double yDistanceToSpeaker = Constants.Positions.speakerBlueY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();

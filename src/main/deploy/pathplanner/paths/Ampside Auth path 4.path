@@ -1,0 +1,52 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.15,
+        "y": 7.325500083098932
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.6555989865066145,
+        "y": 7.121296217901078
+      },
+      "isLocked": false,
+      "linkedName": "Ampside Auto path 3 Endpoint"
+    },
+    {
+      "anchor": {
+        "x": 1.69,
+        "y": 6.86
+      },
+      "prevControl": {
+        "x": 4.438379168232951,
+        "y": 6.949241269692627
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Ampside Auto Path 4 Endpoint"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.75,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 46.81201520995728,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "Amp Side",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

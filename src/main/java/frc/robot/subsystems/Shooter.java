@@ -36,6 +36,7 @@ public class Shooter extends SubsystemBase {
   public final double runShooterVoltage = 6.0;
   public final double reverseShooterVoltage = 3.0;
   public final double stopShooterVoltage = 0.0;
+  public final double shooterSpeedToleranceRPS = 100.0/60.0; //100 RPM
 
 
   // left shooter motor PID
@@ -65,9 +66,10 @@ public class Shooter extends SubsystemBase {
   private VelocityVoltage rm_request;
   private VelocityVoltage lm_request;
 
-  private DigitalInput breakBeam;
+  public DigitalInput breakBeam;
   
   private TalonFXConfigurator configF;
+  private double m_setSpeed = 0.0;
 
   // constructor
   public Shooter() {
@@ -189,7 +191,7 @@ public class Shooter extends SubsystemBase {
    * none
    */
   public void shootingMotorsSetControl(double rightShooterSpeed, double leftShooterSpeed) {
-
+    m_setSpeed = rightShooterSpeed;
     m_rightShooter.setControl(rm_request.withVelocity(rightShooterSpeed));
     m_leftShooter.setControl(lm_request.withVelocity(-leftShooterSpeed));
 
@@ -214,6 +216,21 @@ public class Shooter extends SubsystemBase {
   }
 
 
+   public boolean isUpToSpeed() {
+
+    
+     double actualSpeed = m_leftShooter.getVelocity().getValueAsDouble();
+     double error = Math.abs(actualSpeed + m_setSpeed);
+
+     SmartDashboard.putNumber("shooterActualSpeed", actualSpeed);
+     SmartDashboard.putNumber("shooterSetSpeed", m_setSpeed);
+
+     if (error <= shooterSpeedToleranceRPS) {
+       return true;
+     } else {
+       return false;
+     }
+   }
 
   @Override
   public void periodic() {
@@ -224,5 +241,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Right Shooter Temp", m_rightShooter.getDeviceTemp().getValueAsDouble());
     SmartDashboard.putNumber("Left Shooter Temp", m_leftShooter.getDeviceTemp().getValueAsDouble());
     SmartDashboard.putBoolean("Break Beam Sensor", getBreakBeamOutput());
+    SmartDashboard.putBoolean("driver/Break Beam Sensor", getBreakBeamOutput());
+    SmartDashboard.putNumber("Right Shooter Current", m_rightShooter.getSupplyCurrent().getValueAsDouble());
+    SmartDashboard.putNumber("Left Shooter Current", m_leftShooter.getSupplyCurrent().getValueAsDouble());
   }
 }

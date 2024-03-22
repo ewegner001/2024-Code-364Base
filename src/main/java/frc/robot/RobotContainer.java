@@ -1,25 +1,35 @@
 package frc.robot;
 
+import java.sql.Driver;
 import java.time.Instant;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -51,6 +61,7 @@ public class RobotContainer {
     private final JoystickButton operatorButtonY = new JoystickButton(operator, XboxController.Button.kY.value);
     private final JoystickButton operatorButtonA = new JoystickButton(operator, XboxController.Button.kA.value);
     private final JoystickButton operatorButtonB = new JoystickButton(operator, XboxController.Button.kB.value);
+    private final JoystickButton operatorButtonX = new JoystickButton(operator, XboxController.Button.kX.value);
     /* Driver Buttons */
     private final JoystickButton driverA = new JoystickButton(driver, XboxController.Button.kA.value);
     private final JoystickButton driverB = new JoystickButton(driver, XboxController.Button.kB.value);
@@ -103,6 +114,7 @@ public class RobotContainer {
     /* operator triggers */
     final Trigger operatorLeftTrigger = new Trigger(() -> operator.getRawAxis(operatorLeftTriggerAxis) > 0.1);
     final Trigger operatorRightTrigger = new Trigger(() -> operator.getRawAxis(operatorRightTriggerAxis) > 0.1);
+
     
     
     /* Subsystems */
@@ -118,11 +130,12 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
 
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
 
     public RobotContainer() {
 
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
@@ -154,39 +167,63 @@ public class RobotContainer {
         );
 
         }
+
+        //spin up shooter when we have a note in the indexer
+        //NOTE: IF REMOVED NEED TO ADD SHOOTER SPINUP FOR AMP SCORE
+        s_Shooter.setDefaultCommand(
+            new ConditionalCommand(
+                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
+                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(40, 40), s_Shooter), 
+                () -> s_Shooter.getBreakBeamOutput())
+        );
+
         // Configure the button bindings
         configureButtonBindings();
 
         //Command ElevatorAtPosition = new s_Elevator.ElevatorAtPosition();
 
-        Command AimThenShoot = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+        Command AimThenShootAuto = new ParallelRaceGroup(
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
             new SequentialCommandGroup(
-                new WaitCommand(1.0), 
+                new PrintCommand("pre release:" + Timer.getFPGATimestamp()),
+                new WaitCommand(1.0).until(() -> prepareShot()),
+                new PrintCommand("post release:" + Timer.getFPGATimestamp()),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
-                new WaitCommand(1.0))
+                new WaitCommand(1.0)).until(() -> s_Shooter.getBreakBeamOutput())
                 );
 
         Command AimThenShootFar = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter), 
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
             new SequentialCommandGroup(
                 new WaitCommand(1.5), 
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
                 new WaitCommand(1.0))
                 );
 
-        NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()));
-        NamedCommands.registerCommand("Score", AimThenShoot);
+        NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
+            .until(() -> !s_Shooter.getBreakBeamOutput())
+        );
+        NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
+            .until(() -> !s_Shooter.getBreakBeamOutput())
+            .withTimeout(2)
+        );
+        NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
         NamedCommands.registerCommand("Score Far", AimThenShootFar);
-        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter));
+        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
         
         autoChooser = AutoBuilder.buildAutoChooser();
 
-
-
-        SmartDashboard.putData("Auto Chooser", autoChooser);
         
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+        SmartDashboard.putData("driver/Auto Chooser", autoChooser);
+        
+    }    
+    
+    private boolean prepareShot() {
+
+        return (s_ShooterPivot.atPosition() == true && s_Shooter.isUpToSpeed() == true);
+
     }
 
     /**
@@ -202,23 +239,90 @@ public class RobotContainer {
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
         // aim speaker
-        driverLeftTrigger.whileTrue(new TeleopSwerve(
-                s_Swerve, 
-                () -> driver.getRawAxis(leftY), 
-                () -> driver.getRawAxis(leftX), 
-                () -> driver.getRawAxis(rightX),
-                () -> driverDpadUp.getAsBoolean(),
-                () -> s_Eyes.getTargetRotation(),
-                () -> driverLeftTrigger.getAsBoolean(),
-                rotationSpeed,
-                true
-            ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter))
-        );
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            driverLeftTrigger.whileTrue(new TeleopSwerve(
+                    s_Swerve, 
+                    () -> -driver.getRawAxis(leftY), 
+                    () -> -driver.getRawAxis(leftX), 
+                    () -> driver.getRawAxis(rightX),
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getTargetRotation(),
+                    () -> driverLeftTrigger.getAsBoolean(),
+                    rotationSpeed,
+                    true
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+
+            );
+        } else {
+            driverLeftTrigger.whileTrue(new TeleopSwerve(
+                    s_Swerve, 
+                    () -> driver.getRawAxis(leftY), 
+                    () -> driver.getRawAxis(leftX), 
+                    () -> driver.getRawAxis(rightX),
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getTargetRotation(),
+                    () -> driverLeftTrigger.getAsBoolean(),
+                    rotationSpeed,
+                    true
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+
+            );
+        }
+        
+
+        // aim speaker with elevator
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            driverB.whileTrue(
+                new ParallelCommandGroup(
+                    new TeleopSwerve(
+                            s_Swerve, 
+                            () -> -driver.getRawAxis(leftY), 
+                            () -> -driver.getRawAxis(leftX), 
+                            () -> driver.getRawAxis(rightX),
+                            () -> driverDpadUp.getAsBoolean(),
+                            () -> s_Eyes.getTargetRotation(),
+                            () -> driverB.getAsBoolean(),
+                            rotationSpeed,
+                            true
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
+                )
+            ).onFalse(
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+                )
+            );
+        } else {
+            driverB.whileTrue(
+                new ParallelCommandGroup(
+                    new TeleopSwerve(
+                            s_Swerve, 
+                            () -> driver.getRawAxis(leftY), 
+                            () -> driver.getRawAxis(leftX), 
+                            () -> driver.getRawAxis(rightX),
+                            () -> driverDpadUp.getAsBoolean(),
+                            () -> s_Eyes.getTargetRotation(),
+                            () -> driverB.getAsBoolean(),
+                            rotationSpeed,
+                            true
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
+                )
+            ).onFalse(
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+                )
+            );
+        }
+
+        
 
         // shoot speaker
         driverRightTrigger.onTrue(
             new ParallelCommandGroup(
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(6))
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
             )
         ).onFalse(
             new ParallelCommandGroup(
@@ -226,8 +330,21 @@ public class RobotContainer {
             )
         );
 
+        
+
         // intake
-        driverX.whileTrue(new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes).until(() -> !s_Shooter.getBreakBeamOutput()).andThen(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")))).onFalse(new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")));
+        driverX.whileTrue(
+            new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
+            .until(() -> !s_Shooter.getBreakBeamOutput())
+            .andThen(new ParallelCommandGroup(
+                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")),
+                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1))
+            )))
+            .onFalse(new ParallelCommandGroup(
+                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")),
+                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))
+                )
+            );
 
         // outake
         driverA.whileTrue(new SequentialCommandGroup(
@@ -245,17 +362,19 @@ public class RobotContainer {
             )
         );
 
+        
+
 
         // climb reach
-        
         driverLB.onTrue(
             new SequentialCommandGroup(
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
                 
                 new ParallelCommandGroup(
                     new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16))
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             )
         );
@@ -264,20 +383,25 @@ public class RobotContainer {
         // climb pull up
         driverRB.onTrue(
             new ParallelCommandGroup(
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(2))
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0)),
+                new InstantCommand(() -> SmartDashboard.putString("ClimbCommand", "up"))
                 
             )
         );
 
         // escape climb
-        driverStart.onTrue(
+        driverSelect.onTrue(
 
             new SequentialCommandGroup(
-                new InstantCommand(() -> s_Elevator.setTargetElevatorPosition(16)),
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
+                new InstantCommand(() -> SmartDashboard.putString("ClimbCommand", "down")),
                 s_Elevator.ElevatorAtPosition(),
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                new InstantCommand(() -> SmartDashboard.putString("ShooterPivot", "return")),
                 s_ShooterPivot.ShooterPivotAtPosition(),
-                new InstantCommand(() -> s_Elevator.setTargetElevatorPosition(0))
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
             )
 
         );
@@ -294,7 +418,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
                 new ParallelCommandGroup(
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(16)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                     new AmpShooterPivot(s_ShooterPivot)
                 )
             )
@@ -306,19 +430,33 @@ public class RobotContainer {
                 )
         );
 
-        // shoot amp
-        operatorRightTrigger.onTrue(
-            new ParallelCommandGroup(
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(-6))
-            )
-        ).onFalse(
-            new ParallelCommandGroup(
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(0))
-            )
-        );
         
+        operatorRightTrigger.onTrue(
+             new ParallelCommandGroup(
+                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(6)),
+                 new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))
+             )
+         ).onFalse(
+             new ParallelCommandGroup(
+                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0)),
+                 new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0))
+             )
+         );
+        
+        // dummy shoot commands
+        operatorDpadDown.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 1.25)));
+        operatorDpadLeft.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 2.4)));
+        operatorDpadUp.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 3.17)));
         
 
+    }
+
+    public void rumbleControllers() {
+        if (s_Eyes.controllerRumble == true) {
+            driver.setRumble(RumbleType.kBothRumble, 1);
+        } else {
+            driver.setRumble(RumbleType.kBothRumble, 0);
+        }
     }
 
     /**
@@ -328,8 +466,9 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
-        //s_Swerve.swerveOdometry.update()
         return autoChooser.getSelected();
         
     }
+
+
 }

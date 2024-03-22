@@ -16,10 +16,11 @@ public final class Constants {
     public static final double stickDeadband = 0.1;
 
     public static final double ELEVATOR_SPROCKET_DIAMETER = 1.273;
-    public static final double ELEVATOR_ROTATIONS_TO_IN = (1.0 / 45.0) * ELEVATOR_SPROCKET_DIAMETER * Math.PI * 2.0;
-    public static final double ELEVATOR_TOLERANCE = 0.5;
-    public static final double ELEVATOR_HIGH_LEVEL = 15.0;
-    public static final double ELEVATOR_SAFE_LEVEL = 7;
+    public static final double ELEVATOR_GEAR_RATIO = 20.0;
+    public static final double ELEVATOR_ROTATIONS_TO_IN = (1.0 / ELEVATOR_GEAR_RATIO) * ELEVATOR_SPROCKET_DIAMETER * Math.PI * 2.0;
+    public static final double ELEVATOR_TOLERANCE = 1.0;
+    public static final double ELEVATOR_HIGH_LEVEL = 16.0;
+    public static final double ELEVATOR_SAFE_LEVEL = 7.0;
 
 
     /* PID Rotation */ 
@@ -34,7 +35,7 @@ public final class Constants {
     public static final double SLOW_MODE_PERCENT_STRAFE = 0.5;
     public static final double SLOW_MODE_PERCENT_ROTATION = 0.5;
 
-    public static final double AUTO_ROTATE_DEADBAND = 0.0;
+    public static final double AUTO_ROTATE_DEADBAND = 1.0;
 
     public static final class Swerve {
 
@@ -42,9 +43,14 @@ public final class Constants {
         public static final int pigeonID = 8;
         public static final double gyroOffset = 0;
 
+        public static final double rotateToAmpTargetAngle = 90;
+
+        public static final double atPositionTolerance = 3.0;
+        
+
 
         public static final COTSTalonFXSwerveConstants chosenModule =  //TODO: This must be tuned to specific robot
-        COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2);
+        COTSTalonFXSwerveConstants.SDS.MK4i.Falcon500(COTSTalonFXSwerveConstants.SDS.MK4i.driveRatios.L2_16T);
 
         /* Drivetrain Constants */
         public static final double trackWidth = Units.inchesToMeters(21.73); //TODO: This must be tuned to specific robot
@@ -104,7 +110,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 5.12; 
+        public static final double maxSpeed = 5.75; 
         /** Radians per Second */
         public static final double maxAngularVelocity = 10.0; //TODO: This must be tuned to specific robot
 
@@ -118,7 +124,7 @@ public final class Constants {
             public static final int driveMotorID = 0;
             public static final int angleMotorID = 1;
             public static final int cancoderID = 3;
-            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(140.34); //137.65
+            public static final Rotation2d angleOffset = Rotation2d.fromDegrees(137.65); //137.65
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, cancoderID, angleOffset);
         }

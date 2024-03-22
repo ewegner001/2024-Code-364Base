@@ -14,7 +14,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Score"
+            "name": "AutoScore"
           }
         },
         {
@@ -26,7 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Score"
+            "name": "Confirm Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScore"
           }
         }
       ]

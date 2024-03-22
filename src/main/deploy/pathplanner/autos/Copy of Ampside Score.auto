@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3571648195927977,
-      "y": 5.565450328895646
+      "x": 0.7987428243044774,
+      "y": 6.67517683109546
     },
-    "rotation": 0
+    "rotation": 60.06848815949221
   },
   "command": {
     "type": "sequential",
@@ -20,13 +20,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Four Piece Auto Path 1"
+            "pathName": "Ampside Auto path 1"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Confirm Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside Auto path 2"
           }
         },
         {
@@ -38,13 +44,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Four Piece Auto Path 2"
+            "pathName": "Ampside Auto path 5"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Confirm Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Ampside Auto Path 6"
           }
         },
         {
@@ -56,25 +68,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Four Piece Auto Path 3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Confirm Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AutoScore"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Four Piece Auto Path 4"
+            "pathName": "Ampside Auto path 3"
           }
         },
         {
@@ -86,7 +80,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Four Piece Auto Path 5"
+            "pathName": "Ampside Auth path 4"
           }
         },
         {

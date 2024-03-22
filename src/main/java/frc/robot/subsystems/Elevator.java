@@ -65,7 +65,7 @@ public class Elevator extends SubsystemBase {
   public double restingposition = 0;
   public double shootingPosition = 12.0;
 
-  private double elevatorP = 4.0;
+  private double elevatorP = 1.5; //4.0
   private double elevatorI = 0.0;
   private double elevatorD = 0.0;
 
@@ -94,7 +94,7 @@ public class Elevator extends SubsystemBase {
     e_Elevator = m_elevator1.getEncoder();
 
     m_elevator1.restoreFactoryDefaults();
-    m_elevator1.setInverted(true);
+    m_elevator1.setInverted(false);
 
     pidController = m_elevator1.getPIDController();
     
@@ -159,10 +159,6 @@ public class Elevator extends SubsystemBase {
     m_elevator1.set(speed);
   }
 
-    /* Sets the Target Elevator Position in inches.*/
-  public void setTargetElevatorPosition(double inches){
-      targetElevatorPosition = inches;
-  }
 
   /* Sets the Target Elevator Position in inches.*/
   public double getTargetElevatorPosition(){
