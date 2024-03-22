@@ -222,7 +222,7 @@ public class RobotContainer {
     
     private boolean prepareShot() {
 
-        return (s_ShooterPivot.atPosition() == true /*&& s_Eyes.swerveAtPosition() == true*/ && s_Shooter.isUpToSpeed() == true);
+        return (s_ShooterPivot.atPosition() == true && s_Shooter.isUpToSpeed() == true);
 
     }
 
@@ -442,17 +442,6 @@ public class RobotContainer {
                  new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0))
              )
          );
-
-        /*
-        driverStart.whileTrue(
-            new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
-
-        ) .onFalse(new ParallelCommandGroup(
-                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")),
-                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))
-                )
-        );
-        */
         
         // dummy shoot commands
         operatorDpadDown.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 1.25)));
@@ -477,7 +466,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
-        //s_Swerve.swerveOdometry.update()
         return autoChooser.getSelected();
         
     }
