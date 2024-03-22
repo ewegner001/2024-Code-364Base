@@ -66,7 +66,7 @@ public class Shooter extends SubsystemBase {
   private VelocityVoltage rm_request;
   private VelocityVoltage lm_request;
 
-  private DigitalInput breakBeam;
+  public DigitalInput breakBeam;
   
   private TalonFXConfigurator configF;
   private double m_setSpeed = 0.0;
@@ -236,6 +236,7 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Right Shooter Temp", m_rightShooter.getDeviceTemp().getValueAsDouble());
     SmartDashboard.putNumber("Left Shooter Temp", m_leftShooter.getDeviceTemp().getValueAsDouble());
     SmartDashboard.putBoolean("Break Beam Sensor", getBreakBeamOutput());
+    SmartDashboard.putBoolean("driver/Break Beam Sensor", getBreakBeamOutput());
     SmartDashboard.putNumber("Right Shooter Current", m_rightShooter.getSupplyCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Left Shooter Current", m_leftShooter.getSupplyCurrent().getValueAsDouble());
   }
