@@ -7,6 +7,7 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,6 +20,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -125,11 +130,12 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser;
 
 
+
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
 
     public RobotContainer() {
 
-        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
             s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve, 
@@ -208,9 +214,9 @@ public class RobotContainer {
         
         autoChooser = AutoBuilder.buildAutoChooser();
 
-
-
+        
         SmartDashboard.putData("Auto Chooser", autoChooser);
+        SmartDashboard.putData("driver/Auto Chooser", autoChooser);
         
     }    
     
@@ -475,4 +481,6 @@ public class RobotContainer {
         return autoChooser.getSelected();
         
     }
+
+
 }

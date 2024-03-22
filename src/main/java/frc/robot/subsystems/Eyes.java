@@ -137,7 +137,7 @@ public class Eyes extends SubsystemBase {
         Pose3d pose;
 
         // if robot is on blue alliance
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+        if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
 
             // get pose of blue speaker
             pose = new Pose3d(Constants.Positions.speakerBlueX, Constants.Positions.speakerBlueY, 0, new Rotation3d(0,0,Constants.Positions.speakerBlueR));
@@ -200,7 +200,7 @@ public class Eyes extends SubsystemBase {
 
         double distance;
 
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+        if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
 
             double xDistanceToSpeaker = Constants.Positions.speakerBlueX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
             double yDistanceToSpeaker = Constants.Positions.speakerBlueY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
