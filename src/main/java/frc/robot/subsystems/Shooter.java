@@ -39,7 +39,7 @@ public class Shooter extends SubsystemBase {
   public final double shooterSpeedToleranceRPS = 100.0/60.0; //100 RPM
 
   public final double shotSpeedRPS = 90;
-  public final double shooterSpinReduction = 0.95;
+  public final double shooterSpinReduction = 1.0;
 
 
   // left shooter motor PID
