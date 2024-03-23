@@ -74,6 +74,8 @@ public class Shooter extends SubsystemBase {
   private TalonFXConfigurator configF;
   private double m_setSpeed = 0.0;
 
+  public boolean gotNote = true;
+
   // constructor
   public Shooter() {
     // motors
@@ -154,6 +156,11 @@ public class Shooter extends SubsystemBase {
    */
   public boolean getBreakBeamOutput() {
     return breakBeam.get();
+
+  }
+
+  public void checkNote() {
+    gotNote = getBreakBeamOutput();
   }
 
   public Trigger getBreakBeamTrigger() {

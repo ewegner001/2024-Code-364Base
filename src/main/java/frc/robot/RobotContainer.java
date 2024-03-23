@@ -211,6 +211,17 @@ public class RobotContainer {
         NamedCommands.registerCommand("Score Far", AimThenShootFar);
         NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
+        NamedCommands.registerCommand("Check Note", new InstantCommand(() -> s_Shooter.checkNote()));
+        NamedCommands.registerCommand("Got Note", new ConditionalCommand(
+            new WaitCommand (15),
+            new InstantCommand (),
+            () -> s_Shooter.gotNote
+        ));
+        NamedCommands.registerCommand("Not Got Note", new ConditionalCommand(
+            new InstantCommand (),
+            new WaitCommand (15),
+            () -> s_Shooter.gotNote
+        ));
         
         autoChooser = AutoBuilder.buildAutoChooser();
 
