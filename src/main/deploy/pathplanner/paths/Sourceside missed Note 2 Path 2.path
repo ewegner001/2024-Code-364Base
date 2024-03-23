@@ -4,42 +4,48 @@
     {
       "anchor": {
         "x": 8.241041962510971,
-        "y": 2.4150717815077387
+        "y": 4.119255498297474
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.608696097586862,
-        "y": 0.3310985506857081
+        "x": 3.2356109314828365,
+        "y": 4.5574741683291204
       },
       "isLocked": false,
-      "linkedName": "Sourceside Auto path 3 Endpoint"
+      "linkedName": "Sourceside Missed Note 2 Endpoint"
     },
     {
       "anchor": {
-        "x": 2.261791664745845,
-        "y": 3.953706222952186
+        "x": 2.057289618731077,
+        "y": 3.5933930942594987
       },
       "prevControl": {
-        "x": 3.157705390143877,
-        "y": 2.960410570880455
+        "x": 4.248382968889307,
+        "y": 1.9963294968108325
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Sourceside Auto Path 4 Endpoint"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": 0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 5.75,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.3693172423648,
+    "rotation": -55.124671655397854,
     "rotateFast": false
   },
   "reversed": false,

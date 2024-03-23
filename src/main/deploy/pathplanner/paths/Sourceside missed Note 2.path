@@ -3,37 +3,43 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.69,
-        "y": 6.86
+        "x": 8.241041962510971,
+        "y": 2.4150717815077387
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.69,
-        "y": 6.86
+        "x": 6.14733053902644,
+        "y": 3.40836743357947
       },
       "isLocked": false,
-      "linkedName": "Ampside Auto path 2 Endpoint"
+      "linkedName": "Sourceside Auto path 3 Endpoint"
     },
     {
       "anchor": {
-        "x": 8.049679650761172,
-        "y": 5.75417973265853
+        "x": 8.241041962510971,
+        "y": 4.119255498297474
       },
       "prevControl": {
-        "x": 6.917276398300345,
-        "y": 6.097613505945829
+        "x": 6.770574869738114,
+        "y": 3.8368479109437468
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Ampside Auto (Inside Center) "
+      "linkedName": "Sourceside Missed Note 2 Endpoint"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4,
+      "rotationDegrees": 25.624492662715717,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Intake",
-      "waypointRelativePos": 0.65,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.35,
       "command": {
         "type": "parallel",
         "data": {
@@ -50,18 +56,18 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 5.75,
-    "maxAcceleration": 3.5,
+    "maxVelocity": 5.57,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 20.28255908891649,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Source Side",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

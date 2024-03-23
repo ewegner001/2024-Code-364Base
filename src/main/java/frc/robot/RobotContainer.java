@@ -168,14 +168,7 @@ public class RobotContainer {
 
         }
 
-        //spin up shooter when we have a note in the indexer
-        //NOTE: IF REMOVED NEED TO ADD SHOOTER SPINUP FOR AMP SCORE
-        s_Shooter.setDefaultCommand(
-            new ConditionalCommand(
-                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
-                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(40, 40), s_Shooter), 
-                () -> s_Shooter.getBreakBeamOutput())
-        );
+ 
 
         // Configure the button bindings
         configureButtonBindings();
@@ -183,11 +176,19 @@ public class RobotContainer {
         //Command ElevatorAtPosition = new s_Elevator.ElevatorAtPosition();
 
         Command AimThenShootAuto = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false).alongWith(new TeleopSwerve(
+                    s_Swerve, 
+                    () -> 0, 
+                    () -> 0, 
+                    () -> 0,
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getTargetRotation(),
+                    () -> false,
+                    rotationSpeed,
+                    true
+                )), 
             new SequentialCommandGroup(
-                new PrintCommand("pre release:" + Timer.getFPGATimestamp()),
                 new WaitCommand(1.0).until(() -> prepareShot()),
-                new PrintCommand("post release:" + Timer.getFPGATimestamp()),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
                 new WaitCommand(1.0)).until(() -> s_Shooter.getBreakBeamOutput())
                 );
@@ -205,7 +206,7 @@ public class RobotContainer {
         );
         NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
             .until(() -> !s_Shooter.getBreakBeamOutput())
-            .withTimeout(2)
+            .withTimeout(.5)
         );
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
         NamedCommands.registerCommand("Score Far", AimThenShootFar);
@@ -258,7 +259,7 @@ public class RobotContainer {
                     () -> driver.getRawAxis(rightX),
                     () -> driverDpadUp.getAsBoolean(),
                     () -> s_Eyes.getTargetRotation(),
-                    () -> driverLeftTrigger.getAsBoolean(),
+                    () -> false, //driverLeftTrigger.getAsBoolean(),
                     rotationSpeed,
                     true
                 ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
@@ -272,7 +273,7 @@ public class RobotContainer {
                     () -> driver.getRawAxis(rightX),
                     () -> driverDpadUp.getAsBoolean(),
                     () -> s_Eyes.getTargetRotation(),
-                    () -> driverLeftTrigger.getAsBoolean(),
+                    () -> false,//driverLeftTrigger.getAsBoolean(),
                     rotationSpeed,
                     true
                 ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
@@ -292,7 +293,7 @@ public class RobotContainer {
                             () -> driver.getRawAxis(rightX),
                             () -> driverDpadUp.getAsBoolean(),
                             () -> s_Eyes.getTargetRotation(),
-                            () -> driverB.getAsBoolean(),
+                            () -> false,//driverB.getAsBoolean(),
                             rotationSpeed,
                             true
                         ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
@@ -314,7 +315,7 @@ public class RobotContainer {
                             () -> driver.getRawAxis(rightX),
                             () -> driverDpadUp.getAsBoolean(),
                             () -> s_Eyes.getTargetRotation(),
-                            () -> driverB.getAsBoolean(),
+                            () -> false,//driverB.getAsBoolean(),
                             rotationSpeed,
                             true
                         ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
@@ -328,7 +329,14 @@ public class RobotContainer {
             );
         }
 
-        
+    //spin up shooter when we have a note in the indexer
+    //NOTE: IF REMOVED NEED TO ADD SHOOTER SPINUP FOR AMP SCORE
+    s_Shooter.setDefaultCommand(
+            new ConditionalCommand(
+                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
+                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(40, 40), s_Shooter), 
+                () -> s_Shooter.getBreakBeamOutput())
+        );
 
         // shoot speaker
         driverRightTrigger.onTrue(
@@ -469,6 +477,7 @@ public class RobotContainer {
             driver.setRumble(RumbleType.kBothRumble, 0);
         }
     }
+
 
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.

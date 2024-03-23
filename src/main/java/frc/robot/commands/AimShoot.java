@@ -41,16 +41,8 @@ public class AimShoot extends Command {
 
     // required WPILib class objects
     private InterpolatingDoubleTreeMap shooterAngleInterpolation;
-    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolation;
-    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolation;
-
     private InterpolatingDoubleTreeMap shooterAngleInterpolationAuto;
-    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationAuto;
-    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationAuto;
-
     private InterpolatingDoubleTreeMap shooterAngleInterpolationElevator;
-    private InterpolatingDoubleTreeMap shooterLeftSpeedInterpolationElevator;
-    private InterpolatingDoubleTreeMap shooterRightSpeedInterpolationElevator;
 
     // local variables
     private double shooterAngle;
@@ -62,7 +54,7 @@ public class AimShoot extends Command {
     // positions 
 
     //Higher note shot is lower angle!!!
-    private final double subWooferDistance = 1.25;
+    private final double subWooferDistance = 1.21; //1.21 at 930, 1.25 at comp
     private final double subWooferAngle = 115.0;
     private final double subWooferLeftShooterSpeed = 90.0;
     private final double subWooferRightShooterSpeed = subWooferLeftShooterSpeed;
@@ -72,13 +64,13 @@ public class AimShoot extends Command {
     private final double d2LeftShooterSpeed = 90.0;
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
-    private final double podiumDistance = 3.17;
-    private final double podiumAngle = 137;
+    private final double podiumDistance = 2.98; //2.98 at 930, 3.17 at comp
+    private final double podiumAngle = 138;
     private final double podiumLeftShooterSpeed = 90.0;
     private final double podiumRightShooterSpeed = podiumLeftShooterSpeed;
 
-    private final double d3Distance = 4.0;
-    private final double d3Angle = 137.0;
+    private final double d3Distance = 4.1;
+    private final double d3Angle = 140.0;
     private final double d3LeftShooterSpeed = 95.0;
     private final double d3RightShooterSpeed = d3LeftShooterSpeed;
 
@@ -130,7 +122,9 @@ public class AimShoot extends Command {
         addRequirements(eyes, shooterPivot, shooter);
 
         // instantiate objects
-        shooterAngleInterpolation = new InterpolatingDoubleTreeMap();;
+        shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
+        shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
+        shooterAngleInterpolationElevator = new InterpolatingDoubleTreeMap();
 
         // create points in angle linear interpolation line
         // TODO tune these values
@@ -161,9 +155,7 @@ public class AimShoot extends Command {
 
         // instantiate objects
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
-
         shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
-
         shooterAngleInterpolationElevator = new InterpolatingDoubleTreeMap();
 
         // create points in angle linear interpolation line
