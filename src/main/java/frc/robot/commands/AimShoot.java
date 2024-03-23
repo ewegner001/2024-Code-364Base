@@ -130,17 +130,7 @@ public class AimShoot extends Command {
         addRequirements(eyes, shooterPivot, shooter);
 
         // instantiate objects
-        shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
-        shooterLeftSpeedInterpolation = new InterpolatingDoubleTreeMap();
-        shooterRightSpeedInterpolation = new InterpolatingDoubleTreeMap();
-
-        shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
-        shooterLeftSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
-        shooterRightSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
-
-        shooterAngleInterpolationElevator = new InterpolatingDoubleTreeMap();
-        shooterLeftSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
-        shooterRightSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
+        shooterAngleInterpolation = new InterpolatingDoubleTreeMap();;
 
         // create points in angle linear interpolation line
         // TODO tune these values
@@ -150,21 +140,6 @@ public class AimShoot extends Command {
         shooterAngleInterpolation.put(d3Distance, d3Angle);
         shooterAngleInterpolation.put(xSpotDistance, xSpotAngle);
 
-        // create points in shooter power linear interpolation line
-        // TODO tune these values
-        shooterLeftSpeedInterpolation.put(subWooferDistance, subWooferLeftShooterSpeed);
-        //shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(podiumDistance, podiumLeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(d3Distance, d3LeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
-
-        shooterRightSpeedInterpolation.put(subWooferDistance, subWooferRightShooterSpeed);
-        //shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
-        shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
-        shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
-        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeed);
-
-
 
         shooterAngleInterpolationAuto.put(subWooferDistanceAuto, subWooferAngleAuto);
         shooterAngleInterpolationAuto.put(d2DistanceAuto, d2AngleAuto);
@@ -172,23 +147,7 @@ public class AimShoot extends Command {
         shooterAngleInterpolationAuto.put(d3DistanceAuto, d3AngleAuto);
         shooterAngleInterpolationAuto.put(xSpotDistanceAuto, xSpotAngleAuto);
 
-        // create points in shooter power linear interpolation line
-        // TODO tune these values
-        shooterLeftSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferLeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolationAuto.put(d2DistanceAuto, d2LeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolationAuto.put(podiumDistanceAuto, podiumLeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolationAuto.put(d3DistanceAuto, d3LeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
-
-        shooterRightSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferRightShooterSpeedAuto);
-        shooterRightSpeedInterpolationAuto.put(d2DistanceAuto, d2RightShooterSpeedAuto);
-        shooterRightSpeedInterpolationAuto.put(podiumDistanceAuto, podiumRightShooterSpeedAuto);
-        shooterRightSpeedInterpolationAuto.put(d3DistanceAuto, d3RightShooterSpeedAuto);
-        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeedAuto);
-
         shooterAngleInterpolationElevator.put(elevatorShotDistance, elevatorShotAngle);
-        shooterLeftSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotLeftShooterSpeed);
-        shooterRightSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotRightShooterSpeed);
 
     }
 
@@ -202,16 +161,10 @@ public class AimShoot extends Command {
 
         // instantiate objects
         shooterAngleInterpolation = new InterpolatingDoubleTreeMap();
-        shooterLeftSpeedInterpolation = new InterpolatingDoubleTreeMap();
-        shooterRightSpeedInterpolation = new InterpolatingDoubleTreeMap();
 
         shooterAngleInterpolationAuto = new InterpolatingDoubleTreeMap();
-        shooterLeftSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
-        shooterRightSpeedInterpolationAuto = new InterpolatingDoubleTreeMap();
 
         shooterAngleInterpolationElevator = new InterpolatingDoubleTreeMap();
-        shooterLeftSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
-        shooterRightSpeedInterpolationElevator = new InterpolatingDoubleTreeMap();
 
         // create points in angle linear interpolation line
         // TODO tune these values
@@ -221,46 +174,13 @@ public class AimShoot extends Command {
         shooterAngleInterpolation.put(d3Distance, d3Angle);
         shooterAngleInterpolation.put(xSpotDistance, xSpotAngle);
 
-        // create points in shooter power linear interpolation line
-        // TODO tune these values
-        shooterLeftSpeedInterpolation.put(subWooferDistance, subWooferLeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(d2Distance, d2LeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(podiumDistance, podiumLeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(d3Distance, d3LeftShooterSpeed);
-        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
-
-        shooterRightSpeedInterpolation.put(subWooferDistance, subWooferRightShooterSpeed);
-        shooterRightSpeedInterpolation.put(d2Distance, d2RightShooterSpeed);
-        shooterRightSpeedInterpolation.put(podiumDistance, podiumRightShooterSpeed);
-        shooterRightSpeedInterpolation.put(d3Distance, d3RightShooterSpeed);
-        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeed);
-
-
-
         shooterAngleInterpolationAuto.put(subWooferDistanceAuto, subWooferAngleAuto);
         shooterAngleInterpolationAuto.put(d2DistanceAuto, d2AngleAuto);
         shooterAngleInterpolationAuto.put(podiumDistanceAuto, podiumAngleAuto);
         shooterAngleInterpolationAuto.put(d3DistanceAuto, d3AngleAuto);
         shooterAngleInterpolationAuto.put(xSpotDistanceAuto, xSpotAngleAuto);
 
-        // create points in shooter power linear interpolation line
-        // TODO tune these values
-        shooterLeftSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferLeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolationAuto.put(d2DistanceAuto, d2LeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolationAuto.put(podiumDistanceAuto, podiumLeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolationAuto.put(d3DistanceAuto, d3LeftShooterSpeedAuto);
-        shooterLeftSpeedInterpolation.put(xSpotDistance, xSpotLeftShooterSpeed);
-
-        shooterRightSpeedInterpolationAuto.put(subWooferDistanceAuto, subWooferRightShooterSpeedAuto);
-        shooterRightSpeedInterpolationAuto.put(d2DistanceAuto, d2RightShooterSpeedAuto);
-        shooterRightSpeedInterpolationAuto.put(podiumDistanceAuto, podiumRightShooterSpeedAuto);
-        shooterRightSpeedInterpolationAuto.put(d3DistanceAuto, d3RightShooterSpeedAuto);
-        shooterRightSpeedInterpolation.put(xSpotDistance, xSpotRightShooterSpeedAuto);
-
         shooterAngleInterpolationElevator.put(elevatorShotDistance, elevatorShotAngle);
-        shooterLeftSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotLeftShooterSpeed);
-        shooterRightSpeedInterpolationElevator.put(elevatorShotDistance, elevatorShotRightShooterSpeed);
-
     }
 
     @Override
@@ -288,8 +208,8 @@ public class AimShoot extends Command {
         // get desired shooter power using the linear interpolation
         // x (input) = distance
         // y (output) = shooter power
-        leftShooterSpeed = shooterLeftSpeedInterpolation.get(distance);
-        rightShooterSpeed = shooterRightSpeedInterpolation.get(distance);
+        leftShooterSpeed = shooter.shotSpeedRPS;
+        rightShooterSpeed = shooter.shotSpeedRPS * shooter.shooterSpinReduction;
         
 
 
