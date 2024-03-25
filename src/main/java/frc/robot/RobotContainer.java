@@ -123,7 +123,7 @@ public class RobotContainer {
     private final Elevator s_Elevator = new Elevator();
     private final Intake s_Intake = new Intake();
     private final Shooter s_Shooter = new Shooter();
-    private final Eyes s_Eyes = new Eyes(s_Swerve);
+    private final Eyes s_Eyes = new Eyes(s_Swerve, s_Shooter);
 
 
 
@@ -183,7 +183,7 @@ public class RobotContainer {
         //Command ElevatorAtPosition = new s_Elevator.ElevatorAtPosition();
 
         Command AimThenShootAuto = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false), 
             new SequentialCommandGroup(
                 new PrintCommand("pre release:" + Timer.getFPGATimestamp()),
                 new WaitCommand(1.0).until(() -> prepareShot()),
@@ -192,13 +192,7 @@ public class RobotContainer {
                 new WaitCommand(1.0)).until(() -> s_Shooter.getBreakBeamOutput())
                 );
 
-        Command AimThenShootFar = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false), 
-            new SequentialCommandGroup(
-                new WaitCommand(1.5), 
-                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
-                new WaitCommand(1.0))
-                );
+
 
         NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
             .until(() -> !s_Shooter.getBreakBeamOutput())
@@ -208,8 +202,7 @@ public class RobotContainer {
             .withTimeout(2)
         );
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
-        NamedCommands.registerCommand("Score Far", AimThenShootFar);
-        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false));
+        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
         
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -250,7 +243,7 @@ public class RobotContainer {
                     () -> driverLeftTrigger.getAsBoolean(),
                     rotationSpeed,
                     true
-                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true))
 
             );
         } else {
@@ -264,7 +257,7 @@ public class RobotContainer {
                     () -> driverLeftTrigger.getAsBoolean(),
                     rotationSpeed,
                     true
-                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false))
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false ,true))
 
             );
         }
@@ -284,7 +277,7 @@ public class RobotContainer {
                             () -> driverB.getAsBoolean(),
                             rotationSpeed,
                             true
-                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false)),
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             ).onFalse(
@@ -306,7 +299,7 @@ public class RobotContainer {
                             () -> driverB.getAsBoolean(),
                             rotationSpeed,
                             true
-                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true)),
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false)),
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             ).onFalse(

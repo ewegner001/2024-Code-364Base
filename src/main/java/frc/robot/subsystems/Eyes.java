@@ -25,6 +25,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.Swerve;
 
@@ -34,6 +35,7 @@ public class Eyes extends SubsystemBase {
 
     // Swerve subsystem for pose estimator
     Swerve s_Swerve;
+    Shooter s_Shooter;
 
     // create objects and variables
     public LimelightHelpers limelight;
@@ -41,13 +43,15 @@ public class Eyes extends SubsystemBase {
     public double ty;
     public double ta;
     public double tID;
+    private double accelerationCompensation = 0.1;
 
     public boolean controllerRumble = false;
   
     // constuctor
-    public Eyes(Swerve swerve) {
+    public Eyes(Swerve swerve, Shooter shooter) {
 
         s_Swerve = swerve;
+        s_Shooter = shooter;
     }
 
  
@@ -196,6 +200,12 @@ public class Eyes extends SubsystemBase {
         }
     }
 
+    public double getShotTime(double distance) {
+
+        double linearSpeed = ((Math.PI * 4 * s_Shooter.m_setSpeed * (2 * Math.PI)) / 1.333) * 0.0254; //TODO: change shooter gear ratio
+        return (distance / linearSpeed) + 0.1;
+    }
+
     public double getDistanceFromTarget() {
 
         double distance;
@@ -213,6 +223,65 @@ public class Eyes extends SubsystemBase {
             distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
 
         }
+
+        return distance;
+
+    }
+
+    public Pose2d getMovingTarget() {
+        double shotTime = getShotTime(getDistanceFromTarget());
+
+        Translation2d movingGoal = new Translation2d();
+        Translation2d movingGoalLocation = new Translation2d();
+
+        //TODO MAKE FIELD RELATIVE?
+        double robotVelX = s_Swerve.getChassisSpeed().vxMetersPerSecond;
+        double robotVelY = s_Swerve.getChassisSpeed().vyMetersPerSecond;
+
+        //TODO calculate accelerations
+        double robotAccelX  = 0;
+        double robotAccelY = 0;
+
+        for(int i=0;i<5;i++){
+
+            double virtualGoalX = getTargetPose().getX() - shotTime * (robotVelX + robotAccelX * accelerationCompensation);
+            double virtualGoalY = getTargetPose().getY() - shotTime * (robotVelY + robotAccelY * accelerationCompensation);
+
+            SmartDashboard.putNumber("Goal X", virtualGoalX);
+            SmartDashboard.putNumber("Goal Y", virtualGoalY);
+
+            Translation2d testGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+
+            Translation2d toTestGoal = testGoalLocation.minus(s_Swerve.getEstimatedPose().getTranslation());
+
+            double newShotTime = getShotTime(toTestGoal.getDistance(new Translation2d()));
+
+
+
+            if(Math.abs(newShotTime-shotTime) <= 0.010){
+                i=4;
+            }
+
+            if(i == 4){
+                movingGoalLocation = testGoalLocation;
+                SmartDashboard.putNumber("NewShotTime", newShotTime);
+            }
+            else{
+                shotTime = newShotTime;
+            }
+
+        }
+        return new Pose2d(movingGoalLocation, getTargetPose().getRotation().toRotation2d());
+
+    }
+
+    public double getDistanceFromMovingTarget() {
+
+        double distance;
+
+        double xDistanceToSpeaker = getMovingTarget().getX() - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
+        double yDistanceToSpeaker = getMovingTarget().getY() - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
+        distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
 
         return distance;
 

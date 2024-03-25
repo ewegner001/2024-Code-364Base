@@ -58,6 +58,7 @@ public class AimShoot extends Command {
     private double rightShooterSpeed;
 
     public boolean isElevatorShot = false;
+    public boolean onMove = false;
 
     // positions 
 
@@ -119,13 +120,13 @@ public class AimShoot extends Command {
     private final double elevatorShotLeftShooterSpeed = 90;
     private final double elevatorShotRightShooterSpeed = elevatorShotLeftShooterSpeed;
 
-
     // constructor
-    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot) {
+    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot, boolean onMove) {
         this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
         this.isElevatorShot = isElevatorShot;
+        this.onMove = onMove;
 
         addRequirements(eyes, shooterPivot, shooter);
 
@@ -272,8 +273,14 @@ public class AimShoot extends Command {
             distance = elevatorShotDistance;
             shooterAngle = elevatorShotAngle;
         } else if(manualDistance == 0) {
-            distance = eyes.getDistanceFromTarget();
-            shooterAngle = shooterAngleInterpolation.get(distance);
+            if (onMove == true) {
+                distance = eyes.getDistanceFromMovingTarget();
+                shooterAngle = shooterAngleInterpolation.get(distance);
+            } else {
+                distance = eyes.getDistanceFromTarget();
+                shooterAngle = shooterAngleInterpolation.get(distance);
+            }
+
         } else {
             distance = manualDistance;
             shooterAngle = shooterAngleInterpolation.get(distance);
