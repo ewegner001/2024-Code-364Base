@@ -234,7 +234,8 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-
+        //Manual climb
+        operatorLB.onTrue(new InstantCommand(() -> s_Elevator.climb()));
         // zero gyro
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 

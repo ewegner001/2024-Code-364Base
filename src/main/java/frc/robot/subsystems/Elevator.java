@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -63,6 +64,7 @@ public class Elevator extends SubsystemBase {
   private double heightlimit = 16;
   public double elevatorspeed = 0.1;
   public double restingposition = 0;
+  public double climbingPosition = -2.0;
   public double shootingPosition = 12.0;
 
   private double elevatorP = 1.5; //4.0
@@ -163,6 +165,12 @@ public class Elevator extends SubsystemBase {
   /* Sets the Target Elevator Position in inches.*/
   public double getTargetElevatorPosition(){
       return targetElevatorPosition;
+  }
+
+  public void climb() {
+  m_elevator1.setSoftLimit(SoftLimitDirection.kReverse,(float)inchesToMotorRotations(climbingPosition));  
+  m_elevator2.setSoftLimit(SoftLimitDirection.kReverse,(float)inchesToMotorRotations(climbingPosition));
+  SetElevatorPosition(climbingPosition);
   }
 
 
