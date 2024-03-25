@@ -239,7 +239,7 @@ public class RobotContainer {
                     () -> -driver.getRawAxis(leftX), 
                     () -> driver.getRawAxis(rightX),
                     () -> driverDpadUp.getAsBoolean(),
-                    () -> s_Eyes.getTargetRotation(),
+                    () -> s_Eyes.getMovingTargetRotation(),
                     () -> driverLeftTrigger.getAsBoolean(),
                     rotationSpeed,
                     true
@@ -253,7 +253,7 @@ public class RobotContainer {
                     () -> driver.getRawAxis(leftX), 
                     () -> driver.getRawAxis(rightX),
                     () -> driverDpadUp.getAsBoolean(),
-                    () -> s_Eyes.getTargetRotation(),
+                    () -> s_Eyes.getMovingTargetRotation(),
                     () -> driverLeftTrigger.getAsBoolean(),
                     rotationSpeed,
                     true

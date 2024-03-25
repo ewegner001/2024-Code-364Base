@@ -183,6 +183,32 @@ public class Eyes extends SubsystemBase {
         return -angle + 180;
     }
 
+    public double getMovingTargetRotation() {
+
+        Pose2d robotPose = s_Swerve.m_poseEstimator.getEstimatedPosition();
+        Pose2d targetPose = getMovingTarget();
+
+        double robotX = robotPose.getX();
+        double robotY = robotPose.getY();
+
+        double targetX = targetPose.getX();
+        double targetY = targetPose.getY();
+
+        double angle =  (Math.atan((targetY - robotY) / (targetX - robotX)) * (180 / Math.PI));
+
+        if (robotX > targetX) {
+
+            angle = angle + 180;
+
+        }
+
+        SmartDashboard.putNumber("angle", angle);
+        SmartDashboard.putNumber(" inverted angle", -angle);
+
+        return -angle + 180;
+    }
+
+
     public boolean swerveAtPosition() {
 
 
