@@ -12,6 +12,8 @@
 package frc.robot.subsystems;
 
 
+import frc.lib.util.FieldRelativeAccel;
+import frc.lib.util.FieldRelativeSpeed;
 import frc.robot.Constants;
 import java.util.List;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -265,8 +267,8 @@ public class Eyes extends SubsystemBase {
         double robotVelY = s_Swerve.getChassisSpeed().vyMetersPerSecond;
 
         //TODO calculate accelerations
-        double robotAccelX  = 0;
-        double robotAccelY = 0;
+        double robotAccelX  = s_Swerve.fieldRelativeAccel.ax;
+        double robotAccelY = s_Swerve.fieldRelativeAccel.ay;
 
         for(int i=0;i<5;i++){
 

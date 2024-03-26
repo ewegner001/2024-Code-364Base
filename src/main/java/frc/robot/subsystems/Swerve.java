@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
 import frc.robot.LimelightHelpers.LimelightTarget_Detector;
+import frc.lib.util.FieldRelativeAccel;
+import frc.lib.util.FieldRelativeAccel;
+import frc.lib.util.FieldRelativeSpeed;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -70,6 +73,9 @@ public class Swerve extends SubsystemBase {
     public StructArrayPublisher<SwerveModuleState> swerveKinematicsPublisher;
     public StructPublisher<Pose2d> estimatedRobotPosePublisher;
     public SwerveDrivePoseEstimator m_poseEstimator;
+    public FieldRelativeSpeed fieldRelativeVelocity;
+    public FieldRelativeSpeed lastFieldRelativeVelocity;
+    public FieldRelativeAccel fieldRelativeAccel;
     
 
     // constructor
@@ -78,6 +84,9 @@ public class Swerve extends SubsystemBase {
         // instantiate objects 
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         m_field = new Field2d();
+        fieldRelativeVelocity = new FieldRelativeSpeed();
+        lastFieldRelativeVelocity = new FieldRelativeSpeed();
+        fieldRelativeAccel = new FieldRelativeAccel();
 
         // set gyro
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -290,6 +299,10 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic(){
         swerveOdometry.update(getGyroYaw(), getModulePositions());
+
+        fieldRelativeVelocity = new FieldRelativeSpeed(getChassisSpeed(), getGyroYaw());
+        fieldRelativeAccel = new FieldRelativeAccel(fieldRelativeVelocity, lastFieldRelativeVelocity, 0.02);
+        lastFieldRelativeVelocity = fieldRelativeVelocity;
 
         SmartDashboard.putNumber("ChassisSpeedX", getChassisSpeed().vxMetersPerSecond);
         SmartDashboard.putNumber("ChassisSpeedY", getChassisSpeed().vyMetersPerSecond);
