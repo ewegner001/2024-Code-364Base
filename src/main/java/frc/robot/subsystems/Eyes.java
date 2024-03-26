@@ -263,8 +263,8 @@ public class Eyes extends SubsystemBase {
         Translation2d movingGoalLocation = new Translation2d();
 
         //TODO MAKE FIELD RELATIVE?
-        double robotVelX = s_Swerve.getChassisSpeed().vxMetersPerSecond;
-        double robotVelY = s_Swerve.getChassisSpeed().vyMetersPerSecond;
+        double robotVelX = s_Swerve.fieldRelativeVelocity.vx; //s_Swerve.getChassisSpeed().vxMetersPerSecond
+        double robotVelY = s_Swerve.fieldRelativeVelocity.vy; //s_Swerve.getChassisSpeed().vyMetersPerSecond
 
         //TODO calculate accelerations
         double robotAccelX  = s_Swerve.fieldRelativeAccel.ax;
