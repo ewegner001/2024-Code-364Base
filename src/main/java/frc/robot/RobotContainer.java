@@ -240,7 +240,7 @@ public class RobotContainer {
                     () -> driver.getRawAxis(rightX),
                     () -> driverDpadUp.getAsBoolean(),
                     () -> s_Eyes.getMovingTargetRotation(),
-                    () -> driverLeftTrigger.getAsBoolean(),
+                    () -> false,
                     rotationSpeed,
                     true
                 ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true))
@@ -254,7 +254,7 @@ public class RobotContainer {
                     () -> driver.getRawAxis(rightX),
                     () -> driverDpadUp.getAsBoolean(),
                     () -> s_Eyes.getMovingTargetRotation(),
-                    () -> driverLeftTrigger.getAsBoolean(),
+                    () -> false,
                     rotationSpeed,
                     true
                 ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false ,true))
