@@ -173,6 +173,10 @@ public class Elevator extends SubsystemBase {
   SetElevatorPosition(climbingPosition);
   }
 
+  public void resetElevatorReverseSoftlimit(){
+  m_elevator1.setSoftLimit(SoftLimitDirection.kReverse,(float)inchesToMotorRotations(restingposition));  
+  m_elevator2.setSoftLimit(SoftLimitDirection.kReverse,(float)inchesToMotorRotations(restingposition));
+  }
 
     private double motorRotationsToInches(double rotations) {
         return rotations * Constants.ELEVATOR_ROTATIONS_TO_IN;

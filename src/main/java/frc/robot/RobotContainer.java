@@ -369,6 +369,7 @@ public class RobotContainer {
         // climb reach
         driverLB.onTrue(
             new SequentialCommandGroup(
+                new InstantCommand(() -> s_Elevator.resetElevatorReverseSoftlimit()),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
                 s_Elevator.ElevatorAtPosition(),
@@ -378,6 +379,7 @@ public class RobotContainer {
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             )
+        
         );
 
 
