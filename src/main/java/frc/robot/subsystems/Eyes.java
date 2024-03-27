@@ -28,6 +28,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
@@ -364,30 +365,33 @@ public class Eyes extends SubsystemBase {
 
     }
 
-    /*public void updatePoseEstimatorWithVisionBotPose() {
+    public void updatePoseEstimatorWithVisionBotPose() {
         //invalid limelight
         if (LimelightHelpers.getTV("") == false) {
           return;
         }
         
         // distance from current pose to vision estimated pose
-        double poseDifference = s_Swerve.m_poseEstimator.getEstimatedPosition().getTranslation()
-            .getDistance(getRobotPose().getTranslation());
+        LimelightHelpers.PoseEstimate lastResult = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
+        double fpgaTimestamp = Timer.getFPGATimestamp();
+        
+        Translation2d translation = s_Swerve.m_poseEstimator.getEstimatedPosition().getTranslation();
+        double poseDifference = translation.getDistance(lastResult.pose.getTranslation());
     
           double xyStds;
           double degStds;
           // multiple targets detected
-          if (limelight.getNumberOfTargetsVisible() >= 2) {
+          if (lastResult.tagCount >= 2) {
             xyStds = 0.5;
             degStds = 6;
           }
           // 1 target with large area and close to estimated pose
-          else if (LimelightHelpers.getTA() > 0.8 && poseDifference < 0.5) {
+          else if (lastResult.avgTagArea > 0.8 && poseDifference < 0.5) {
             xyStds = 1.0;
             degStds = 12;
           }
           // 1 target farther away and estimated pose is close
-          else if (limelight.getBestTargetArea() > 0.1 && poseDifference < 0.3) {
+          else if (lastResult.avgTagArea > 0.1 && poseDifference < 0.3) {
             xyStds = 2.0;
             degStds = 30;
           }
@@ -399,22 +403,16 @@ public class Eyes extends SubsystemBase {
           s_Swerve.m_poseEstimator.setVisionMeasurementStdDevs(
               VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
           s_Swerve.m_poseEstimator.addVisionMeasurement(getRobotPose(),
-              Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0));
+              fpgaTimestamp - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0));
         }
-      }
-/* */
+
 
     @Override
     public void periodic() {
         s_Swerve.m_poseEstimator.update(s_Swerve.getGyroYaw(), s_Swerve.getModulePositions());
 
 
-        if (LimelightHelpers.getTV("") == true) {
-            s_Swerve.m_poseEstimator.addVisionMeasurement(
-                getRobotPose(), 
-                Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0)
-            );
-        }
+        updatePoseEstimatorWithVisionBotPose();
 
         SmartDashboard.putNumber("Pose estimator rotations", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
         SmartDashboard.putNumber("Pose Estimator X", s_Swerve.m_poseEstimator.getEstimatedPosition().getX());
