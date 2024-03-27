@@ -1,5 +1,7 @@
 package frc.lib.util;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class FieldRelativeAccel {
     public double ax;
     public double ay;
@@ -25,6 +27,9 @@ public class FieldRelativeAccel {
         if (Math.abs(this.alpha) > 4 * Math.PI) {
             this.alpha = 4 * Math.PI * Math.signum(this.alpha);
         }
+
+        SmartDashboard.putNumber("fieldRelativeAccelX", this.ax);
+        SmartDashboard.putNumber("fieldRelativeAccelY", this.ay);
     }
 
     public FieldRelativeAccel() {

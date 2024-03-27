@@ -29,6 +29,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.subsystems.Swerve;
 
 
@@ -45,12 +47,15 @@ public class Eyes extends SubsystemBase {
     public double ty;
     public double ta;
     public double tID;
-    private double accelerationCompensation = 0.1;
+    private double accelerationCompensation = 0.0; //Note this caused a ton of jitter due to inconsistent loop times
+    private StructPublisher<Pose2d> posePublisher;
 
     public boolean controllerRumble = false;
   
     // constuctor
     public Eyes(Swerve swerve, Shooter shooter) {
+
+        posePublisher = NetworkTableInstance.getDefault().getStructTopic("/moving Goal x", Pose2d.struct).publish();
 
         s_Swerve = swerve;
         s_Shooter = shooter;
@@ -231,7 +236,7 @@ public class Eyes extends SubsystemBase {
     public double getShotTime(double distance) {
 
         double linearSpeed = ((Math.PI * 4 * s_Shooter.m_setSpeed * (2 * Math.PI)) / 1.333) * 0.0254; //TODO: change shooter gear ratio
-        return (distance / linearSpeed) + 0.1;
+        return (distance / linearSpeed) + 0.25; //TODO: tune constant for shot accel/feeding time
     }
 
     public double getDistanceFromTarget() {
@@ -259,12 +264,11 @@ public class Eyes extends SubsystemBase {
     public Pose2d getMovingTarget() {
         double shotTime = getShotTime(getDistanceFromTarget());
 
-        Translation2d movingGoal = new Translation2d();
         Translation2d movingGoalLocation = new Translation2d();
 
         //TODO MAKE FIELD RELATIVE?
-        double robotVelX = s_Swerve.fieldRelativeVelocity.vx; //s_Swerve.getChassisSpeed().vxMetersPerSecond
-        double robotVelY = s_Swerve.fieldRelativeVelocity.vy; //s_Swerve.getChassisSpeed().vyMetersPerSecond
+        double robotVelX = s_Swerve.fieldRelativeVelocity.vx;
+        double robotVelY = s_Swerve.fieldRelativeVelocity.vy; 
 
         //TODO calculate accelerations
         double robotAccelX  = s_Swerve.fieldRelativeAccel.ax;
@@ -272,8 +276,8 @@ public class Eyes extends SubsystemBase {
 
         for(int i=0;i<5;i++){
 
-            double virtualGoalX = getTargetPose().getX() - shotTime * (robotVelX + robotAccelX * accelerationCompensation);
-            double virtualGoalY = getTargetPose().getY() - shotTime * (robotVelY + robotAccelY * accelerationCompensation);
+            double virtualGoalX = getTargetPose().getX() + shotTime * (robotVelX + robotAccelX * accelerationCompensation); //TODO: Test on blue
+            double virtualGoalY = getTargetPose().getY() + shotTime * (robotVelY + robotAccelY * accelerationCompensation); //TODO: Test on blue
 
             SmartDashboard.putNumber("Goal X", virtualGoalX);
             SmartDashboard.putNumber("Goal Y", virtualGoalY);
@@ -416,6 +420,9 @@ public class Eyes extends SubsystemBase {
         SmartDashboard.putNumber("target X", getTargetPose().getX());
         SmartDashboard.putNumber("target Y", getTargetPose().getY());
         SmartDashboard.putNumber("Distance to Target", getDistanceFromTarget());
+
+        
+        posePublisher.set(getMovingTarget());
 
     }
 }
