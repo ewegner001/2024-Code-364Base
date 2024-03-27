@@ -49,14 +49,14 @@ public class Eyes extends SubsystemBase {
     public double tID;
     private double accelerationCompensation = 0.0; //Note this caused a ton of jitter due to inconsistent loop times
     private StructPublisher<Pose2d> posePublisher;
-
+    private StructPublisher<Translation2d> translationPublisher;
     public boolean controllerRumble = false;
   
     // constuctor
     public Eyes(Swerve swerve, Shooter shooter) {
 
-        posePublisher = NetworkTableInstance.getDefault().getStructTopic("/moving Goal x", Pose2d.struct).publish();
-
+        posePublisher = NetworkTableInstance.getDefault().getStructTopic("/Moving Goal pose", Pose2d.struct).publish();
+        translationPublisher = NetworkTableInstance.getDefault().getStructTopic("/Moving Goal translation", Translation2d.struct).publish();
         s_Swerve = swerve;
         s_Shooter = shooter;
     }
@@ -285,6 +285,7 @@ public class Eyes extends SubsystemBase {
             Translation2d testGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
 
             Translation2d toTestGoal = testGoalLocation.minus(s_Swerve.getEstimatedPose().getTranslation());
+            translationPublisher.set(toTestGoal);
 
             double newShotTime = getShotTime(toTestGoal.getDistance(new Translation2d()));
 
@@ -303,7 +304,7 @@ public class Eyes extends SubsystemBase {
             }
 
         }
-        return new Pose2d(movingGoalLocation, getTargetPose().getRotation().toRotation2d());
+        return new Pose2d(movingGoalLocation, getTargetPose().getRotation().toRotation2d()); //TODO: validate rotation--probably not needed since only get x and y
 
     }
 
@@ -406,6 +407,7 @@ public class Eyes extends SubsystemBase {
     @Override
     public void periodic() {
         s_Swerve.m_poseEstimator.update(s_Swerve.getGyroYaw(), s_Swerve.getModulePositions());
+
 
         if (LimelightHelpers.getTV("") == true) {
             s_Swerve.m_poseEstimator.addVisionMeasurement(
