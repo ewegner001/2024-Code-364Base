@@ -217,11 +217,13 @@ public class Eyes extends SubsystemBase {
     }
 
 
-    public boolean swerveAtPosition() {
-
-
-
-        double error = Math.abs(getTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+    public boolean swerveAtPosition(boolean onMove) {
+        double error;
+        if(onMove){
+            error = Math.abs(getMovingTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+        } else { 
+            error = Math.abs(getTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+        }
 
         SmartDashboard.putNumber("getTargetRotation", getTargetRotation());
         SmartDashboard.putNumber("estimated rotation", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
@@ -233,6 +235,8 @@ public class Eyes extends SubsystemBase {
             return false;
         }
     }
+
+    
 
     public double getShotTime(double distance) {
 
@@ -267,7 +271,6 @@ public class Eyes extends SubsystemBase {
 
         Translation2d movingGoalLocation = new Translation2d();
 
-        //TODO MAKE FIELD RELATIVE?
         double robotVelX = s_Swerve.fieldRelativeVelocity.vx;
         double robotVelY = s_Swerve.fieldRelativeVelocity.vy; 
 

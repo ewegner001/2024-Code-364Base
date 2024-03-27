@@ -306,7 +306,7 @@ public class AimShoot extends Command {
         // set shooter speed power to calculated value
         shooter.shootingMotorsSetControl(rightShooterSpeed, leftShooterSpeed);
 
-        if(shooterPivot.atPosition() == true && eyes.swerveAtPosition() == true && shooter.isUpToSpeed() == true) {
+        if(shooterPivot.atPosition() == true && eyes.swerveAtPosition(onMove) == true && shooter.isUpToSpeed() == true) {
             eyes.controllerRumble = true;
         } else {
             eyes.controllerRumble = false;
