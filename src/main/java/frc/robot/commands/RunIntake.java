@@ -41,7 +41,9 @@ public class RunIntake extends Command {
     public void execute() {
 
         s_Intake.setIntakePivotPosition(s_Intake.intakeGroundPosition);
+        s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage);
         s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition);
+        s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage);
         
         
     }
