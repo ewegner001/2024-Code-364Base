@@ -307,6 +307,7 @@ public class Swerve extends SubsystemBase {
         fieldRelativeAccel = new FieldRelativeAccel(fieldRelativeVelocity, lastFieldRelativeVelocity, time-lastTime); //time was 0.02 for standard loop time attempting to calculate it to increase accuracy.  May crash with /0 error if startup is too quick
         lastFieldRelativeVelocity = fieldRelativeVelocity;
         lastTime = time;
+    
 
         SmartDashboard.putNumber("ChassisSpeedX", getChassisSpeed().vxMetersPerSecond);
         SmartDashboard.putNumber("ChassisSpeedY", getChassisSpeed().vyMetersPerSecond);

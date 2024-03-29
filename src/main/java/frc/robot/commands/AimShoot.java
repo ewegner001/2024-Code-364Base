@@ -311,6 +311,7 @@ public class AimShoot extends Command {
         } else {
             eyes.controllerRumble = false;
         }
+        
 
     }
 

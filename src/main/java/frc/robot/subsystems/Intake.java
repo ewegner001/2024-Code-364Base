@@ -14,7 +14,10 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
 
@@ -135,6 +138,28 @@ public class Intake extends SubsystemBase {
    */
   public double cancoderInDegrees() {
     return e_intakePivot.getPosition().getValue() * 360;
+  }
+  
+  double getTargetIntakePosition() {
+    return intakeGroundPosition;
+  }
+
+
+  public boolean atPosition() {
+
+        double error = Math.abs(e_intakePivot.getPosition().getValueAsDouble() - getTargetIntakePosition());
+
+        if (Constants.ELEVATOR_TOLERANCE >= error) {
+            return true;
+
+        } else {
+            return false;
+        }
+
+        }
+
+        public Command IntakeAtPosition(){
+          return Commands.waitUntil(() -> atPosition());
   }
 
    @Override

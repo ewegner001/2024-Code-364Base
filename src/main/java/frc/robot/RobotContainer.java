@@ -327,13 +327,20 @@ public class RobotContainer {
 
         // intake
         driverX.whileTrue(
-            new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
-            .until(() -> !s_Shooter.getBreakBeamOutput())
-            .andThen(new ParallelCommandGroup(
-                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")),
-                new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1))
-            )))
-            .onFalse(new ParallelCommandGroup(
+            new SequentialCommandGroup( 
+                new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes),
+                new ConditionalCommand(
+                    new ParallelCommandGroup(
+                        new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)),
+                        new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage))),
+                    new ParallelCommandGroup(
+                        new InstantCommand(() -> s_Shooter.setLoaderVoltage(0)),
+                        new InstantCommand(() -> s_Intake.setIntakeVoltage(0))),
+                    () -> s_Intake.atPosition())).andThen(
+                    new ParallelCommandGroup(
+                        new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink("")),
+                        new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1)))
+                    )).onFalse(new ParallelCommandGroup(
                 new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")),
                 new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))
                 )
