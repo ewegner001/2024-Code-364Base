@@ -166,10 +166,66 @@ public class Eyes extends SubsystemBase {
 
     }
 
+    /*
+     * This method will return the known pose of the desired target.
+     * 
+     * parameters:
+     * none
+     * 
+     * returns:
+     * target pose      (Pose2d)
+     */
+    public Pose3d getFeedPose() {
+
+        Pose3d pose;
+
+        // if robot is on blue alliance
+        if(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue) {
+
+            // get pose of blue speaker
+            pose = new Pose3d(Constants.Positions.ampBlueX, Constants.Positions.ampBlueY, 0, new Rotation3d(0,0,Constants.Positions.ampBlueR));
+
+        // if robot is on red alliance
+        } else {
+
+            // get pose of red speaker
+            pose = new Pose3d(Constants.Positions.ampRedX, Constants.Positions.ampRedY, 0, new Rotation3d(0,0,Constants.Positions.ampRedR));
+
+        }
+        
+        return pose;
+
+    }
+
     public double getTargetRotation() {
 
         Pose2d robotPose = s_Swerve.m_poseEstimator.getEstimatedPosition();
         Pose3d targetPose = getTargetPose();
+
+        double robotX = robotPose.getX();
+        double robotY = robotPose.getY();
+
+        double targetX = targetPose.getX();
+        double targetY = targetPose.getY();
+
+        double angle =  (Math.atan((targetY - robotY) / (targetX - robotX)) * (180 / Math.PI));
+
+        if (robotX > targetX) {
+
+            angle = angle + 180;
+
+        }
+
+        SmartDashboard.putNumber("angle", angle);
+        SmartDashboard.putNumber(" inverted angle", -angle);
+
+        return -angle + 180;
+    }
+
+    public double getFeedRotation() {
+
+        Pose2d robotPose = s_Swerve.m_poseEstimator.getEstimatedPosition();
+        Pose3d targetPose = getFeedPose();
 
         double robotX = robotPose.getX();
         double robotY = robotPose.getY();
@@ -242,7 +298,7 @@ public class Eyes extends SubsystemBase {
     public double getShotTime(double distance) {
 
         double linearSpeed = ((Math.PI * 4 * s_Shooter.m_setSpeed * (2 * Math.PI)) / 1/1.375) * 0.0254; //TODO: change shooter gear ratio
-        return (distance / linearSpeed) + 0.25; //TODO: tune constant for shot accel/feeding time
+        return (distance / linearSpeed) + 0.2; //TODO: tune constant for shot accel/feeding time
     }
 
     public double getDistanceFromTarget() {

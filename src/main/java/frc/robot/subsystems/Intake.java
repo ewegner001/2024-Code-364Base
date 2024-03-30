@@ -44,7 +44,7 @@ public class Intake extends SubsystemBase {
   private final double magnetOffSet = 0.0;
 
   // Kermit Limits
-  private final int intakeCurrentLimit = 120;
+  private final int intakeCurrentLimit = 60;
   private final int intakePivotCurrentLimit = 60;
 
   // local variables

@@ -186,7 +186,7 @@ public class RobotContainer {
         //Auto Commands
 
         Command AimThenShootAuto = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true).alongWith(new TeleopSwerve(
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true, false).alongWith(new TeleopSwerve(
                     s_Swerve, 
                     () -> 0, 
                     () -> 0, 
@@ -213,7 +213,7 @@ public class RobotContainer {
             .withTimeout(.5)
         );
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
-        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false));
+        NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false, false));
         NamedCommands.registerCommand("Fire", new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)));
         NamedCommands.registerCommand("Check Note", new InstantCommand(() -> s_Shooter.checkNote()));
         NamedCommands.registerCommand("Got Note", new ConditionalCommand(
@@ -265,7 +265,7 @@ public class RobotContainer {
                     () -> true,
                     rotationSpeed,
                     true
-                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true))
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true, false))
 
             );
         } else {
@@ -279,7 +279,7 @@ public class RobotContainer {
                     () -> true,
                     rotationSpeed,
                     true
-                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false ,true))
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false ,true, false))
 
             );
         }
@@ -299,7 +299,7 @@ public class RobotContainer {
                             () -> false,//driverB.getAsBoolean(),
                             rotationSpeed,
                             true
-                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false)),
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false, false)),
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             ).onFalse(
@@ -321,7 +321,7 @@ public class RobotContainer {
                             () -> false,//driverB.getAsBoolean(),
                             rotationSpeed,
                             true
-                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false)),
+                        ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false, false)),
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
             ).onFalse(
@@ -418,7 +418,7 @@ public class RobotContainer {
         driverRB.onTrue(
             new ParallelCommandGroup(
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(2)),
                 new InstantCommand(() -> SmartDashboard.putString("ClimbCommand", "up"))
                 
             )
@@ -444,8 +444,40 @@ public class RobotContainer {
 
         /* Operator Buttons */
         
-        // aim amp
-        
+
+        // aim speaker
+        if (DriverStation.getAlliance().get() == Alliance.Blue) {
+            operatorRightTrigger.whileTrue(new TeleopSwerve(
+                    s_Swerve, 
+                    () -> -driver.getRawAxis(leftY), 
+                    () -> -driver.getRawAxis(leftX), 
+                    () -> 0,
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getFeedRotation(),
+                    () -> false,
+                    rotationSpeed,
+                    true
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false, true))
+
+            );
+        } else {
+            operatorRightTrigger.whileTrue(new TeleopSwerve(
+                    s_Swerve, 
+                    () -> driver.getRawAxis(leftY), 
+                    () -> driver.getRawAxis(leftX), 
+                    () -> 0,
+                    () -> driverDpadUp.getAsBoolean(),
+                    () -> s_Eyes.getFeedRotation(),
+                    () -> false,
+                    rotationSpeed,
+                    true
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 2.4))
+
+            );
+        }
+
+
+        //reach amp 
         operatorLeftTrigger.whileTrue(
             new SequentialCommandGroup(
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
@@ -464,17 +496,6 @@ public class RobotContainer {
         );
 
         
-        operatorRightTrigger.onTrue(
-             new ParallelCommandGroup(
-                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(6)),
-                 new InstantCommand(() -> s_Shooter.setShooterVoltage(6, -6))
-             )
-         ).onFalse(
-             new ParallelCommandGroup(
-                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(0)),
-                 new InstantCommand(() -> s_Shooter.setShooterVoltage(0, 0))
-             )
-         );
         
         // dummy shoot commands
         operatorDpadDown.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 1.25)));

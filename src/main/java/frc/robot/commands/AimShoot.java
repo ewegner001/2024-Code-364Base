@@ -51,6 +51,7 @@ public class AimShoot extends Command {
 
     public boolean isElevatorShot = false;
     public boolean onMove = false;
+    public boolean feed = false;
 
     // positions 
 
@@ -74,9 +75,12 @@ public class AimShoot extends Command {
     private final double wingerDistance = 5.44;
     private final double wingerAngle = 145;
     private final double wingerSpeed = 85.0;
+
+
  
-
-
+    private final double feedDistance = 2.4;
+    private final double feedAngle = 131.0;
+    private final double feedSpeed = 60.0;
 
     private final double elevatorShotDistance = 2.65;
     private final double elevatorShotAngle = 146;
@@ -84,12 +88,13 @@ public class AimShoot extends Command {
 
 
     // constructor
-    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot, boolean onMove) {
+    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot, boolean onMove, boolean feed) {
         this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
         this.isElevatorShot = isElevatorShot;
         this.onMove = onMove;
+        this.feed = feed;
 
         addRequirements(eyes, shooterPivot, shooter);
 
@@ -156,9 +161,12 @@ public class AimShoot extends Command {
 
         // assign target distance as variable
 
-        if (isElevatorShot == true) {
+        if (isElevatorShot) {
             distance = elevatorShotDistance;
             shooterAngle = elevatorShotAngle;
+        } else if(feed) {
+            distance = feedDistance;
+            shooterAngle = feedAngle;
         } else if(manualDistance == 0) {
             if (onMove == true) {
                 distance = eyes.getDistanceFromMovingTarget();
@@ -182,6 +190,8 @@ public class AimShoot extends Command {
         // y (output) = shooter power
         if(isElevatorShot) {
             shooterSpeed = elevatorShotShooterSpeed;
+        } else if (feed){
+            shooterSpeed = feedSpeed;
         } else {
             shooterSpeed = shooterSpeedInterpolation.get(distance);
         }

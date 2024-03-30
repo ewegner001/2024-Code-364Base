@@ -26,11 +26,13 @@ public class Shooter extends SubsystemBase {
   private final int rightShooterMotorID = 14;
   private final int loaderMotorID = 16;
   private final int breakBeamID = 0;
+  
 
   // loader speeds
   public final double runLoaderVoltage = 12.0;
   public final double reverseLoaderVoltage = -3.0;
   public final double stopLoaderVoltage = 0.0;
+  private final int loaderCurrentLimit = 40;
 
   // shooter speeds
   public final double runShooterVoltage = 6.0;
@@ -40,6 +42,7 @@ public class Shooter extends SubsystemBase {
 
   public final double shotSpeedRPS = 90;
   public final double shooterSpinReduction = 1.0;
+  private final int currentLimit = 80;
 
 
   // left shooter motor PID
@@ -53,7 +56,9 @@ public class Shooter extends SubsystemBase {
   private final double rShooterMotorPGains = 0.05;
   private final double rShooterMotorIGains = 0.0;
   private final double rShooterMotorDGains = 0.0;
-  private final int m_CurrentLimit = 40;
+
+
+
   
   private final double rShooterMotorSGains = 0.0;
   private final double rShooterMotorVGains = 0.12;
@@ -91,7 +96,7 @@ public class Shooter extends SubsystemBase {
     configF.apply(
       new CurrentLimitsConfigs()
       .withSupplyCurrentLimitEnable(true)
-      .withSupplyCurrentLimit(m_CurrentLimit)
+      .withSupplyCurrentLimit(loaderCurrentLimit)
     );
 
     // right shooter motor configuration
@@ -184,9 +189,19 @@ public class Shooter extends SubsystemBase {
     slotConfigsL.kP = SmartDashboard.getNumber("LShooter kP", 0);
     slotConfigsL.kV = SmartDashboard.getNumber("LShooter kV", 0);
 
+
+
     // set configurations to motors
     m_rightShooter.getConfigurator().apply(slotConfigsR);
     m_leftShooter.getConfigurator().apply(slotConfigsL);
+
+    m_rightShooter.getConfigurator().apply(new CurrentLimitsConfigs()
+    .withSupplyCurrentLimitEnable(true)
+    .withSupplyCurrentLimit(currentLimit));
+
+    m_leftShooter.getConfigurator().apply(new CurrentLimitsConfigs()
+    .withSupplyCurrentLimitEnable(true)
+    .withSupplyCurrentLimit(currentLimit));
   }
 
   /*
