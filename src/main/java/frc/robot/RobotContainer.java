@@ -175,7 +175,7 @@ public class RobotContainer {
         s_Shooter.setDefaultCommand(
             new ConditionalCommand(
                 new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
-                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(40, 40), s_Shooter), 
+                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(20, 20), s_Shooter), 
                 () -> s_Shooter.getBreakBeamOutput())
         );
 
