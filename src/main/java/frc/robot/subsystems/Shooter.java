@@ -72,7 +72,7 @@ public class Shooter extends SubsystemBase {
   public DigitalInput breakBeam;
   
   private TalonFXConfigurator configF;
-  private double m_setSpeed = 0.0;
+  public double m_setSpeed = 0.0;
 
   public boolean gotNote = false;
 

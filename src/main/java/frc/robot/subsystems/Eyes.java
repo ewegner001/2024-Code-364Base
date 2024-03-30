@@ -12,6 +12,8 @@
 package frc.robot.subsystems;
 
 
+import frc.lib.util.FieldRelativeAccel;
+import frc.lib.util.FieldRelativeSpeed;
 import frc.robot.Constants;
 import java.util.List;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,7 +27,11 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import frc.robot.subsystems.Swerve;
 
 
@@ -34,6 +40,7 @@ public class Eyes extends SubsystemBase {
 
     // Swerve subsystem for pose estimator
     Swerve s_Swerve;
+    Shooter s_Shooter;
 
     // create objects and variables
     public LimelightHelpers limelight;
@@ -41,13 +48,18 @@ public class Eyes extends SubsystemBase {
     public double ty;
     public double ta;
     public double tID;
-
+    private double accelerationCompensation = 0.0; //Note this caused a ton of jitter due to inconsistent loop times
+    private StructPublisher<Pose2d> posePublisher;
+    private StructPublisher<Translation2d> translationPublisher;
     public boolean controllerRumble = false;
   
     // constuctor
-    public Eyes(Swerve swerve) {
+    public Eyes(Swerve swerve, Shooter shooter) {
 
+        posePublisher = NetworkTableInstance.getDefault().getStructTopic("/Moving Goal pose", Pose2d.struct).publish();
+        translationPublisher = NetworkTableInstance.getDefault().getStructTopic("/Moving Goal translation", Translation2d.struct).publish();
         s_Swerve = swerve;
+        s_Shooter = shooter;
     }
 
  
@@ -179,21 +191,58 @@ public class Eyes extends SubsystemBase {
         return -angle + 180;
     }
 
-    public boolean swerveAtPosition() {
+    public double getMovingTargetRotation() {
+
+        Pose2d robotPose = s_Swerve.m_poseEstimator.getEstimatedPosition();
+        Pose2d targetPose = getMovingTarget();
+
+        double robotX = robotPose.getX();
+        double robotY = robotPose.getY();
+
+        double targetX = targetPose.getX();
+        double targetY = targetPose.getY();
+
+        double angle =  (Math.atan((targetY - robotY) / (targetX - robotX)) * (180 / Math.PI));
+
+        if (robotX > targetX) {
+
+            angle = angle + 180;
+
+        }
+
+        SmartDashboard.putNumber("angle", angle);
+        SmartDashboard.putNumber(" inverted angle", -angle);
+
+        return -angle + 180;
+    }
 
 
+    public boolean swerveAtPosition(boolean onMove) {
+        double error;
+        if(onMove){
+            error = Math.abs(getMovingTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360) % 360;
+        } else { 
+            error = Math.abs(getTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+        }
 
-        double error = Math.abs(getTargetRotation() + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
-
-        SmartDashboard.putNumber("getTargetRotation", getTargetRotation());
+        SmartDashboard.putNumber("getMovingTargetRotation", getMovingTargetRotation());
         SmartDashboard.putNumber("estimated rotation", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
         SmartDashboard.putNumber("rotationError", error);
+        //SmartDashboard.putBoolean("swerveAtPosition", error <= Constants.Swerve.atPositionTolerance);
 
         if (error <= Constants.Swerve.atPositionTolerance) {
             return true;
         } else {
             return false;
         }
+    }
+
+    
+
+    public double getShotTime(double distance) {
+
+        double linearSpeed = ((Math.PI * 4 * s_Shooter.m_setSpeed * (2 * Math.PI)) / 1.333) * 0.0254; //TODO: change shooter gear ratio
+        return (distance / linearSpeed) + 0.25; //TODO: tune constant for shot accel/feeding time
     }
 
     public double getDistanceFromTarget() {
@@ -213,6 +262,64 @@ public class Eyes extends SubsystemBase {
             distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
 
         }
+
+        return distance;
+
+    }
+
+    public Pose2d getMovingTarget() {
+        double shotTime = getShotTime(getDistanceFromTarget());
+
+        Translation2d movingGoalLocation = new Translation2d();
+
+        double robotVelX = s_Swerve.fieldRelativeVelocity.vx;
+        double robotVelY = s_Swerve.fieldRelativeVelocity.vy; 
+
+        //TODO calculate accelerations
+        double robotAccelX  = s_Swerve.fieldRelativeAccel.ax;
+        double robotAccelY = s_Swerve.fieldRelativeAccel.ay;
+
+        for(int i=0;i<5;i++){
+
+            double virtualGoalX = getTargetPose().getX() + shotTime * (robotVelX + robotAccelX * accelerationCompensation); //TODO: Test on blue
+            double virtualGoalY = getTargetPose().getY() + shotTime * (robotVelY + robotAccelY * accelerationCompensation); //TODO: Test on blue
+
+
+            Translation2d testGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
+            translationPublisher.set(testGoalLocation);
+
+            Translation2d toTestGoal = testGoalLocation.minus(s_Swerve.getEstimatedPose().getTranslation());
+ 
+            
+
+            double newShotTime = getShotTime(toTestGoal.getDistance(new Translation2d()));
+
+
+
+            if(Math.abs(newShotTime-shotTime) <= 0.010){
+                i=4;
+            }
+
+            if(i == 4){
+                movingGoalLocation = testGoalLocation;
+                SmartDashboard.putNumber("NewShotTime", newShotTime);
+            }
+            else{
+                shotTime = newShotTime;
+            }
+
+        }
+        return new Pose2d(movingGoalLocation, getTargetPose().getRotation().toRotation2d()); //TODO: validate rotation--probably not needed since only get x and y
+
+    }
+
+    public double getDistanceFromMovingTarget() {
+
+        double distance;
+
+        double xDistanceToSpeaker = getMovingTarget().getX() - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
+        double yDistanceToSpeaker = getMovingTarget().getY() - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
+        distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
 
         return distance;
 
@@ -262,30 +369,33 @@ public class Eyes extends SubsystemBase {
 
     }
 
-    /*public void updatePoseEstimatorWithVisionBotPose() {
+    public void updatePoseEstimatorWithVisionBotPose() {
         //invalid limelight
         if (LimelightHelpers.getTV("") == false) {
           return;
         }
         
         // distance from current pose to vision estimated pose
-        double poseDifference = s_Swerve.m_poseEstimator.getEstimatedPosition().getTranslation()
-            .getDistance(getRobotPose().getTranslation());
+        LimelightHelpers.PoseEstimate lastResult = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
+        double fpgaTimestamp = Timer.getFPGATimestamp();
+        
+        Translation2d translation = s_Swerve.m_poseEstimator.getEstimatedPosition().getTranslation();
+        double poseDifference = translation.getDistance(lastResult.pose.getTranslation());
     
           double xyStds;
           double degStds;
           // multiple targets detected
-          if (limelight.getNumberOfTargetsVisible() >= 2) {
+          if (lastResult.tagCount >= 2) {
             xyStds = 0.5;
             degStds = 6;
           }
           // 1 target with large area and close to estimated pose
-          else if (LimelightHelpers.getTA() > 0.8 && poseDifference < 0.5) {
+          else if (lastResult.avgTagArea > 0.8 && poseDifference < 0.5) {
             xyStds = 1.0;
             degStds = 12;
           }
           // 1 target farther away and estimated pose is close
-          else if (limelight.getBestTargetArea() > 0.1 && poseDifference < 0.3) {
+          else if (lastResult.avgTagArea > 0.1 && poseDifference < 0.3) {
             xyStds = 2.0;
             degStds = 30;
           }
@@ -297,15 +407,16 @@ public class Eyes extends SubsystemBase {
           s_Swerve.m_poseEstimator.setVisionMeasurementStdDevs(
               VecBuilder.fill(xyStds, xyStds, Units.degreesToRadians(degStds)));
           s_Swerve.m_poseEstimator.addVisionMeasurement(getRobotPose(),
-              Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0));
+              fpgaTimestamp - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0));
         }
-      }
-/* */
+
 
     @Override
     public void periodic() {
         s_Swerve.m_poseEstimator.update(s_Swerve.getGyroYaw(), s_Swerve.getModulePositions());
 
+
+        //updatePoseEstimatorWithVisionBotPose();
         if (LimelightHelpers.getTV("") == true) {
             s_Swerve.m_poseEstimator.addVisionMeasurement(
                 getRobotPose(), 
@@ -319,6 +430,9 @@ public class Eyes extends SubsystemBase {
         SmartDashboard.putNumber("target X", getTargetPose().getX());
         SmartDashboard.putNumber("target Y", getTargetPose().getY());
         SmartDashboard.putNumber("Distance to Target", getDistanceFromTarget());
+
+        
+        posePublisher.set(getMovingTarget());
 
     }
 }

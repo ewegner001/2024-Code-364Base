@@ -50,28 +50,29 @@ public class AimShoot extends Command {
     private double rightShooterSpeed;
 
     public boolean isElevatorShot = false;
+    public boolean onMove = false;
 
     // positions 
 
     //Higher note shot is lower angle!!!
     private final double subWooferDistance = 1.21; //1.21 at 930, 1.25 at comp
     private final double subWooferAngle = 115.0;
-    private final double subWooferLeftShooterSpeed = 90.0;
+    private final double subWooferLeftShooterSpeed = 50.0;
     private final double subWooferRightShooterSpeed = subWooferLeftShooterSpeed;
 
     private final double d2Distance = 2.15;
     private final double d2Angle = 128.0;
-    private final double d2LeftShooterSpeed = 90.0;
+    private final double d2LeftShooterSpeed = 50.0;
     private final double d2RightShooterSpeed = d2LeftShooterSpeed;
 
-    private final double podiumDistance = 2.98; //2.98 at 930, 3.17 at comp
-    private final double podiumAngle = 138;
-    private final double podiumLeftShooterSpeed = 90.0;
+    private final double podiumDistance = 3.17;
+    private final double podiumAngle = 137;
+    private final double podiumLeftShooterSpeed = 60.0;
     private final double podiumRightShooterSpeed = podiumLeftShooterSpeed;
 
-    private final double d3Distance = 4.1;
-    private final double d3Angle = 140.0;
-    private final double d3LeftShooterSpeed = 95.0;
+    private final double d3Distance = 4.0;
+    private final double d3Angle = 138.0;
+    private final double d3LeftShooterSpeed = 70.0;
     private final double d3RightShooterSpeed = d3LeftShooterSpeed;
 
 
@@ -111,13 +112,13 @@ public class AimShoot extends Command {
     private final double elevatorShotLeftShooterSpeed = 90;
     private final double elevatorShotRightShooterSpeed = elevatorShotLeftShooterSpeed;
 
-
     // constructor
-    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot) {
+    public AimShoot(Eyes eyes, ShooterPivot shooterPivot, Shooter shooter, boolean isElevatorShot, boolean onMove) {
         this.eyes = eyes;
         this.shooterPivot = shooterPivot;
         this.shooter = shooter;
         this.isElevatorShot = isElevatorShot;
+        this.onMove = onMove;
 
         addRequirements(eyes, shooterPivot, shooter);
 
@@ -184,8 +185,14 @@ public class AimShoot extends Command {
             distance = elevatorShotDistance;
             shooterAngle = elevatorShotAngle;
         } else if(manualDistance == 0) {
-            distance = eyes.getDistanceFromTarget();
-            shooterAngle = shooterAngleInterpolation.get(distance);
+            if (onMove == true) {
+                distance = eyes.getDistanceFromMovingTarget();
+                shooterAngle = shooterAngleInterpolation.get(distance);
+            } else {
+                distance = eyes.getDistanceFromTarget();
+                shooterAngle = shooterAngleInterpolation.get(distance);
+            }
+
         } else {
             distance = manualDistance;
             shooterAngle = shooterAngleInterpolation.get(distance);
@@ -211,11 +218,12 @@ public class AimShoot extends Command {
         // set shooter speed power to calculated value
         shooter.shootingMotorsSetControl(rightShooterSpeed, leftShooterSpeed);
 
-        if(shooterPivot.atPosition() == true && eyes.swerveAtPosition() == true && shooter.isUpToSpeed() == true) {
+        if(shooterPivot.atPosition() == true && eyes.swerveAtPosition(onMove) == true && shooter.isUpToSpeed() == true) {
             eyes.controllerRumble = true;
         } else {
             eyes.controllerRumble = false;
         }
+        
 
     }
 

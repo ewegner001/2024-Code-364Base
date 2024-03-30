@@ -117,6 +117,7 @@ public class ShooterPivot extends SubsystemBase {
 
     double error = Math.abs(cancoderInDegrees() - m_setPoint);
 
+    //SmartDashboard.putBoolean("at pivot position", pivotTolerance >= error);
     if (pivotTolerance >= error) {
         return true;
 

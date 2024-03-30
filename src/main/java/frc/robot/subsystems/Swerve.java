@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 
 import frc.robot.SwerveModule;
 import frc.robot.LimelightHelpers.LimelightTarget_Detector;
+import frc.lib.util.FieldRelativeAccel;
+import frc.lib.util.FieldRelativeAccel;
+import frc.lib.util.FieldRelativeSpeed;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -70,6 +73,11 @@ public class Swerve extends SubsystemBase {
     public StructArrayPublisher<SwerveModuleState> swerveKinematicsPublisher;
     public StructPublisher<Pose2d> estimatedRobotPosePublisher;
     public SwerveDrivePoseEstimator m_poseEstimator;
+    public FieldRelativeSpeed fieldRelativeVelocity;
+    public FieldRelativeSpeed lastFieldRelativeVelocity;
+    public FieldRelativeAccel fieldRelativeAccel;
+    private double time;
+    private double lastTime = 0.0;
     
 
     // constructor
@@ -78,6 +86,9 @@ public class Swerve extends SubsystemBase {
         // instantiate objects 
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         m_field = new Field2d();
+        fieldRelativeVelocity = new FieldRelativeSpeed();
+        lastFieldRelativeVelocity = new FieldRelativeSpeed();
+        fieldRelativeAccel = new FieldRelativeAccel();
 
         // set gyro
         gyro.getConfigurator().apply(new Pigeon2Configuration());
@@ -291,9 +302,17 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         swerveOdometry.update(getGyroYaw(), getModulePositions());
 
+        time = Timer.getFPGATimestamp();
+        fieldRelativeVelocity = new FieldRelativeSpeed(getChassisSpeed(), getGyroYaw());
+        fieldRelativeAccel = new FieldRelativeAccel(fieldRelativeVelocity, lastFieldRelativeVelocity, time-lastTime); //time was 0.02 for standard loop time attempting to calculate it to increase accuracy.  May crash with /0 error if startup is too quick
+        lastFieldRelativeVelocity = fieldRelativeVelocity;
+        lastTime = time;
+    
+
         SmartDashboard.putNumber("ChassisSpeedX", getChassisSpeed().vxMetersPerSecond);
         SmartDashboard.putNumber("ChassisSpeedY", getChassisSpeed().vyMetersPerSecond);
         SmartDashboard.putNumber("ChassisSpeedOmega", getChassisSpeed().omegaRadiansPerSecond);
+        
 
 
 
