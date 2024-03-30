@@ -335,8 +335,8 @@ public class RobotContainer {
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
                 ),
-            s_Intake.IntakeAtPosition().withTimeout(0.5),
-            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage))) 
+            s_Intake.IntakeAtPosition().withTimeout(0.25), //TODO Make at position work
+            new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)).repeatedly()) 
             .until(() -> !s_Shooter.getBreakBeamOutput())
             .andThen(new ParallelCommandGroup(
                 new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
@@ -347,6 +347,10 @@ public class RobotContainer {
                 new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 1))
             )))
             .onFalse(new ParallelCommandGroup(
+                new InstantCommand(() -> s_Intake.setIntakePivotPosition(s_Intake.intakeSafePosition)),
+                new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.stopIntakeVoltage)),
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
+                new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.stopLoaderVoltage)),
                 new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")),
                 new InstantCommand(() -> driver.setRumble(RumbleType.kBothRumble, 0))));
 

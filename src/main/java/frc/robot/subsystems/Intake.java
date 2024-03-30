@@ -31,7 +31,7 @@ public class Intake extends SubsystemBase {
   // positions
   // NOTE: these positions are also used in robotcontainer.
   public final double intakeSafePosition = 28.0;
-  public final double intakeGroundPosition = -74.0;
+  public final double intakeGroundPosition = -70.0;
   public final double intakeSourcePosition = intakeSafePosition;
 
   // PID values
@@ -149,7 +149,7 @@ public class Intake extends SubsystemBase {
 
         double error = Math.abs(e_intakePivot.getPosition().getValueAsDouble() - getTargetIntakePosition());
 
-        if (Constants.ELEVATOR_TOLERANCE >= error) {
+        if (5.0 >= error) {
             return true;
 
         } else {
