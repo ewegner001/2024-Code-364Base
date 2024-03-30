@@ -241,7 +241,7 @@ public class Eyes extends SubsystemBase {
 
     public double getShotTime(double distance) {
 
-        double linearSpeed = ((Math.PI * 4 * s_Shooter.m_setSpeed * (2 * Math.PI)) / 1.333) * 0.0254; //TODO: change shooter gear ratio
+        double linearSpeed = ((Math.PI * 4 * s_Shooter.m_setSpeed * (2 * Math.PI)) / 1/1.375) * 0.0254; //TODO: change shooter gear ratio
         return (distance / linearSpeed) + 0.25; //TODO: tune constant for shot accel/feeding time
     }
 
@@ -281,9 +281,16 @@ public class Eyes extends SubsystemBase {
 
         for(int i=0;i<5;i++){
 
-            double virtualGoalX = getTargetPose().getX() + shotTime * (robotVelX + robotAccelX * accelerationCompensation); //TODO: Test on blue
-            double virtualGoalY = getTargetPose().getY() + shotTime * (robotVelY + robotAccelY * accelerationCompensation); //TODO: Test on blue
+            double virtualGoalX;
+            double virtualGoalY;
 
+            if(DriverStation.getAlliance().get() == Alliance.Blue) {
+                virtualGoalX = getTargetPose().getX() - shotTime * (robotVelX + robotAccelX * accelerationCompensation); 
+                virtualGoalY = getTargetPose().getY() - shotTime * (robotVelY + robotAccelY * accelerationCompensation); 
+            } else {
+                virtualGoalX = getTargetPose().getX() + shotTime * (robotVelX + robotAccelX * accelerationCompensation); 
+                virtualGoalY = getTargetPose().getY() + shotTime * (robotVelY + robotAccelY * accelerationCompensation); 
+            }
 
             Translation2d testGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
             translationPublisher.set(testGoalLocation);

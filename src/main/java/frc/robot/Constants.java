@@ -33,7 +33,7 @@ public final class Constants {
     /* slow mode */
     public static final double SLOW_MODE_PERCENT_TRANSLATION = 0.5;
     public static final double SLOW_MODE_PERCENT_STRAFE = 0.5;
-    public static final double SLOW_MODE_PERCENT_ROTATION = 0.5;
+    public static final double SLOW_MODE_PERCENT_ROTATION = 1.0;
 
     public static final double AUTO_ROTATE_DEADBAND = 1.0;
 

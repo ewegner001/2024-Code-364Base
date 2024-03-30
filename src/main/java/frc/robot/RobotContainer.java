@@ -186,7 +186,7 @@ public class RobotContainer {
         //Auto Commands
 
         Command AimThenShootAuto = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false).alongWith(new TeleopSwerve(
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true).alongWith(new TeleopSwerve(
                     s_Swerve, 
                     () -> 0, 
                     () -> 0, 
