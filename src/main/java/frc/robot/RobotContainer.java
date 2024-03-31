@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -206,10 +207,10 @@ public class RobotContainer {
 
 
         NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
-            .until(() -> !s_Shooter.getBreakBeamOutput()) //Make rollers spin after at position/0.25s
+            .until(() -> !s_Shooter.getBreakBeamOutput()) //TODO Make rollers spin after at position/0.25s
         );
         NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
-            .until(() -> !s_Shooter.getBreakBeamOutput()) //Make rollers spin after at position/0.25s
+            .until(() -> !s_Shooter.getBreakBeamOutput()) //TODO Make rollers spin after at position/0.25s
             .withTimeout(.5)
         );
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
@@ -334,15 +335,6 @@ public class RobotContainer {
             );
         }
 
-    //spin up shooter when we have a note in the indexer
-    //NOTE: IF REMOVED NEED TO ADD SHOOTER SPINUP FOR AMP SCORE
-    s_Shooter.setDefaultCommand(
-            new ConditionalCommand(
-                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
-                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(40, 40), s_Shooter), 
-                () -> s_Shooter.getBreakBeamOutput())
-        );
-
         // shoot speaker
         driverRightTrigger.onTrue(
             new ParallelCommandGroup(
@@ -363,7 +355,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
                 ),
-            s_Intake.IntakeAtPosition().repeatedly().withTimeout(0.25), //TODO Test if this works now instead of just being time based
+            s_Intake.IntakeAtPosition().withTimeout(0.25), //TODO figure out if this actually is working or just time delay
             new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)).repeatedly()) 
             .until(() -> !s_Shooter.getBreakBeamOutput())
             .andThen(new ParallelCommandGroup(
@@ -400,33 +392,35 @@ public class RobotContainer {
 
         
 
-
-        // climb reach
-        driverLB.onTrue(
-            new SequentialCommandGroup(
-                new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
-                s_Elevator.ElevatorAtPosition(),
-                
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
-                )
-            )
-        );
-
-
-        // climb pull up
-        driverRB.onTrue(
+        //Climbing
+        driverRB.onTrue(new ConditionalCommand(
+            //climb pull up
             new ParallelCommandGroup(
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(2)),
-                new InstantCommand(() -> SmartDashboard.putString("ClimbCommand", "up"))
-                
-            )
-        );
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(2.0)),
+                new InstantCommand(() -> SmartDashboard.putString("ClimbCommand", "up")),
+                new InstantCommand(() -> s_Elevator.isClimbed(true))),
 
-        // escape climb
+            //Reach for Climb             
+            new SequentialCommandGroup(
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
+                s_Elevator.ElevatorAtPosition(Constants.ELEVATOR_SAFE_LEVEL),
+                new ParallelCommandGroup(
+                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
+                    new InstantCommand(() -> s_Elevator.isClimbed(false))
+            )), 
+            () -> {
+                if(s_Elevator.isClimbed){
+                return false;
+            } else{
+                return true;
+            }
+        }));
+
+
+        // abort climb
         driverSelect.onTrue(
 
             new SequentialCommandGroup(
@@ -443,13 +437,9 @@ public class RobotContainer {
         );
         
 
-
-        /* Operator Buttons */
-        
-
         //Feed
         if (DriverStation.getAlliance().get() == Alliance.Blue) {
-            operatorRightTrigger.whileTrue(new TeleopSwerve(
+            driverRStick.whileTrue(new TeleopSwerve(
                     s_Swerve, 
                     () -> -driver.getRawAxis(leftY), 
                     () -> -driver.getRawAxis(leftX), 
@@ -462,7 +452,7 @@ public class RobotContainer {
                 ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false, true))
             ).onFalse(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)));
         } else {
-            operatorRightTrigger.whileTrue(new TeleopSwerve(
+            driverRStick.whileTrue(new TeleopSwerve(
                     s_Swerve, 
                     () -> driver.getRawAxis(leftY), 
                     () -> driver.getRawAxis(leftX), 
@@ -478,9 +468,8 @@ public class RobotContainer {
             );
         }
 
-
         //reach amp 
-        operatorLeftTrigger.whileTrue(
+        driverLB.whileTrue(
             new SequentialCommandGroup(
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                 s_Elevator.ElevatorAtPosition(Constants.ELEVATOR_SAFE_LEVEL),
@@ -494,7 +483,8 @@ public class RobotContainer {
                 )
         );
 
-        
+
+        /* Operator Buttons */
         
         // dummy shoot commands
         operatorDpadDown.whileTrue(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 1.25))

@@ -70,6 +70,7 @@ public class Elevator extends SubsystemBase {
   private double elevatorD = 0.0;
 
   private double voltage = 0.0;
+  public boolean isClimbed = true;
  
 
   /* Constructor
@@ -223,6 +224,11 @@ if (m_elevator1.getEncoder().getPosition() == shootingPosition){
   down();
 }
 }
+
+public void isClimbed(boolean climbState) {
+  isClimbed = climbState;
+}
+
 
 
 
