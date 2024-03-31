@@ -175,7 +175,7 @@ public class RobotContainer {
         s_Shooter.setDefaultCommand(
             new ConditionalCommand(
                 new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
-                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(20, 20), s_Shooter), 
+                new InstantCommand(() -> s_Shooter.setShooterVoltage(5, 5), s_Shooter), //s_Shooter.shootingMotorsSetControl(20, 20)
                 () -> s_Shooter.getBreakBeamOutput())
         );
 
@@ -206,10 +206,10 @@ public class RobotContainer {
 
 
         NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
-            .until(() -> !s_Shooter.getBreakBeamOutput())
+            .until(() -> !s_Shooter.getBreakBeamOutput()) //Make rollers spin after at position/0.25s
         );
         NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
-            .until(() -> !s_Shooter.getBreakBeamOutput())
+            .until(() -> !s_Shooter.getBreakBeamOutput()) //Make rollers spin after at position/0.25s
             .withTimeout(.5)
         );
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
@@ -226,6 +226,8 @@ public class RobotContainer {
             new WaitCommand (15),
             () -> s_Shooter.gotNote
         ));
+
+        //TODO Shoot on the Move in Auto?
         
         autoChooser = AutoBuilder.buildAutoChooser();
 
@@ -361,7 +363,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotIntakePosition)),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage))
                 ),
-            s_Intake.IntakeAtPosition().withTimeout(0.25), //TODO Make at position work
+            s_Intake.IntakeAtPosition().repeatedly().withTimeout(0.25), //TODO Test if this works now instead of just being time based
             new InstantCommand(() -> s_Intake.setIntakeVoltage(s_Intake.runIntakeVoltage)).repeatedly()) 
             .until(() -> !s_Shooter.getBreakBeamOutput())
             .andThen(new ParallelCommandGroup(
@@ -445,7 +447,7 @@ public class RobotContainer {
         /* Operator Buttons */
         
 
-        // aim speaker
+        //Feed
         if (DriverStation.getAlliance().get() == Alliance.Blue) {
             operatorRightTrigger.whileTrue(new TeleopSwerve(
                     s_Swerve, 
@@ -458,8 +460,7 @@ public class RobotContainer {
                     rotationSpeed,
                     true
                 ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false, true))
-
-            );
+            ).onFalse(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)));
         } else {
             operatorRightTrigger.whileTrue(new TeleopSwerve(
                     s_Swerve, 
@@ -471,7 +472,8 @@ public class RobotContainer {
                     () -> false,
                     rotationSpeed,
                     true
-                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 2.4))
+                ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 2.4)))
+                .onFalse(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition))
 
             );
         }
@@ -480,27 +482,27 @@ public class RobotContainer {
         //reach amp 
         operatorLeftTrigger.whileTrue(
             new SequentialCommandGroup(
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_SAFE_LEVEL)),
-                s_Elevator.ElevatorAtPosition(),
-                new ParallelCommandGroup(
-                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
-                    new AmpShooterPivot(s_ShooterPivot)
-                )
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
+                s_Elevator.ElevatorAtPosition(Constants.ELEVATOR_SAFE_LEVEL),
+                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotAmpPosition))
             )
         ).onFalse(
                 new SequentialCommandGroup(
-                    new AmpShooterPivotRetract(s_ShooterPivot),
+                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
                     s_ShooterPivot.ShooterPivotAtPosition(),
-                    new AmpElevatorRetract(s_Elevator)
+                    new InstantCommand(() -> s_Elevator.SetElevatorPosition(0.0))
                 )
         );
 
         
         
         // dummy shoot commands
-        operatorDpadDown.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 1.25)));
-        operatorDpadLeft.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 2.4)));
-        operatorDpadUp.whileTrue((new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 3.17)));
+        operatorDpadDown.whileTrue(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 1.25))
+            .onFalse(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)));
+        operatorDpadLeft.whileTrue(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 2.4))
+            .onFalse(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)));
+        operatorDpadUp.whileTrue(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, 3.17))
+            .onFalse(new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)));
         
 
     }

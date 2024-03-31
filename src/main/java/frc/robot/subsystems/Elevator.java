@@ -187,6 +187,19 @@ public class Elevator extends SubsystemBase {
 
         }
 
+        public boolean atPosition(double setPosition) {
+
+        double error = Math.abs(e_Elevator.getPosition() - setPosition);
+
+        if (Constants.ELEVATOR_TOLERANCE >= error) {
+            return true;
+
+        } else {
+            return false;
+        }
+
+        }
+
   /* The below method is public, which means that it can be 
    * accessed outside of this class. It also takes in a 
    * single double value as a parameter. It then takes that 
@@ -256,6 +269,10 @@ private double getPosition() {
 
       public Command ElevatorAtPosition(){
           return Commands.waitUntil(() -> atPosition());
+  }
+
+      public Command ElevatorAtPosition(double setPosition){
+        return Commands.waitUntil(() -> atPosition(setPosition));
   }
          
 }
