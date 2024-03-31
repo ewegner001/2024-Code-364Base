@@ -431,7 +431,8 @@ public class RobotContainer {
                 new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
                 new InstantCommand(() -> SmartDashboard.putString("ShooterPivot", "return")),
                 s_ShooterPivot.ShooterPivotAtPosition(),
-                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0))
+                new InstantCommand(() -> s_Elevator.SetElevatorPosition(0)),
+                new InstantCommand(() -> s_Elevator.isClimbed(true))
             )
 
         );
