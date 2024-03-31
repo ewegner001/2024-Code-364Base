@@ -407,7 +407,7 @@ public class RobotContainer {
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                 s_Elevator.ElevatorAtPosition(Constants.ELEVATOR_SAFE_LEVEL),
                 new ParallelCommandGroup(
-                    new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)),
+                    //new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotClimbPosition)), //TODO add this back once confirm safe level works for amp
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                     new InstantCommand(() -> s_Elevator.isClimbed(false))
             )), 
@@ -474,10 +474,12 @@ public class RobotContainer {
             new SequentialCommandGroup(
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                 s_Elevator.ElevatorAtPosition(Constants.ELEVATOR_SAFE_LEVEL),
-                new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotAmpPosition))
+                new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceBlink(""))//TODO: this is to test that the at position command is actually working before it breaks something--remove this and uncomment the pivot below if this works
+                //new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotAmpPosition))
             )
         ).onFalse(
                 new SequentialCommandGroup(
+                    new InstantCommand(() -> s_Eyes.limelight.setLEDMode_ForceOff("")), //remove this if the test above works
                     new InstantCommand(() -> s_ShooterPivot.moveShooterPivot(s_ShooterPivot.shooterPivotStowPosition)),
                     s_ShooterPivot.ShooterPivotAtPosition(),
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(0.0))
