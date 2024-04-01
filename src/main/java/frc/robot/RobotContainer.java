@@ -145,7 +145,7 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(leftY), 
                 () -> -driver.getRawAxis(leftX), 
                 () -> driver.getRawAxis(rightX),
-                () -> driverDpadUp.getAsBoolean(),
+                () -> false,
                 () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
                 rotationSpeed,
@@ -161,7 +161,7 @@ public class RobotContainer {
                 () -> driver.getRawAxis(leftY), 
                 () -> driver.getRawAxis(leftX), 
                 () -> driver.getRawAxis(rightX),
-                () -> driverDpadUp.getAsBoolean(),
+                () -> false,
                 () -> s_Swerve.getGyroYaw().getDegrees(),
                 () -> driverLeftTrigger.getAsBoolean(),
                 rotationSpeed,
@@ -192,7 +192,7 @@ public class RobotContainer {
                     () -> 0, 
                     () -> 0, 
                     () -> 0,
-                    () -> driverDpadUp.getAsBoolean(),
+                    () -> false,
                     () -> s_Eyes.getTargetRotation(),
                     () -> false,
                     rotationSpeed,
@@ -263,7 +263,7 @@ public class RobotContainer {
                     () -> -driver.getRawAxis(leftY), 
                     () -> -driver.getRawAxis(leftX), 
                     () -> 0, //driver.getRawAxis(rightX),
-                    () -> driverDpadUp.getAsBoolean(),
+                    () -> false,
                     () -> s_Eyes.getMovingTargetRotation(),
                     () -> true,
                     rotationSpeed,
@@ -277,7 +277,7 @@ public class RobotContainer {
                     () -> driver.getRawAxis(leftY), 
                     () -> driver.getRawAxis(leftX), 
                     () -> 0,//driver.getRawAxis(rightX),
-                    () -> driverDpadUp.getAsBoolean(),
+                    () -> false,                    
                     () -> s_Eyes.getMovingTargetRotation(),
                     () -> true,
                     rotationSpeed,
@@ -297,11 +297,11 @@ public class RobotContainer {
                             () -> -driver.getRawAxis(leftY), 
                             () -> -driver.getRawAxis(leftX), 
                             () -> driver.getRawAxis(rightX),
-                            () -> driverDpadUp.getAsBoolean(),
+                            () -> false,
                             () -> s_Eyes.getTargetRotation(),
                             () -> false,//driverB.getAsBoolean(),
                             rotationSpeed,
-                            true
+                            false //TODO Determine if we want auto rotation aiming
                         ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false, false)),
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
@@ -319,11 +319,11 @@ public class RobotContainer {
                             () -> driver.getRawAxis(leftY), 
                             () -> driver.getRawAxis(leftX), 
                             () -> driver.getRawAxis(rightX),
-                            () -> driverDpadUp.getAsBoolean(),
-                            () -> s_Eyes.getTargetRotation(),
+                            () -> false,
+                            () -> s_Eyes.getTargetRotation(), 
                             () -> false,//driverB.getAsBoolean(),
                             rotationSpeed,
-                            true
+                            false //TODO: Determine if we want auto rotation aiming
                         ).alongWith(new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, true, false, false)),
                     new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL))
                 )
@@ -438,7 +438,7 @@ public class RobotContainer {
         );
 
         // generate and run path to closest trap
-        driverStart.whileTrue(new GoToTrap(s_Eyes, s_Swerve));
+        driverStart.whileTrue(new GoToTrap(s_Eyes, s_Swerve)).onFalse(s_Swerve.getDefaultCommand());
 
         //Feed
         if (DriverStation.getAlliance().get() == Alliance.Blue) {
@@ -447,7 +447,7 @@ public class RobotContainer {
                     () -> -driver.getRawAxis(leftY), 
                     () -> -driver.getRawAxis(leftX), 
                     () -> 0,
-                    () -> driverDpadUp.getAsBoolean(),
+                    () -> false,
                     () -> s_Eyes.getFeedRotation(),
                     () -> false,
                     rotationSpeed,
@@ -460,7 +460,7 @@ public class RobotContainer {
                     () -> driver.getRawAxis(leftY), 
                     () -> driver.getRawAxis(leftX), 
                     () -> 0,
-                    () -> driverDpadUp.getAsBoolean(),
+                    () -> false,
                     () -> s_Eyes.getFeedRotation(),
                     () -> false,
                     rotationSpeed,
