@@ -436,7 +436,9 @@ public class RobotContainer {
             )
 
         );
-        
+
+        // generate and run path to closest trap
+        driverStart.whileTrue(new GoToTrap(s_Eyes, s_Swerve));
 
         //Feed
         if (DriverStation.getAlliance().get() == Alliance.Blue) {
