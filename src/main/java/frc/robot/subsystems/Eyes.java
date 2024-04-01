@@ -432,6 +432,22 @@ public class Eyes extends SubsystemBase {
 
     }
 
+    public double getDistanceFromTargetTrap(double trapX, double trapY) {
+
+        double distance = 0.0;
+
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+
+            double xDistanceToSpeaker = trapX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
+            double yDistanceToSpeaker = trapY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
+            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
+
+        }
+
+        return distance;
+
+    }
+
     public void updatePoseEstimatorWithVisionBotPose() {
         //invalid limelight
         if (LimelightHelpers.getTV("") == false) {
