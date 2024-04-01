@@ -434,15 +434,9 @@ public class Eyes extends SubsystemBase {
 
     public double getDistanceFromTargetTrap(double trapX, double trapY) {
 
-        double distance = 0.0;
-
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-
-            double xDistanceToSpeaker = trapX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
-            double yDistanceToSpeaker = trapY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
-            distance = Math.sqrt(Math.pow(xDistanceToSpeaker, 2) + Math.pow(yDistanceToSpeaker, 2));
-
-        }
+        double xDistance = trapX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX();
+        double yDistance = trapY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY();
+        double distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 
         return distance;
 

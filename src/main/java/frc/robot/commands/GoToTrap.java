@@ -185,9 +185,13 @@ public class GoToTrap extends Command {
     @Override
     public boolean isFinished() {
 
-        double xError = Math.abs(targetX + s_Swerve.m_poseEstimator.getEstimatedPosition().getX());
-        double yError = Math.abs(targetY + s_Swerve.m_poseEstimator.getEstimatedPosition().getY());
-        double rError = Math.abs(targetR + s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+        double xError = Math.abs(targetX - s_Swerve.m_poseEstimator.getEstimatedPosition().getX());
+        double yError = Math.abs(targetY - s_Swerve.m_poseEstimator.getEstimatedPosition().getY());
+        double rError = Math.abs(targetR - s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees() % 360);
+
+        SmartDashboard.putBoolean("Trap X Error", xError <= positionTolerance);
+        SmartDashboard.putBoolean("Trap Y Error", yError <= positionTolerance);
+        SmartDashboard.putBoolean("Trap Rotation Error", rError <= rotationTolerance);
 
         if (xError <= positionTolerance && yError <= positionTolerance && rError <= rotationTolerance) {
             return true;
