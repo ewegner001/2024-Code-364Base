@@ -36,7 +36,7 @@ public class GoToTrap extends Command {
 
     public double positionTolerance = 0.1;
     public double rotationTolerance =  2.0;
-    public double distanceLimit = 3.0;
+    public double distanceLimit = 6.0;
     public double closestDistance = distanceLimit; 
 
     // blue trap positions
@@ -70,6 +70,8 @@ public class GoToTrap extends Command {
     public double redTrapCenterY = 4.1;
     public double redTrapCenterR = 0.0;
     public double redTrapCenterDistance = 0.0; // Leave as 0.0
+
+    public PathPlannerPath path;
 
     public GoToTrap(Eyes s_Eyes, Swerve s_Swerve) {
 
@@ -106,7 +108,7 @@ public class GoToTrap extends Command {
         };
 
         for(int i = 0; i < distances.length; i++) {
-            if (closestDistance < distances[i]) {
+            if (closestDistance > distances[i]) {
                 closestDistance = distances[i];
             }
         }
@@ -156,12 +158,18 @@ public class GoToTrap extends Command {
 
         PathPlannerPath path = new PathPlannerPath(
             bezierPoints,
-            new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI),
+            new PathConstraints(0.25, 0.25, 2 * Math.PI, 4 * Math.PI),
             new GoalEndState(0.0, Rotation2d.fromDegrees(targetR))
         );
 
         // Prevent the path from being flipped as all coordinates are blue origin
         path.preventFlipping = true;
+
+
+    }
+
+    @Override
+    public void execute() {
 
         if (closestDistance < distanceLimit) { //DO NOT INCLUDE DISTANCE LIMIT
             AutoBuilder.followPath(path);
@@ -171,11 +179,7 @@ public class GoToTrap extends Command {
         }
 
     }
-
-    @Override
-    public void execute() {
         
-    }
 
     @Override
     public void end(boolean interrupted) {
