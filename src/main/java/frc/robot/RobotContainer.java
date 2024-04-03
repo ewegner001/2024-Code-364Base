@@ -199,9 +199,9 @@ public class RobotContainer {
                     true
                 )), 
             new SequentialCommandGroup(
-                new WaitCommand(1.0).until(() -> prepareShot()),
+                new WaitCommand(2.0).until(() -> prepareShot()),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
-                new WaitCommand(1.0)).until(() -> s_Shooter.getBreakBeamOutput())
+                new WaitCommand(1.5)).until(() -> s_Shooter.getBreakBeamOutput())
                 );
 
 
@@ -211,7 +211,7 @@ public class RobotContainer {
         );
         NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
             .until(() -> !s_Shooter.getBreakBeamOutput()) //TODO Make rollers spin after at position/0.25s
-            .withTimeout(.5)
+            .withTimeout(1.0)
         );
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
         NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false, false));

@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.9658667218569015,
-        "y": 0.7909763967676083
+        "x": 5.640944520323205,
+        "y": -0.3213603580232063
       },
       "isLocked": false,
       "linkedName": "Loadside Auto Path 2 Endpoint"
@@ -20,8 +20,8 @@
         "y": 2.4150717815077387
       },
       "prevControl": {
-        "x": 6.93456182044388,
-        "y": 1.9440666129695687
+        "x": 7.345128237112941,
+        "y": 1.1491067347496495
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,15 +31,15 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 0.7,
-      "rotationDegrees": 23.19029156666067,
-      "rotateFast": false
+      "rotationDegrees": 30.707075654360423,
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 0.6,
+      "waypointRelativePos": 0.5,
       "command": {
         "type": "parallel",
         "data": {
@@ -57,13 +57,13 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.75,
-    "maxAcceleration": 5.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 26.075355583948827,
+    "rotation": 34.62415507994909,
     "rotateFast": false
   },
   "reversed": false,

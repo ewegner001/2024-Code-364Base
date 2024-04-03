@@ -57,23 +57,23 @@ public class AimShoot extends Command {
 
     //Higher note shot is lower angle!!!
     private final double subWooferDistance = 1.21; //1.21 at 930, 1.25 at comp
-    private final double subWooferAngle = 115.0;
-    private final double subWooferSpeed = 50.0;
+    private final double subWooferAngle = 115.0; //115
+    private final double subWooferSpeed = 50.0; //50
     
     private final double xSpotDistance = 2.4;
-    private final double xSpotAngle = 131.0;
+    private final double xSpotAngle = 133.0;
     private final double xSpotSpeed = 50.0;
 
     private final double podiumDistance = 3.17;
-    private final double podiumAngle = 137;
+    private final double podiumAngle = 139;
     private final double podiumSpeed = 60.0;
 
     private final double d3Distance = 4.0;
-    private final double d3Angle = 140.0;
+    private final double d3Angle = 142.5;
     private final double d3Speed = 70.0;
 
     private final double wingerDistance = 5.44;
-    private final double wingerAngle = 145;
+    private final double wingerAngle = 147;
     private final double wingerSpeed = 85.0;
 
 

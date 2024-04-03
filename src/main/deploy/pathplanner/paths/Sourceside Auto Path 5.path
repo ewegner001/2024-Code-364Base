@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.4446939700083,
-        "y": 0.19979096765891036
+        "x": 6.040210419685371,
+        "y": -0.3116221653558371
       },
       "isLocked": false,
       "linkedName": "Sourceside Auto Path 4 Endpoint"
     },
     {
       "anchor": {
-        "x": 8.153398228504642,
-        "y": 4.060826342293255
+        "x": 8.279994733180452,
+        "y": 4.099779112962734
       },
       "prevControl": {
-        "x": 6.21346150912503,
-        "y": 1.0627423214338552
+        "x": 6.390785355710689,
+        "y": 1.5581108267791854
       },
       "nextControl": null,
       "isLocked": false,
@@ -51,13 +51,13 @@
   ],
   "globalConstraints": {
     "maxVelocity": 5.75,
-    "maxAcceleration": 5.5,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 25.942295489871594,
+    "rotation": 42.089162173832335,
     "rotateFast": false
   },
   "reversed": false,

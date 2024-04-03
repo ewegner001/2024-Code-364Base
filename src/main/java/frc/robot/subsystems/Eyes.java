@@ -298,7 +298,7 @@ public class Eyes extends SubsystemBase {
     public double getShotTime(double distance) {
 
         double linearSpeed = ((Math.PI * 4 * s_Shooter.m_setSpeed * (2 * Math.PI)) / 1/1.375) * 0.0254; //TODO: change shooter gear ratio
-        return (distance / linearSpeed) + 0.2; //TODO: tune constant for shot accel/feeding time
+        return (distance / linearSpeed) + 0.25; //TODO: tune constant for shot accel/feeding time
     }
 
     public double getDistanceFromTarget() {
