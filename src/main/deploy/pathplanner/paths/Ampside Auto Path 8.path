@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 8.157095812938493,
+        "y": 4.156084903648504
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.018336848061597,
-        "y": 7.069927876510557
+        "x": 5.770433195004229,
+        "y": 2.9113169003249295
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Ampside Auto Path 7 Endpoint"
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 7.0
+        "x": 2.47848475647076,
+        "y": 6.419299455137156
       },
       "prevControl": {
-        "x": 1.93,
-        "y": 7.0
+        "x": 3.2191731551407905,
+        "y": 5.750622428560045
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Ampside Auto Path 8 Endpoint"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0,
+    "rotation": 22.89055165624832,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Amp Side",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -31.429565614838474,
     "velocity": 0
   },
   "useDefaultConstraints": true
