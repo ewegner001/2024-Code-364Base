@@ -309,6 +309,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Check Note"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -342,6 +348,12 @@
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Got Note"
                 }
               }
             ]
