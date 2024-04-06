@@ -510,13 +510,16 @@ public class Eyes extends SubsystemBase {
         s_Swerve.m_poseEstimator.update(s_Swerve.getGyroYaw(), s_Swerve.getModulePositions());
 
 
-        //updatePoseEstimatorWithVisionBotPose();
+        updatePoseEstimatorWithVisionBotPoseMegatag2();
+
+        /*
         if (LimelightHelpers.getTV("") == true) {
             s_Swerve.m_poseEstimator.addVisionMeasurement(
                 getRobotPose(), 
                 Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0)
             );
         }
+        */
 
         SmartDashboard.putNumber("Pose estimator rotations", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
         SmartDashboard.putNumber("Pose Estimator X", s_Swerve.m_poseEstimator.getEstimatedPosition().getX());
