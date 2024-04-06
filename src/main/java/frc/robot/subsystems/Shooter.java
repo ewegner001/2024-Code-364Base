@@ -64,8 +64,8 @@ public class Shooter extends SubsystemBase {
   private final double rShooterMotorVGains = 0.12;
 
   // WPILib class objects
-  private TalonFX m_leftShooter;
-  private TalonFX m_rightShooter;
+  public TalonFX m_leftShooter;
+  public TalonFX m_rightShooter;
   private TalonFX m_loader;
 
   private Slot0Configs slotConfigsR;
