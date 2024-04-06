@@ -8,27 +8,33 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.608696097586862,
-        "y": 0.3310985506857081
+        "x": 6.517381860386496,
+        "y": -0.01947638533473953
       },
       "isLocked": false,
       "linkedName": "Sourceside Auto path 3 Endpoint"
     },
     {
       "anchor": {
-        "x": 2.261791664745845,
-        "y": 3.953706222952186
+        "x": 1.385354324682553,
+        "y": 4.52825959032701
       },
       "prevControl": {
-        "x": 3.157705390143877,
-        "y": 2.960410570880455
+        "x": 1.1029467373288258,
+        "y": 1.4217761294360076
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Sourceside Auto Path 4 Endpoint"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.05,
+      "rotationDegrees": -39.370000000000005,
+      "rotateFast": true
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -39,7 +45,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -39.3693172423648,
+    "rotation": -45.0,
     "rotateFast": false
   },
   "reversed": false,

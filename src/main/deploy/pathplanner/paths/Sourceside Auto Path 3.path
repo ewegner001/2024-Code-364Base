@@ -8,11 +8,11 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.640944520323205,
-        "y": -0.3213603580232063
+        "x": 2.534461059432202,
+        "y": 0.2142402386821383
       },
       "isLocked": false,
-      "linkedName": "Loadside Auto Path 2 Endpoint"
+      "linkedName": "Sourceside Auto Path 2 Endpoint"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 2.4150717815077387
       },
       "prevControl": {
-        "x": 7.345128237112941,
-        "y": 1.1491067347496495
+        "x": 7.24774631043924,
+        "y": 0.13633469734318018
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.35,
       "rotationDegrees": 30.707075654360423,
       "rotateFast": true
     }

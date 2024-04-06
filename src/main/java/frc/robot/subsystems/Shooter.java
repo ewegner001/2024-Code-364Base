@@ -46,20 +46,16 @@ public class Shooter extends SubsystemBase {
 
 
   // left shooter motor PID
-  private final double lShooterMotorPGains = 0.05;
+  private final double lShooterMotorPGains = 0.4;
   private final double lShooterMotorIGains = 0.0;
   private final double lShooterMotorDGains = 0.0;
   private final double lShooterMotorSGains = 0.0;
   private final double lShooterMotorVGains = 0.12;
 
   // right shooter motor PID
-  private final double rShooterMotorPGains = 0.05;
+  private final double rShooterMotorPGains = 0.4;
   private final double rShooterMotorIGains = 0.0;
   private final double rShooterMotorDGains = 0.0;
-
-
-
-  
   private final double rShooterMotorSGains = 0.0;
   private final double rShooterMotorVGains = 0.12;
 

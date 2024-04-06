@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.104707265167793,
-        "y": 5.68710451774403
+        "x": 8.065754494498313,
+        "y": 5.823439215087209
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.2365711585252095,
-        "y": 6.494637984662815
+        "x": 5.485133437645286,
+        "y": 7.663957629220123
       },
       "isLocked": false,
       "linkedName": "Four Piece Auto Path 4 Endpoint"

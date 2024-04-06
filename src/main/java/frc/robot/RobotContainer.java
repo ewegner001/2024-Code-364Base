@@ -175,8 +175,8 @@ public class RobotContainer {
         //NOTE: IF REMOVED NEED TO ADD SHOOTER SPINUP FOR AMP SCORE
         s_Shooter.setDefaultCommand(
             new ConditionalCommand(
-                new InstantCommand (() -> s_Shooter.setShooterVoltage(0, 0), s_Shooter), 
-                new InstantCommand(() -> s_Shooter.setShooterVoltage(5, 5), s_Shooter), //s_Shooter.shootingMotorsSetControl(20, 20)
+                new InstantCommand (() -> s_Shooter.shootingMotorsSetControl(0, 0), s_Shooter), 
+                new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(35.0, 35.0), s_Shooter), //s_Shooter.shootingMotorsSetControl(20, 20)
                 () -> s_Shooter.getBreakBeamOutput())
         );
 
@@ -187,21 +187,14 @@ public class RobotContainer {
         //Auto Commands
 
         Command AimThenShootAuto = new ParallelRaceGroup(
-            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true, false).alongWith(new TeleopSwerve(
-                    s_Swerve, 
-                    () -> 0, 
-                    () -> 0, 
-                    () -> 0,
-                    () -> false,
-                    () -> s_Eyes.getTargetRotation(),
-                    () -> false,
-                    rotationSpeed,
-                    true
-                )), 
+            
+            new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, true, false),
+            
             new SequentialCommandGroup(
                 new WaitCommand(2.0).until(() -> prepareShot()),
                 new InstantCommand(() -> s_Shooter.setLoaderVoltage(s_Shooter.runLoaderVoltage)), 
                 new WaitCommand(1.5)).until(() -> s_Shooter.getBreakBeamOutput())
+                
                 );
 
 
@@ -211,7 +204,7 @@ public class RobotContainer {
         );
         NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
             .until(() -> !s_Shooter.getBreakBeamOutput()) //TODO Make rollers spin after at position/0.25s
-            .withTimeout(1.0)
+            .withTimeout(1.25)
         );
         NamedCommands.registerCommand("AutoScore", AimThenShootAuto);
         NamedCommands.registerCommand("Aim", new AimShoot(s_Eyes, s_ShooterPivot, s_Shooter, false, false, false));

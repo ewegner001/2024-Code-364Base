@@ -19,6 +19,9 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Eyes;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterPivot;
+
+import java.sql.Driver;
+
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -56,35 +59,35 @@ public class AimShoot extends Command {
     // positions 
 
     //Higher note shot is lower angle!!!
-    private final double subWooferDistance = 1.21; //1.21 at 930, 1.25 at comp
+    private final double subWooferDistance = 1.31; //1.21 at 930, 1.25 at comp, 1.31 at marquette
     private final double subWooferAngle = 115.0; //115
-    private final double subWooferSpeed = 50.0; //50
+    private final double subWooferSpeed = 35.0; //50
     
-    private final double xSpotDistance = 2.4;
-    private final double xSpotAngle = 133.0;
-    private final double xSpotSpeed = 50.0;
+    private final double xSpotDistance = 2.45; //2.45 at marquette
+    private final double xSpotAngle = 131.0;
+    private final double xSpotSpeed = 45.0;
 
-    private final double podiumDistance = 3.17;
-    private final double podiumAngle = 139;
+    private final double podiumDistance = 3.02; //3.17 at comp, 3.02 at marquette
+    private final double podiumAngle = 137;
     private final double podiumSpeed = 60.0;
 
-    private final double d3Distance = 4.0;
-    private final double d3Angle = 142.5;
-    private final double d3Speed = 70.0;
+    private final double chainDistance = 4.33; //4.33 at marquette (NOT ACCCURATE)
+    private final double chainAngle = 145.0;
+    private final double chainSpeed = 80.0;
 
     private final double wingerDistance = 5.44;
     private final double wingerAngle = 147;
-    private final double wingerSpeed = 85.0;
+    private final double wingerSpeed = 40.25;
 
 
  
     private final double feedDistance = 2.4;
     private final double feedAngle = 131.0;
-    private final double feedSpeed = 60.0;
+    private final double feedSpeed = 30.0;
 
     private final double elevatorShotDistance = 2.65;
     private final double elevatorShotAngle = 146;
-    private final double elevatorShotShooterSpeed = 60;
+    private final double elevatorShotShooterSpeed = 30.0;
 
 
     // constructor
@@ -108,7 +111,7 @@ public class AimShoot extends Command {
         shooterAngleInterpolation.put(subWooferDistance, subWooferAngle);
         shooterAngleInterpolation.put(podiumDistance, podiumAngle);
         shooterAngleInterpolation.put(xSpotDistance, xSpotAngle);
-        shooterAngleInterpolation.put(d3Distance, d3Angle);
+        shooterAngleInterpolation.put(chainDistance, chainAngle);
         shooterAngleInterpolation.put(wingerDistance, wingerAngle);
 
 
@@ -117,7 +120,7 @@ public class AimShoot extends Command {
         // create points in shooter linear interpolation line
         // TODO tune these values
         shooterSpeedInterpolation.put(podiumDistance, podiumSpeed);
-        shooterSpeedInterpolation.put(d3Distance, d3Speed);
+        shooterSpeedInterpolation.put(chainDistance, chainSpeed);
         shooterSpeedInterpolation.put(xSpotDistance, xSpotSpeed);
         shooterSpeedInterpolation.put(wingerDistance, wingerSpeed);
         shooterSpeedInterpolation.put(subWooferDistance, subWooferSpeed);
@@ -142,13 +145,13 @@ public class AimShoot extends Command {
         shooterAngleInterpolation.put(subWooferDistance, subWooferAngle);
         shooterAngleInterpolation.put(podiumDistance, podiumAngle);
         shooterAngleInterpolation.put(xSpotDistance, xSpotAngle);
-        shooterAngleInterpolation.put(d3Distance, d3Angle);
+        shooterAngleInterpolation.put(chainDistance, chainAngle);
         shooterAngleInterpolation.put(wingerDistance, wingerAngle);
 
         // create points in angle linear interpolation line
         // TODO tune these values
         shooterSpeedInterpolation.put(podiumDistance, podiumSpeed);
-        shooterSpeedInterpolation.put(d3Distance, d3Speed);
+        shooterSpeedInterpolation.put(chainDistance, chainSpeed);
         shooterSpeedInterpolation.put(xSpotDistance, xSpotSpeed);
         shooterSpeedInterpolation.put(wingerDistance, wingerSpeed);
         shooterSpeedInterpolation.put(subWooferDistance, subWooferSpeed);
@@ -213,6 +216,9 @@ public class AimShoot extends Command {
     public void end(boolean interrupted) {
         shooter.setLoaderVoltage(shooter.stopLoaderVoltage);
         shooter.setShooterVoltage(shooter.stopShooterVoltage, shooter.stopShooterVoltage);
+        if (DriverStation.isAutonomous()) {
+            shooter.shootingMotorsSetControl(subWooferSpeed, subWooferSpeed);
+        }
         eyes.controllerRumble = false;
     }
 

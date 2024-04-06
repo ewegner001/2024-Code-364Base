@@ -335,17 +335,19 @@ public class Eyes extends SubsystemBase {
         double robotAccelX  = s_Swerve.fieldRelativeAccel.ax;
         double robotAccelY = s_Swerve.fieldRelativeAccel.ay;
 
+        double velocityCompensation = 2.0;
+
         for(int i=0;i<5;i++){
 
             double virtualGoalX;
             double virtualGoalY;
 
             if(DriverStation.getAlliance().get() == Alliance.Blue) {
-                virtualGoalX = getTargetPose().getX() - shotTime * (robotVelX + robotAccelX * accelerationCompensation); 
-                virtualGoalY = getTargetPose().getY() - shotTime * (robotVelY + robotAccelY * accelerationCompensation); 
+                virtualGoalX = getTargetPose().getX() - shotTime * ((robotVelX * velocityCompensation) + robotAccelX * accelerationCompensation); 
+                virtualGoalY = getTargetPose().getY() - shotTime * ((robotVelY * velocityCompensation) + robotAccelY * accelerationCompensation); 
             } else {
-                virtualGoalX = getTargetPose().getX() + shotTime * (robotVelX + robotAccelX * accelerationCompensation); 
-                virtualGoalY = getTargetPose().getY() + shotTime * (robotVelY + robotAccelY * accelerationCompensation); 
+                virtualGoalX = getTargetPose().getX() + shotTime * ((robotVelX * velocityCompensation) + robotAccelX * accelerationCompensation); 
+                virtualGoalY = getTargetPose().getY() + shotTime * ((robotVelY * velocityCompensation) + robotAccelY * accelerationCompensation); 
             }
 
             Translation2d testGoalLocation = new Translation2d(virtualGoalX, virtualGoalY);
@@ -510,16 +512,16 @@ public class Eyes extends SubsystemBase {
         s_Swerve.m_poseEstimator.update(s_Swerve.getGyroYaw(), s_Swerve.getModulePositions());
 
 
-        updatePoseEstimatorWithVisionBotPoseMegatag2();
+        //updatePoseEstimatorWithVisionBotPose();
 
-        /*
+        
         if (LimelightHelpers.getTV("") == true) {
             s_Swerve.m_poseEstimator.addVisionMeasurement(
                 getRobotPose(), 
                 Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0)
             );
         }
-        */
+        
 
         SmartDashboard.putNumber("Pose estimator rotations", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
         SmartDashboard.putNumber("Pose Estimator X", s_Swerve.m_poseEstimator.getEstimatedPosition().getX());
