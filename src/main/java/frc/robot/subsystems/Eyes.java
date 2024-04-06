@@ -483,6 +483,27 @@ public class Eyes extends SubsystemBase {
               fpgaTimestamp - (LimelightHelpers.getLatency_Pipeline("")/1000.0) - (LimelightHelpers.getLatency_Capture("")/1000.0));
         }
 
+    public void updatePoseEstimatorWithVisionBotPoseMegatag2() {
+        //invalid limelight
+        if (LimelightHelpers.getTV("") == false) {
+          return;
+        }
+
+        boolean doRejectUpdate = false;
+        LimelightHelpers.SetRobotOrientation("limelight", s_Swerve.m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+        if(Math.abs(s_Swerve.gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+        {
+          doRejectUpdate = true;
+        }
+        if(!doRejectUpdate)
+        {
+          s_Swerve.m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.6,.6,9999999));
+          s_Swerve.m_poseEstimator.addVisionMeasurement(
+              mt2.pose,
+              mt2.timestampSeconds);
+        }
+    }
 
     @Override
     public void periodic() {
