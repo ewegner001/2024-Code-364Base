@@ -479,6 +479,8 @@ public class RobotContainer {
                 )
         );
 
+        operatorRightTrigger.onTrue(new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(50, 50)))
+        .onFalse(new InstantCommand(() -> s_Shooter.shootingMotorsSetControl(0, 0)));
 
         /* Operator Buttons */
         

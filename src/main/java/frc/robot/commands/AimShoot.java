@@ -82,8 +82,8 @@ public class AimShoot extends Command {
 
  
     private final double feedDistance = 2.4;
-    private final double feedAngle = 131.0;
-    private final double feedSpeed = 30.0;
+    private final double feedAngle = 117.0;
+    private final double feedSpeed = 65.0;
 
     private final double elevatorShotDistance = 2.65;
     private final double elevatorShotAngle = 146;
