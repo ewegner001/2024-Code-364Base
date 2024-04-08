@@ -45,6 +45,7 @@ public class AimShoot extends Command {
 
     // required WPILib class objects
     private InterpolatingDoubleTreeMap shooterAngleInterpolation;
+    private InterpolatingDoubleTreeMap shooterAngleInterpolationAuto;
     private InterpolatingDoubleTreeMap shooterAngleInterpolationElevator;
     private InterpolatingDoubleTreeMap shooterSpeedInterpolation;
 

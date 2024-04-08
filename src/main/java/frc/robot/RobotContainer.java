@@ -199,10 +199,10 @@ public class RobotContainer {
 
 
 
-        NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
+        NamedCommands.registerCommand("Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes, s_Elevator)
             .until(() -> !s_Shooter.getBreakBeamOutput()) //TODO Make rollers spin after at position/0.25s
         );
-        NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes)
+        NamedCommands.registerCommand("Confirm Intake", new RunIntake(s_Intake, s_ShooterPivot, s_Shooter, s_Eyes, s_Elevator)
             .until(() -> !s_Shooter.getBreakBeamOutput()) //TODO Make rollers spin after at position/0.25s
             .withTimeout(1.25)
         );
@@ -245,7 +245,8 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-
+        //Manual climb
+        operatorLB.onTrue(new InstantCommand(() -> s_Elevator.climb()));
         // zero gyro
         driverY.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
 
@@ -396,6 +397,7 @@ public class RobotContainer {
 
             //Reach for Climb             
             new SequentialCommandGroup(
+                new InstantCommand(() -> s_Elevator.resetElevatorReverseSoftlimit()),
                 new InstantCommand(() -> s_Shooter.setShooterVoltage(0,0)),
                 new InstantCommand(() -> s_Elevator.SetElevatorPosition(Constants.ELEVATOR_HIGH_LEVEL)),
                 s_Elevator.ElevatorAtPosition(Constants.ELEVATOR_SAFE_LEVEL),
