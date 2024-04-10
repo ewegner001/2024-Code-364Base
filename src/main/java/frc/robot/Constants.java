@@ -178,7 +178,8 @@ public final class Constants {
     }
 
     public static final class Positions {
-
+        
+        //Speaker positions
         public static final double speakerBlueX = 0;
         public static final double speakerBlueY = 5.5;
         public static final double speakerBlueR = 0;
@@ -187,6 +188,7 @@ public final class Constants {
         public static final double speakerRedY = 5.5;
         public static final double speakerRedR = 180;
 
+        // amp positions (used for Feeding)
         public static final double ampBlueX = 1.9;
         public static final double ampBlueY = 8.0;
         public static final double ampBlueR = 270;
@@ -195,7 +197,34 @@ public final class Constants {
         public static final double ampRedY = 8.0;
         public static final double ampRedR = 270;
 
+        public static final double distanceLimit = 3.0;
+
+        // blue trap positions
+        public static final double blueTrapLeftX = 4.3;
+        public static final double blueTrapLeftY = 5.0;
+        public static final double blueTrapLeftR = -60.0;
+
+        public static final double blueTrapRightX = 4.3;
+        public static final double blueTrapRightY = 3.0;
+        public static final double blueTrapRightR = 60.0;
+
+        public static final double blueTrapCenterX = 6.1;
+        public static final double blueTrapCenterY = 4.1;
+        public static final double blueTrapCenterR = 180.0;
         
+
+        // red trap positions
+        public static final double redTrapLeftX = 12.3;
+        public static final double redTrapLeftY = 3.0;
+        public static final double redTrapLeftR = 121.64;
+
+        public static final double redTrapRightX = 12.3;
+        public static final double redTrapRightY = 5.0;
+        public static final double redTrapRightR = -121.64;
+
+        public static final double redTrapCenterX = 10.4;
+        public static final double redTrapCenterY = 4.1;
+        public static final double redTrapCenterR = 0.0;
 
     }
 }

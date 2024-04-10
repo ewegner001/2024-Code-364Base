@@ -16,17 +16,25 @@ import frc.lib.util.FieldRelativeAccel;
 import frc.lib.util.FieldRelativeSpeed;
 import frc.robot.Constants;
 import java.util.List;
+
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -51,13 +59,16 @@ public class Eyes extends SubsystemBase {
     private double accelerationCompensation = 0.0; //Note this caused a ton of jitter due to inconsistent loop times
     private StructPublisher<Pose2d> posePublisher;
     private StructPublisher<Translation2d> translationPublisher;
+    private StructPublisher<Translation2d> trapPublisher;
     public boolean controllerRumble = false;
+    public boolean closeToTrap = false;
   
     // constuctor
     public Eyes(Swerve swerve, Shooter shooter) {
 
         posePublisher = NetworkTableInstance.getDefault().getStructTopic("/Moving Goal pose", Pose2d.struct).publish();
         translationPublisher = NetworkTableInstance.getDefault().getStructTopic("/Moving Goal translation", Translation2d.struct).publish();
+        trapPublisher = NetworkTableInstance.getDefault().getStructTopic("/Closest Trap", Translation2d.struct).publish();
         s_Swerve = swerve;
         s_Shooter = shooter;
     }
@@ -443,6 +454,86 @@ public class Eyes extends SubsystemBase {
         return distance;
 
     }
+
+    public Pose2d getClosestTrap() {
+        
+        double trapLeftDistance;
+        double trapRightDistance;
+        double trapCenterDistance;
+
+        Pose2d closestTrap = new Pose2d();
+        double closestDistance;
+
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+            trapLeftDistance = getDistanceFromTargetTrap(Constants.Positions.blueTrapLeftX, Constants.Positions.blueTrapLeftY);
+            trapRightDistance = getDistanceFromTargetTrap(Constants.Positions.blueTrapRightX, Constants.Positions.blueTrapRightY);
+            trapCenterDistance = getDistanceFromTargetTrap(Constants.Positions.blueTrapCenterX, Constants.Positions.blueTrapCenterY);
+
+            closestDistance = Math.min(Math.min(trapLeftDistance, trapRightDistance), trapCenterDistance);
+            
+            if (closestDistance == trapLeftDistance) {
+                closestTrap = new Pose2d(Constants.Positions.blueTrapLeftX, Constants.Positions.blueTrapLeftY, Rotation2d.fromDegrees(Constants.Positions.blueTrapLeftR));
+            } else if (closestDistance == trapRightDistance){
+                closestTrap = new Pose2d(Constants.Positions.blueTrapRightX, Constants.Positions.blueTrapRightY, Rotation2d.fromDegrees(Constants.Positions.blueTrapRightR));
+            } else {
+                closestTrap = new Pose2d(Constants.Positions.blueTrapCenterX, Constants.Positions.blueTrapCenterY, Rotation2d.fromDegrees(Constants.Positions.blueTrapCenterR));
+            }
+
+        } else {
+            trapLeftDistance = getDistanceFromTargetTrap(Constants.Positions.redTrapLeftX, Constants.Positions.redTrapLeftY);
+            trapRightDistance = getDistanceFromTargetTrap(Constants.Positions.redTrapRightX, Constants.Positions.redTrapRightY);
+            trapCenterDistance = getDistanceFromTargetTrap(Constants.Positions.redTrapCenterX, Constants.Positions.redTrapCenterY);
+
+            closestDistance = Math.min(Math.min(trapLeftDistance, trapRightDistance), trapCenterDistance);
+            
+            if (closestDistance == trapLeftDistance) {
+                closestTrap = new Pose2d(Constants.Positions.redTrapLeftX, Constants.Positions.redTrapLeftY, Rotation2d.fromDegrees(Constants.Positions.redTrapLeftR));
+            } else if (closestDistance == trapRightDistance){
+                closestTrap = new Pose2d(Constants.Positions.redTrapRightX, Constants.Positions.redTrapRightY, Rotation2d.fromDegrees(Constants.Positions.redTrapRightR));
+            } else {
+                closestTrap = new Pose2d(Constants.Positions.redTrapCenterX, Constants.Positions.redTrapCenterY, Rotation2d.fromDegrees(Constants.Positions.redTrapCenterR));
+            }
+        }
+
+        if (closestDistance < Constants.Positions.distanceLimit) {
+            closeToTrap = true;
+        } else {
+            closeToTrap = false;
+        }
+
+        //Log Target Trap Location
+        trapPublisher.set(new Translation2d(closestTrap.getX(), closestTrap.getY()));
+
+        return closestTrap;
+    }
+
+
+    public PathPlannerPath closestTrapPath() {
+
+        Pose2d closestTrap = getClosestTrap();
+        Pose2d currentPose = getRobotPose();
+ 
+        //The bezierFromPoses method required that the rotation component of each pose is the direction of travel, not the rotation of a swerve chassis.  To set the rotation the path should end with, use the GoalEndState.
+        
+        List<Translation2d> bezierPoints = PathPlannerPath.bezierFromPoses(
+
+            new Pose2d(currentPose.getX(), currentPose.getY(), currentPose.minus(closestTrap).getRotation()), //TODO Rotation may be wrong
+            new Pose2d(closestTrap.getX(), closestTrap.getY(), closestTrap.minus(currentPose).getRotation()) //TODO Rotation may be wrong
+
+        );
+
+        PathPlannerPath path = new PathPlannerPath(
+            bezierPoints,
+            new PathConstraints(0.25, 0.25, 2 * Math.PI, 4 * Math.PI), //TODO adjust speeds
+            new GoalEndState(0.0, closestTrap.getRotation())
+        );
+
+        // Prevent the path from being flipped as all coordinates are blue origin
+        path.preventFlipping = true;
+
+        return path;
+    }
+
 
     public void updatePoseEstimatorWithVisionBotPose() {
         //invalid limelight
